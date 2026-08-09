@@ -22,8 +22,9 @@ internal unsafe class DebugMisc : DebugSectionBase
 {
     public override void Draw()
     {
-        if(ImGui.Button("EnableSingleMultiMode")) ECommonsIPC.AutoRetainer.EnableSingleMultiMode();
-        if(ImGui.CollapsingHeader("移动卡死检测"))
+        if(ImGui.Button("EnableSingleMultiMode")) ECommonsIPC.AutoRetainer.EnableSingleMultiMode(null);
+        if(ImGui.Button("EnableSingleMultiMode (subs)")) ECommonsIPC.AutoRetainer.EnableSingleMultiMode(ECommons.IPC.Subscribers.AutoRetainer.MultiModeType.Submersibles);
+        if(ImGui.CollapsingHeader("Move stuck detection"))
         {
             ImGuiEx.Text($"""
                 
