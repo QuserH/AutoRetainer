@@ -20,6 +20,8 @@ concurrency:
 
 env:
   UPSTREAM_REPO: PunishXIV/AutoRetainer
+  PLUGIN_REPO: QuserH/zh-repo
+  HAS_ZH_REPO_TOKEN: ${{ secrets.ZH_REPO_TOKEN != '' }}
 
 jobs:
   sync-and-build:
@@ -128,3 +130,72 @@ jobs:
           } else {
             gh release create $tag "AutoRetainer.zip" --title "AutoRetainer $env:VERSION" --notes "Built from the current localized source after upstream synchronization."
           }
+
+      - name: Checkout plugin repository
+        if: env.SHOULD_BUILD == 'true' && env.HAS_ZH_REPO_TOKEN == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PLUGIN_REPO }}
+          token: ${{ secrets.ZH_REPO_TOKEN }}
+          path: plugin-repository
+
+      - name: Update plugin repository entry
+        if: env.SHOULD_BUILD == 'true' && env.HAS_ZH_REPO_TOKEN == 'true'
+        shell: pwsh
+        run: |
+          $manifest = Get-Content "AutoRetainer/AutoRetainer.json" -Raw -Encoding utf8 | ConvertFrom-Json
+          $masterPath = "plugin-repository/pluginmaster.json"
+          [object[]]$entries = @(Get-Content $masterPath -Raw -Encoding utf8 | ConvertFrom-Json)
+          $entry = $entries | Where-Object { $_.InternalName -eq $manifest.InternalName } | Select-Object -First 1
+          $downloadUrl = "https://github.com/${{ github.repository }}/releases/download/v$env:VERSION/AutoRetainer.zip"
+
+          if ($null -eq $entry) {
+            $entry = [PSCustomObject][ordered]@{
+              Author = $manifest.Author
+              Name = $manifest.Name
+              Punchline = $manifest.Punchline
+              Description = $manifest.Description
+              InternalName = $manifest.InternalName
+              AssemblyVersion = $env:VERSION
+              TestingAssemblyVersion = $null
+              RepoUrl = "https://github.com/${{ github.repository }}"
+              ApplicableVersion = $manifest.ApplicableVersion
+              DalamudApiLevel = $manifest.DalamudApiLevel
+              IsHide = $false
+              IsTestingExclusive = $false
+              DownloadLinkInstall = $downloadUrl
+              DownloadLinkTesting = $null
+              DownloadLinkUpdate = $downloadUrl
+              LastUpdate = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+            }
+            $entries += $entry
+          } else {
+            $entry.Author = $manifest.Author
+            $entry.Name = $manifest.Name
+            $entry.Punchline = $manifest.Punchline
+            $entry.Description = $manifest.Description
+            $entry.AssemblyVersion = $env:VERSION
+            $entry.RepoUrl = "https://github.com/${{ github.repository }}"
+            $entry.ApplicableVersion = $manifest.ApplicableVersion
+            $entry.DalamudApiLevel = $manifest.DalamudApiLevel
+            $entry.DownloadLinkInstall = $downloadUrl
+            $entry.DownloadLinkUpdate = $downloadUrl
+            $entry.LastUpdate = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+          }
+
+          ConvertTo-Json -InputObject $entries -Depth 10 | Set-Content $masterPath -Encoding utf8
+          Set-Location plugin-repository
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pluginmaster.json
+          if (git diff --cached --quiet) {
+            Write-Output "pluginmaster.json is already current."
+          } else {
+            git commit -m "AutoRetainer: update to v$env:VERSION"
+            git push origin HEAD:main
+          }
+
+      - name: Warn when plugin repository token is missing
+        if: env.SHOULD_BUILD == 'true' && env.HAS_ZH_REPO_TOKEN != 'true'
+        shell: pwsh
+        run: Write-Output "::warning::Set the ZH_REPO_TOKEN repository secret to update QuserH/zh-repo/pluginmaster.json automatically."
