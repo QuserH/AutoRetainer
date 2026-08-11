@@ -289,6 +289,52 @@ PATCHES = [
         // CN patch: 探险币兑换不再经由货币弹窗（数量已在回调中直接传入）
         tasks.Add(new(ConfirmExchange, conf));''',
     },
+    {
+        "file": r"AutoRetainer\Modules\GcHandin\AutoGCHandin.cs",
+        "old": "    internal static bool Operation = false;",
+        "new": "    internal static bool Operation = false;\n    private static long HandinDelayUntil;\n    private static uint HandinDelayItem;\n\n    private static bool InvokeHandinWithDelay(AtkUnitBase* addon, int which, uint itemId)\n    {\n        if(HandinDelayItem != itemId)\n        {\n            HandinDelayItem = itemId;\n            HandinDelayUntil = Environment.TickCount64 + GetRandomDelayMilliseconds(C.GCHandinDelayMinSeconds, C.GCHandinDelayMaxSeconds);\n        }\n        if(Environment.TickCount64 < HandinDelayUntil) return false;\n        HandinDelayItem = 0;\n        InvokeHandin(addon, which);\n        return true;\n    }\n\n    internal static long GetRandomDelayMilliseconds(float minimumSeconds, float maximumSeconds)\n    {\n        var minimumCentiseconds = ToCentiseconds(minimumSeconds);\n        var maximumCentiseconds = Math.Clamp(ToCentiseconds(maximumSeconds), minimumCentiseconds, 360000);\n        return Random.Shared.NextInt64(minimumCentiseconds, maximumCentiseconds + 1) * 10L;\n    }\n\n    private static int ToCentiseconds(float seconds)\n    {\n        if(!float.IsFinite(seconds)) return 0;\n        return (int)MathF.Round(Math.Clamp(seconds, 0f, 3600f) * 100f, MidpointRounding.AwayFromZero);\n    }",
+    },
+    {
+        "file": r"AutoRetainer\Modules\GcHandin\AutoGCHandin.cs",
+        "old": "                                    InvokeHandin(addon, nextItem.Value.Index);",
+        "new": "                                    InvokeHandinWithDelay(addon, nextItem.Value.Index, nextItem.Value.ItemID);",
+    },
+    {
+        "file": r"AutoRetainer\Modules\GcHandin\AutoGCHandin.cs",
+        "old": "    internal static void Tick()\n    {",
+        "new": "    internal static void Tick()\n    {\n        if(!Operation) HandinDelayItem = 0;",
+    },
+    {
+        "file": r"AutoRetainer\Modules\GcHandin\GCContinuation.cs",
+        "old": "        P.TaskManager.Enqueue(GCContinuation.InteractWithShop);\n        P.TaskManager.Enqueue(BeginNewPurchase);",
+        "new": "        P.TaskManager.Enqueue(GCContinuation.InteractWithShop);\n        P.TaskManager.Enqueue(() => GCContinuation.ExchangeEntryDelayReady());\n        P.TaskManager.Enqueue(BeginNewPurchase);",
+    },
+    {
+        "file": r"AutoRetainer\Modules\GcHandin\GCContinuation.cs",
+        "old": "    public static bool PurchaseItem(this GCExchangeItem item)",
+        "new": "    private static long ExchangeDelayUntil;\n    private static uint ExchangeDelayItem;\n    private static long ExchangeEntryDelayUntil;\n    private static bool ExchangeEntryDelayPending;\n\n    private static bool ExchangeDelayReady(uint itemId)\n    {\n        if(ExchangeDelayItem != itemId)\n        {\n            ExchangeDelayItem = itemId;\n            ExchangeDelayUntil = Environment.TickCount64 + AutoGCHandin.GetRandomDelayMilliseconds(C.GCExchangeDelayMinSeconds, C.GCExchangeDelayMaxSeconds);\n        }\n        if(Environment.TickCount64 < ExchangeDelayUntil) return false;\n        ExchangeDelayItem = 0;\n        return true;\n    }\n\n    private static bool ExchangeEntryDelayReady()\n    {\n        if(!ExchangeEntryDelayPending)\n        {\n            ExchangeEntryDelayPending = true;\n            ExchangeEntryDelayUntil = Environment.TickCount64 + AutoGCHandin.GetRandomDelayMilliseconds(C.GCExchangeDelayMinSeconds, C.GCExchangeDelayMaxSeconds);\n        }\n        if(Environment.TickCount64 < ExchangeEntryDelayUntil) return false;\n        ExchangeEntryDelayPending = false;\n        return true;\n    }\n\n    public static bool PurchaseItem(this GCExchangeItem item)",
+    },
+    {
+        "file": r"AutoRetainer\Modules\GcHandin\GCContinuation.cs",
+        "old": "        var amount = item.GetAmountThatCanBePurchased();",
+        "new": "        var amount = item.GetAmountThatCanBePurchased();\n        if(item.ItemID == VentureItem && !ExchangeDelayReady(item.ItemID)) return false;",
+    },
+    # ============ randomized GC delay configuration ============
+    {
+        "file": r"AutoRetainer\PluginData\Config.cs",
+        "old": "    public int FullAutoGCDeliveryDeliverOnVentureLessThan = 50;\n    public bool VendorItemAfterVoyage = false;",
+        "new": "    public int FullAutoGCDeliveryDeliverOnVentureLessThan = 50;\n    public float GCHandinDelayMinSeconds = 0;\n    public float GCHandinDelayMaxSeconds = 0;\n    public float GCExchangeDelayMinSeconds = 0;\n    public float GCExchangeDelayMaxSeconds = 0;\n    public bool VendorItemAfterVoyage = false;",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\GeneralSettings.cs",
+        "old": "        .Checkbox(\"启用自动筹备交换\", () => ref C.AutoGCContinuation)",
+        "new": "        .Checkbox(\"启用自动筹备交换\", () => ref C.AutoGCContinuation)\n        .Widget(() =>\n        {\n            ImGuiEx.TextWrapped(\"提交装备与兑换探险币的额外随机延迟（单位：秒，保留两位小数；最小值和最大值均为 0 表示不延迟）\");\n            ImGui.SetNextItemWidth(120f);\n            ImGui.InputFloat(\"提交装备延迟最小值\", ref C.GCHandinDelayMinSeconds, 0.01f, 0.10f, \"%.2f\");\n            ImGui.SetNextItemWidth(120f);\n            ImGui.InputFloat(\"提交装备延迟最大值\", ref C.GCHandinDelayMaxSeconds, 0.01f, 0.10f, \"%.2f\");\n            ImGui.SetNextItemWidth(120f);\n            ImGui.InputFloat(\"兑换探险币延迟最小值\", ref C.GCExchangeDelayMinSeconds, 0.01f, 0.10f, \"%.2f\");\n            ImGui.SetNextItemWidth(120f);\n            ImGui.InputFloat(\"兑换探险币延迟最大值\", ref C.GCExchangeDelayMaxSeconds, 0.01f, 0.10f, \"%.2f\");\n            C.GCHandinDelayMinSeconds = NormalizeDelay(C.GCHandinDelayMinSeconds);\n            C.GCHandinDelayMaxSeconds = Math.Max(C.GCHandinDelayMinSeconds, NormalizeDelay(C.GCHandinDelayMaxSeconds));\n            C.GCExchangeDelayMinSeconds = NormalizeDelay(C.GCExchangeDelayMinSeconds);\n            C.GCExchangeDelayMaxSeconds = Math.Max(C.GCExchangeDelayMinSeconds, NormalizeDelay(C.GCExchangeDelayMaxSeconds));\n        })",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\GeneralSettings.cs",
+        "old": "        ;\n}",
+        "new": "        ;\n\n    private static float NormalizeDelay(float seconds)\n    {\n        if(!float.IsFinite(seconds)) return 0f;\n        return Math.Clamp(MathF.Round(seconds, 2, MidpointRounding.AwayFromZero), 0f, 3600f);\n    }\n}",
+    },
 ]
 
 

@@ -12,6 +12,22 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
     public override NuiBuilder Builder => new NuiBuilder()
         .Section("一般设置")
         .Checkbox("启用自动筹备交换", () => ref C.AutoGCContinuation)
+        .Widget(() =>
+        {
+            ImGuiEx.TextWrapped("提交装备与兑换探险币的额外随机延迟（单位：秒，保留两位小数；最小值和最大值均为 0 表示不延迟）");
+            ImGui.SetNextItemWidth(120f);
+            ImGui.InputFloat("提交装备延迟最小值", ref C.GCHandinDelayMinSeconds, 0.01f, 0.10f, "%.2f");
+            ImGui.SetNextItemWidth(120f);
+            ImGui.InputFloat("提交装备延迟最大值", ref C.GCHandinDelayMaxSeconds, 0.01f, 0.10f, "%.2f");
+            ImGui.SetNextItemWidth(120f);
+            ImGui.InputFloat("兑换探险币延迟最小值", ref C.GCExchangeDelayMinSeconds, 0.01f, 0.10f, "%.2f");
+            ImGui.SetNextItemWidth(120f);
+            ImGui.InputFloat("兑换探险币延迟最大值", ref C.GCExchangeDelayMaxSeconds, 0.01f, 0.10f, "%.2f");
+            C.GCHandinDelayMinSeconds = NormalizeDelay(C.GCHandinDelayMinSeconds);
+            C.GCHandinDelayMaxSeconds = Math.Max(C.GCHandinDelayMinSeconds, NormalizeDelay(C.GCHandinDelayMaxSeconds));
+            C.GCExchangeDelayMinSeconds = NormalizeDelay(C.GCExchangeDelayMinSeconds);
+            C.GCExchangeDelayMaxSeconds = Math.Max(C.GCExchangeDelayMinSeconds, NormalizeDelay(C.GCExchangeDelayMaxSeconds));
+        })
         .TextWrapped($"""\n            启用专家交付续传后:\n            - 插件将自动消耗可用的军票，从配置的兑换列表中购买物品。\n            - 如果兑换列表为空，将只购买冒险委托。\n            - 请确保 "Delivery Mode" 未设置为 "Disabled" 在 "Character Configuration" 部分中。\n\n            军票用完后:\n            - 专家交付将自动恢复。\n            - 该过程将重复，直到没有符合条件的物品可交付或没有剩余军票。\n            """)
 
         .Section("多角色模式筹备交换")
@@ -58,4 +74,10 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
         .Checkbox("仅在多角色模式启动时", () => ref C.TeleportAfterGCExchangeMulti)
         .Unindent()
         ;
+
+    private static float NormalizeDelay(float seconds)
+    {
+        if(!float.IsFinite(seconds)) return 0f;
+        return Math.Clamp(MathF.Round(seconds, 2, MidpointRounding.AwayFromZero), 0f, 3600f);
+    }
 }

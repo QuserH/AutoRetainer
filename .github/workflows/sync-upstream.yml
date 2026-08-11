@@ -1,71 +1,90 @@
-name: Auto Sync Upstream & Release
+name: Sync Upstream and Build
 
 on:
   schedule:
     - cron: "0 2 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      build_current:
+        description: Build and publish even when upstream has not changed
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: write
-  issues: write
+
+concurrency:
+  group: sync-upstream-and-build
+  cancel-in-progress: false
 
 env:
   UPSTREAM_REPO: PunishXIV/AutoRetainer
-  PM_REPO: exloser123/DalamudPlugins
-  HAS_PAT: ${{ secrets.PLUGIN_MASTER_PAT != '' }}
 
 jobs:
-  sync:
+  sync-and-build:
     runs-on: windows-latest
+
     steps:
-      - name: Checkout fork (with submodules)
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Configure git
+      - name: Configure Git
         shell: pwsh
         run: |
-          git config user.name "exloser123"
-          git config user.email "exloser123@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Fetch upstream
-        shell: pwsh
-        run: |
-          git fetch "https://github.com/$env:UPSTREAM_REPO.git" master:upstream-master
-          $count = git rev-list --count HEAD..upstream-master
-          Write-Output "commits behind: $count"
-          if ($count -eq "0") {
-            Write-Output "UP_TO_DATE=1" >> $env:GITHUB_ENV
-          } else {
-            Write-Output "UP_TO_DATE=0" >> $env:GITHUB_ENV
-          }
-
-      - name: Merge upstream and re-apply localization
-        if: env.UP_TO_DATE == '0'
-        shell: pwsh
-        run: |
-          git merge upstream-master --no-edit -X theirs
-          python -m pip install --quiet opencc-python-reimplemented
-          python tools/localize.py
-          python tools/patch_cn.py
-          git add AutoRetainer tools
-          git commit -m "chore: 同步上游并重放汉化" | Out-Null
-          git push origin master
-
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Setup .NET
+      - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
 
+      - name: Fetch upstream
+        shell: pwsh
+        run: |
+          git fetch "https://github.com/$env:UPSTREAM_REPO.git" master:refs/remotes/upstream/master
+          $count = git rev-list --count HEAD..upstream/master
+          Write-Output "Upstream commits pending: $count"
+          if ($count -eq "0") {
+            "UPSTREAM_CHANGED=false" >> $env:GITHUB_ENV
+          } else {
+            "UPSTREAM_CHANGED=true" >> $env:GITHUB_ENV
+          }
+
+      - name: Merge upstream and reapply localization
+        if: env.UPSTREAM_CHANGED == 'true'
+        shell: pwsh
+        run: |
+          git merge upstream/master --no-edit -X theirs
+          python -m pip install --quiet opencc-python-reimplemented
+          python tools/localize.py
+          python tools/patch_cn.py
+          git add AutoRetainer tools
+          if (git diff --cached --quiet) {
+            Write-Output "Localization produced no tracked changes."
+          } else {
+            git commit -m "chore: sync upstream and reapply localization"
+          }
+          git push origin HEAD:master
+
+      - name: Decide whether to build
+        shell: pwsh
+        run: |
+          $manualBuild = "${{ github.event_name }}" -eq "workflow_dispatch" -and "${{ inputs.build_current }}" -eq "true"
+          $shouldBuild = $manualBuild -or ($env:UPSTREAM_CHANGED -eq "true")
+          "SHOULD_BUILD=$($shouldBuild.ToString().ToLowerInvariant())" >> $env:GITHUB_ENV
+
       - name: Download Dalamud SDK
-        if: env.UP_TO_DATE == '0'
+        if: env.SHOULD_BUILD == 'true'
         shell: pwsh
         run: |
           $out = Join-Path $env:GITHUB_WORKSPACE "dalamud"
@@ -73,82 +92,39 @@ jobs:
           Invoke-WebRequest -Uri "https://github.com/goatcorp/dalamud-distrib/raw/main/latest.zip" -OutFile (Join-Path $out "dalamud.zip")
           Expand-Archive -Path (Join-Path $out "dalamud.zip") -DestinationPath $out -Force
           Remove-Item (Join-Path $out "dalamud.zip")
-          Write-Output "DALAMUD_HOME=$out" >> $env:GITHUB_ENV
+          "DALAMUD_HOME=$out" >> $env:GITHUB_ENV
 
-      - name: Build
-        if: env.UP_TO_DATE == '0'
+      - name: Build plugin
+        if: env.SHOULD_BUILD == 'true'
         run: dotnet build AutoRetainer/AutoRetainer.csproj -c Release --nologo
 
       - name: Read version
-        if: env.UP_TO_DATE == '0'
+        if: env.SHOULD_BUILD == 'true'
         shell: pwsh
         run: |
-          $v = (Select-String -Path "AutoRetainer/AutoRetainer/AutoRetainer.csproj" -Pattern '<Version>(.*?)</Version>').Matches[0].Groups[1].Value
-          Write-Output "VERSION=$v" >> $env:GITHUB_ENV
+          $version = (Select-String -Path "AutoRetainer/AutoRetainer.csproj" -Pattern '<Version>(.*?)</Version>').Matches[0].Groups[1].Value
+          "VERSION=$version" >> $env:GITHUB_ENV
 
-      - name: Bump version if tag exists
-        if: env.UP_TO_DATE == '0' && env.VERSION != ''
+      - name: Upload build artifact
+        if: env.SHOULD_BUILD == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: AutoRetainer-${{ env.VERSION }}
+          path: AutoRetainer/bin/Release/AutoRetainer/latest.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Create or update release
+        if: env.SHOULD_BUILD == 'true'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "v$env:VERSION"
-          gh release view $tag 2>$null
-          while ($LASTEXITCODE -eq 0) {
-            # 版本已发布过（上游未 bump），汉化版末位 +1
-            $parts = $env:VERSION.Split('.')
-            $parts[$parts.Count - 1] = ([int]$parts[$parts.Count - 1] + 1).ToString()
-            $env:VERSION = $parts -join '.'
-            Write-Output "版本 bump 为 $env:VERSION"
-            (Get-Content "AutoRetainer/AutoRetainer/AutoRetainer.csproj") -replace '<Version>.*?</Version>', "<Version>$env:VERSION</Version>" | Set-Content "AutoRetainer/AutoRetainer/AutoRetainer.csproj"
-            $tag = "v$env:VERSION"
-            gh release view $tag 2>$null
-          }
-          Write-Output "VERSION=$env:VERSION" >> $env:GITHUB_ENV
-
-      - name: Create GitHub Release
-        if: env.UP_TO_DATE == '0' && env.VERSION != ''
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
           Copy-Item "AutoRetainer/AutoRetainer/bin/Release/AutoRetainer/latest.zip" "AutoRetainer.zip"
-          $notes = "自动同步上游并重放汉化（$env:VERSION）`n`n安装：Dalamud 设置 -> 自定义插件仓库 -> https://raw.githubusercontent.com/$env:PM_REPO/main/pluginmaster.json"
-          gh release create "v$env:VERSION" "AutoRetainer.zip" --title "AutoRetainer $env:VERSION 中文汉化版" --notes $notes
-          Write-Output "RELEASED=1" >> $env:GITHUB_ENV
-
-      - name: Update pluginmaster.json
-        if: env.RELEASED == '1' && env.HAS_PAT == 'true'
-        shell: pwsh
-        env:
-          PAT: ${{ secrets.PLUGIN_MASTER_PAT }}
-        run: |
-          git clone "https://x-access-token:$env:PAT@github.com/$env:PM_REPO.git" pmrepo
-          $url = "https://gh.atmoomen.top/https://github.com/${{ github.repository }}/releases/download/v$env:VERSION/AutoRetainer.zip"
-          $log = git log upstream-master..HEAD --oneline --first-parent | Select-Object -First 20
-          python pmrepo/tools/update_pluginmaster.py pmrepo "AutoRetainer" $env:VERSION $url $log
-          Set-Location pmrepo
-          git config user.name "exloser123"
-          git config user.email "exloser123@users.noreply.github.com"
-          git add pluginmaster.json
-          git commit -m "AutoRetainer: update to v$env:VERSION"
-          git push
-          Set-Location $env:GITHUB_WORKSPACE
-
-      - name: Warn if pluginmaster PAT not configured
-        if: env.RELEASED == '1' && env.HAS_PAT == 'false'
-        shell: pwsh
-        run: |
-          Write-Output "::warning::未配置 PLUGIN_MASTER_PAT secret，pluginmaster.json 未自动更新。请手动更新或配置 PAT。"
-
-      - name: Create issue on failure
-        if: failure()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: '自动同步上游失败，需要人工处理',
-              body: `自动同步流程失败，请查看日志：https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}\n\n可能原因：\n- 上游改动导致补丁（tools/patch_cn.py）匹配失败\n- 编译失败\n- 词典（tools/zh-CN.json）缺少新文本翻译`
-            })
+          gh release view $tag 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag "AutoRetainer.zip" --clobber
+          } else {
+            gh release create $tag "AutoRetainer.zip" --title "AutoRetainer $env:VERSION" --notes "Built from the current localized source after upstream synchronization."
+          }

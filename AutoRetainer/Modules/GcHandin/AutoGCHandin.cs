@@ -17,6 +17,34 @@ internal static unsafe class AutoGCHandin
 {
     internal static AutoGCHandinOverlay Overlay;
     internal static bool Operation = false;
+    private static long HandinDelayUntil;
+    private static uint HandinDelayItem;
+
+    private static bool InvokeHandinWithDelay(AtkUnitBase* addon, int which, uint itemId)
+    {
+        if(HandinDelayItem != itemId)
+        {
+            HandinDelayItem = itemId;
+            HandinDelayUntil = Environment.TickCount64 + GetRandomDelayMilliseconds(C.GCHandinDelayMinSeconds, C.GCHandinDelayMaxSeconds);
+        }
+        if(Environment.TickCount64 < HandinDelayUntil) return false;
+        HandinDelayItem = 0;
+        InvokeHandin(addon, which);
+        return true;
+    }
+
+    internal static long GetRandomDelayMilliseconds(float minimumSeconds, float maximumSeconds)
+    {
+        var minimumCentiseconds = ToCentiseconds(minimumSeconds);
+        var maximumCentiseconds = Math.Clamp(ToCentiseconds(maximumSeconds), minimumCentiseconds, 360000);
+        return Random.Shared.NextInt64(minimumCentiseconds, maximumCentiseconds + 1) * 10L;
+    }
+
+    private static int ToCentiseconds(float seconds)
+    {
+        if(!float.IsFinite(seconds)) return 0;
+        return (int)MathF.Round(Math.Clamp(seconds, 0f, 3600f) * 100f, MidpointRounding.AwayFromZero);
+    }
 
     internal static bool IsEnabled()
     {
@@ -53,6 +81,7 @@ internal static unsafe class AutoGCHandin
 
     internal static void Tick()
     {
+        if(!Operation) HandinDelayItem = 0;
         if(Svc.Condition[ConditionFlag.OccupiedInQuestEvent] && TryGetAddonByName<AtkUnitBase>("GrandCompanySupplyList", out var addon))
         {
             if(addon->X != 0 || addon->Y != 0)
@@ -187,7 +216,7 @@ internal static unsafe class AutoGCHandin
                                         throw new GCHandinInterruptedException($"Item {itemName} was not found in inventory");
                                     }
                                     DebugLog($"Handing in item {itemName} for {nextItem.Value.Seals} seals (index={nextItem.Value.Index})");
-                                    InvokeHandin(addon, nextItem.Value.Index);
+                                    InvokeHandinWithDelay(addon, nextItem.Value.Index, nextItem.Value.ItemID);
                                 }
                                 else
                                 {

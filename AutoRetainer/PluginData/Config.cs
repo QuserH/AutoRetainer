@@ -265,6 +265,10 @@ internal unsafe class Config
     public bool FullAutoGCDeliveryUseBuffFCAction = false;
     public bool FullAutoGCDeliveryDeliverOnVentureExhaust = false;
     public int FullAutoGCDeliveryDeliverOnVentureLessThan = 50;
+    public float GCHandinDelayMinSeconds = 0;
+    public float GCHandinDelayMaxSeconds = 0;
+    public float GCExchangeDelayMinSeconds = 0;
+    public float GCExchangeDelayMaxSeconds = 0;
     public bool VendorItemAfterVoyage = false;
 
     public bool ShutdownOnSubExhaustion = false;

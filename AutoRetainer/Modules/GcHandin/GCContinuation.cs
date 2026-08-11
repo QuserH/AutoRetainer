@@ -40,6 +40,7 @@ internal static unsafe class GCContinuation
     {
         P.TaskManager.Enqueue(GCContinuation.WaitUntilNotOccupied);
         P.TaskManager.Enqueue(GCContinuation.InteractWithShop);
+        P.TaskManager.Enqueue(() => GCContinuation.ExchangeEntryDelayReady());
         P.TaskManager.Enqueue(BeginNewPurchase);
         P.TaskManager.Enqueue(GCContinuation.WaitUntilNotOccupied);
         if(redeliver)
@@ -413,11 +414,41 @@ internal static unsafe class GCContinuation
         return false;
     }
 
+    private static long ExchangeDelayUntil;
+    private static uint ExchangeDelayItem;
+    private static long ExchangeEntryDelayUntil;
+    private static bool ExchangeEntryDelayPending;
+
+    private static bool ExchangeDelayReady(uint itemId)
+    {
+        if(ExchangeDelayItem != itemId)
+        {
+            ExchangeDelayItem = itemId;
+            ExchangeDelayUntil = Environment.TickCount64 + AutoGCHandin.GetRandomDelayMilliseconds(C.GCExchangeDelayMinSeconds, C.GCExchangeDelayMaxSeconds);
+        }
+        if(Environment.TickCount64 < ExchangeDelayUntil) return false;
+        ExchangeDelayItem = 0;
+        return true;
+    }
+
+    private static bool ExchangeEntryDelayReady()
+    {
+        if(!ExchangeEntryDelayPending)
+        {
+            ExchangeEntryDelayPending = true;
+            ExchangeEntryDelayUntil = Environment.TickCount64 + AutoGCHandin.GetRandomDelayMilliseconds(C.GCExchangeDelayMinSeconds, C.GCExchangeDelayMaxSeconds);
+        }
+        if(Environment.TickCount64 < ExchangeEntryDelayUntil) return false;
+        ExchangeEntryDelayPending = false;
+        return true;
+    }
+
     public static bool PurchaseItem(this GCExchangeItem item)
     {
         EzThrottler.Throttle($"GcBusy", 60000, true);
         var meta = Utils.GetCurrentlyAvailableSharedExchangeListings()[item.ItemID];
         var amount = item.GetAmountThatCanBePurchased();
+        if(item.ItemID == VentureItem && !ExchangeDelayReady(item.ItemID)) return false;
         if(TryGetAddonByName<AtkUnitBase>("GrandCompanyExchange", out var addon) && IsAddonReady(addon) && AutoGCHandin.IsValidGCTerritory())
         {
             var reader = new ReaderGrandCompanyExchange(addon);
