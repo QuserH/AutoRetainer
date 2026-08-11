@@ -128,7 +128,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = "v$env:VERSION"
-          Copy-Item "AutoRetainer/AutoRetainer/bin/Release/AutoRetainer/latest.zip" "AutoRetainer.zip"
+          Copy-Item "AutoRetainer/bin/Release/AutoRetainer/latest.zip" "AutoRetainer.zip"
           gh release view $tag 2>$null
           if ($LASTEXITCODE -eq 0) {
             gh release upload $tag "AutoRetainer.zip" --clobber
