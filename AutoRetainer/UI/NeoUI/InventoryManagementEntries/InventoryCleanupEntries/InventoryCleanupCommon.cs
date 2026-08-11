@@ -121,7 +121,7 @@ public static unsafe class InventoryCleanupCommon
         if(selectedPlan != null)
         {
             ImGuiEx.SetNextItemFullWidth();
-            ImGui.InputTextWithHint("##name", "Enter plan name", ref selectedPlan.Name, 100);
+            ImGui.InputTextWithHint("##name", "输入计划名称", ref selectedPlan.Name, 100);
 
             if(Data != null)
             {

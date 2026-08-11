@@ -12,7 +12,7 @@ namespace AutoRetainer.UI.Windows;
 internal unsafe class SubmarineUnlockPlanUI : Window
 {
     internal string SelectedPlanGuid = Guid.Empty.ToString();
-    internal string SelectedPlanName => VoyageUtils.GetSubmarineUnlockPlanByGuid(SelectedPlanGuid)?.Name ?? "No or unknown plan selected";
+    internal string SelectedPlanName => VoyageUtils.GetSubmarineUnlockPlanByGuid(SelectedPlanGuid)?.Name ?? "未选择计划或计划不存在";
     internal SubmarineUnlockPlan SelectedPlan => VoyageUtils.GetSubmarineUnlockPlanByGuid(SelectedPlanGuid);
 
     public SubmarineUnlockPlanUI() : base("潜水艇航行解锁计划")
@@ -24,7 +24,7 @@ internal unsafe class SubmarineUnlockPlanUI : Window
     internal Dictionary<uint, bool> RouteExploredCache = [];
     internal int NumUnlockedSubs = 0;
 
-    public static readonly string DrawButtonText = "Open Submarine Unlock Plan Editor";
+    public static readonly string DrawButtonText = "打开潜水艇解锁计划编辑器";
     public static void DrawButton()
     {
         if(ImGuiEx.IconButtonWithText(FontAwesomeIcon.LockOpen, DrawButtonText))
@@ -108,7 +108,7 @@ internal unsafe class SubmarineUnlockPlanUI : Window
             if(ImGui.Button("新计划"))
             {
                 var x = new SubmarineUnlockPlan();
-                x.Name = $"Plan {x.GUID}";
+                x.Name = $"计划 {x.GUID}";
                 C.SubmarineUnlockPlans.Add(x);
                 SelectedPlanGuid = x.GUID;
             }
@@ -215,7 +215,7 @@ internal unsafe class SubmarineUnlockPlanUI : Window
                 ImGui.SameLine();
                 if(ImGui.Button($"帮助"))
                 {
-                    Svc.Chat.Print($"Here is the list of all points that can be unlocked. Whenever a plugin needs to select something to unlock, a first available destination will be chosen from this list. Please note that you can NOT simply specify end point of unlocking, you need to select ALL destinations on your way.");
+                    Svc.Chat.Print("以下列出所有可解锁地点。插件需要选择解锁目标时，会从此列表中选择第一个可用目的地。请注意，不能只指定最终解锁地点，必须选择沿途所有需要经过的目的地。");
                 }
             });
             if(ImGui.BeginChild("计划"))
@@ -224,7 +224,7 @@ internal unsafe class SubmarineUnlockPlanUI : Window
                 {
                     ImGuiEx.TextWrapped($"请访问潜水艇名单以获取数据");
                 }
-                ImGui.Checkbox($"Unlock submarine slots. Current slots: {GetNumUnlockedSubs()?.ToString() ?? "Unknown"}/4", ref SelectedPlan.UnlockSubs);
+                ImGui.Checkbox($"解锁潜水艇栏位。当前栏位：{GetNumUnlockedSubs()?.ToString() ?? "未知"}/4", ref SelectedPlan.UnlockSubs);
                 ImGuiEx.TextWrapped($"解锁栏位的优先级总是高于解锁航线");
                 ImGui.Checkbox("在沉船区（翠浪海）强制执行「重复刷单一目的地」模式", ref SelectedPlan.EnforceDSSSinglePoint);
                 ImGui.Checkbox("将此计划设为强制执行", ref SelectedPlan.EnforcePlan);

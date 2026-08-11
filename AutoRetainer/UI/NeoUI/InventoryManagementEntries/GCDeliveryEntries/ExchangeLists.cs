@@ -269,7 +269,7 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
             }
             ImGui.EndPopup();
         }
-        if(ImGuiEx.IconButtonWithText(FontAwesomeIcon.AngleDoubleDown, "Actions"))
+        if(ImGuiEx.IconButtonWithText(FontAwesomeIcon.AngleDoubleDown, "操作"))
         {
             ImGui.OpenPopup("Ex");
         }
@@ -289,7 +289,7 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
 
 
         DragDrop.Begin();
-        if(ImGuiEx.BeginDefaultTable("GCDeliveryList", ["##dragDrop", "~Item", "GC", "Lv", "Price", "类别", "Keep", "One-Time", "##controls"]))
+        if(ImGuiEx.BeginDefaultTable("GCDeliveryList", ["##dragDrop", "~物品", "军票", "等级", "价格", "类别", "保留数量", "单次数量", "##controls"]))
         {
             for(var i = 0; i < plan.Items.Count; i++)
             {

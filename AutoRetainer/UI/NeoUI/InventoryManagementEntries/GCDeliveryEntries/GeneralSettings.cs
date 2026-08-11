@@ -29,10 +29,10 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
             C.GCExchangeDelayMaxSeconds = Math.Max(C.GCExchangeDelayMinSeconds, NormalizeDelay(C.GCExchangeDelayMaxSeconds));
         })
         .TextWrapped($"""
-            启用专家交付续传后:
+            启用筹备稀有品后续兑换后：
             - 插件将自动消耗可用的军票，从配置的兑换列表中购买物品。
-            - 如果兑换列表为空，将只购买冒险委托。
-            - 请确保 "Delivery Mode" 未设置为 "Disabled" 在 "Character Configuration" 部分中。
+            - 如果兑换列表为空，将只购买探险币。
+            - 请确保“角色配置”中的“交付模式”未设为“禁用”。
 
             军票用完后:
             - 专家交付将自动恢复。
@@ -42,7 +42,7 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
         .Section("多角色模式筹备交换")
         .TextWrapped($"""
         启用后:
-        - 启用传送的角色将在多角色模式下自动交付专家交付物品，并根据兑换计划购买物品（如果其军衔足够）。
+        - 启用传送的角色将在多角色模式下自动筹备稀有品，并在军衔满足条件时按兑换计划购买物品。
         """)
         .Checkbox("启用多角色筹备交换", () => ref C.FullAutoGCDelivery)
         .Checkbox("仅在工作台未锁定时触发", () => ref C.FullAutoGCDeliveryOnlyWsUnlocked)
@@ -62,7 +62,7 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
                     ImGuiEx.Checkbox($"排除 {Data.NameWithWorldCensored}##item", ref Data.NoItemBuffUse);
                 }
                 var cnt = C.OfflineData.Count(x => x.NoItemBuffUse);
-                ImGuiEx.Text($"{(cnt > 0 ? $"{cnt} character(s) are excluded from buff item usage. " : "")} Navigate to \"Functions, Exclusions, Order\" section to exclude a character.");
+                ImGuiEx.Text($"{(cnt > 0 ? $"已排除 {cnt} 个角色使用军票加成票券。" : "")}可在“功能、排除与排序”区块中排除角色。");
                 ImGui.Unindent();
             }
         })
@@ -77,7 +77,7 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
                     ImGuiEx.Checkbox($"排除 {Data.NameWithWorldCensored}", ref Data.NoFcBuffUse);
                 }
                 var cnt = C.OfflineData.Count(x => x.NoFcBuffUse);
-                ImGuiEx.Text($"{(cnt > 0 ? $"{cnt} character(s) are excluded from buff item usage. " : "")} Navigate to \"Functions, Exclusions, Order\" section to exclude a character.");
+                ImGuiEx.Text($"{(cnt > 0 ? $"已排除 {cnt} 个角色使用部队军票加成。" : "")}可在“功能、排除与排序”区块中排除角色。");
                 ImGui.Unindent();
             }
         })

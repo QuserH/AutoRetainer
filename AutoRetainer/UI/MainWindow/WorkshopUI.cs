@@ -512,8 +512,8 @@ internal static unsafe class WorkshopUI
                 ImGuiEx.EnumCombo("##umode", ref adata.UnlockMode, Lang.UnlockModeNames);
                 var currentPlan = VoyageUtils.GetSubmarineUnlockPlanByGuid(adata.SelectedUnlockPlan) ?? VoyageUtils.GetDefaultSubmarineUnlockPlan(false);
                 var isDefault = VoyageUtils.GetSubmarineUnlockPlanByGuid(adata.SelectedUnlockPlan) == null;
-                var text = Environment.TickCount64 % 2000 > 1000 ? "Unlocking every point" : "No or unknown plan selected";
-                if(ImGui.BeginCombo("##uplan", (currentPlan?.Name ?? text) + (isDefault ? " (default)" : ""), ImGuiComboFlags.HeightLarge))
+                var text = Environment.TickCount64 % 2000 > 1000 ? "解锁所有地点" : "未选择计划或计划不存在";
+                if(ImGui.BeginCombo("##uplan", (currentPlan?.Name ?? text) + (isDefault ? "（默认）" : ""), ImGuiComboFlags.HeightLarge))
                 {
                     if(ImGui.Button("开启编辑器"))
                     {
@@ -563,7 +563,7 @@ internal static unsafe class WorkshopUI
             ImGui.Separator();
             ImGuiEx.SetNextItemWidthScaled(150f);
             ImGuiEx.SliderInt("索引值覆盖", ref adata.IndexOverride, 0, 4, adata.IndexOverride == 0 ? "禁用" : $"{adata.IndexOverride}");
-            ImGuiComponents.HelpMarker($"If your vessel order in AutoRetainer is different than in voyage panel menu, you must use this feature to set correct index to incorrectly ordered vessels. Make sure that index is matching order in control panel.");
+            ImGuiComponents.HelpMarker("如果 AutoRetainer 中的舰船顺序与航行控制面板中的顺序不同，请使用此功能为顺序错误的舰船设置正确索引。请确保索引与控制面板中的顺序一致。");
             if(ImGui.CollapsingHeader("我最近重新命名了这艘潜艇"))
             {
                 if(ImGui.BeginCombo("##selprev", "选择更名前的潜艇名称", ImGuiComboFlags.HeightLarge))

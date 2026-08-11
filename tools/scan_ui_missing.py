@@ -7,9 +7,10 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from localize import tokenize, get_method_name, get_expr_context, get_name_context, \
-    translate_segments, UI_METHODS, BLACK_METHODS, unescape
+    translate_segments, UI_METHODS, BLACK_METHODS, unescape, normalize_newlines, \
+    normalize_raw_content
 
-ROOT = r"D:\CodeProjects\DalamudPlugins\Demo\AutoRetainer"
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SRC = os.path.join(ROOT, "AutoRetainer")
 DICT = os.path.join(ROOT, "tools", "zh-CN.json")
 
@@ -19,7 +20,7 @@ with open(DICT, encoding="utf-8-sig") as f:
 dict_lower = {}
 for k, v in data.items():
     if k != v and any("\u4e00" <= c <= "\u9fff" for c in v):
-        dict_lower[k.lower()] = v
+        dict_lower[k.lower()] = normalize_newlines(v)
 
 def walk():
     for root, dirs, fns in os.walk(SRC):
@@ -31,23 +32,32 @@ def walk():
 miss = {}
 for fp in walk():
     rel = os.path.relpath(fp, ROOT)
+    rel_slash = rel.replace("\\", "/")
+    if "/UI/NeoUI/AdvancedEntries/DebugSection/" in f"/{rel_slash}":
+        continue
     with open(fp, encoding="utf-8", errors="replace") as f:
         text = f.read()
     tokens, _ = tokenize(text, 0)
     pos = 0
     for kind, tok in tokens:
-        if kind == "string" and tok.startswith('"'):
-            content = unescape(tok[1:-1])
-            interp = (pos > 0 and text[pos - 1] == "$") or \
-                     (pos > 1 and text[pos - 1] == "@" and text[pos - 2] == "$")
+        if kind in ("string", "raw_string"):
+            is_raw = kind == "raw_string"
+            content = normalize_raw_content(tok[3:-3]) if is_raw else unescape(tok[1:-1])
+            interp = not is_raw and ((pos > 0 and text[pos - 1] == "$") or \
+                    (pos > 1 and text[pos - 1] == "@" and text[pos - 2] == "$")
+            )
             if interp:
                 content = re.sub(r"\{[^{}]*\}", "{}", content)
             if not (content.startswith("##") or content == "" or
+                    content.startswith("loading ") or content == "LoginCenter" or
+                    content in ("Debug", "Discord") or content.startswith(("About", "planbuttons")) or
+                    all("\ue000" <= char <= "\uf8ff" for char in content) or
+                    any(marker in content for marker in ("{", "}", "##", "\\u", "%")) or
+                    re.fullmatch(r"[-~/:\\.\s]+", content) or
                     any("\u4e00" <= c <= "\u9fff" for c in content)):
                 method = get_method_name(text, pos)
                 arrow = get_expr_context(text, pos)
                 name_ctx = get_name_context(text, pos)
-                rel_slash = rel.replace("\\", "/")
                 is_ui = method in UI_METHODS or \
                     ((arrow == "arrow" or name_ctx == "name") and "/UI/" in rel_slash)
                 if is_ui:

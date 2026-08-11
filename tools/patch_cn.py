@@ -335,6 +335,122 @@ PATCHES = [
         "old": "        ;\n}",
         "new": "        ;\n\n    private static float NormalizeDelay(float seconds)\n    {\n        if(!float.IsFinite(seconds)) return 0f;\n        return Math.Clamp(MathF.Round(seconds, 2, MidpointRounding.AwayFromZero), 0f, 3600f);\n    }\n}",
     },
+    # ============ localization audit: dynamic and table UI text ============
+    {
+        "file": r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\GeneralSettings.cs",
+        "old": "            启用专家交付续传后:\n            - 插件将自动消耗可用的军票，从配置的兑换列表中购买物品。\n            - 如果兑换列表为空，将只购买冒险委托。\n            - 请确保 \"Delivery Mode\" 未设置为 \"Disabled\" 在 \"Character Configuration\" 部分中。",
+        "new": "            启用筹备稀有品后续兑换后：\n            - 插件将自动消耗可用的军票，从配置的兑换列表中购买物品。\n            - 如果兑换列表为空，将只购买探险币。\n            - 请确保“角色配置”中的“交付模式”未设为“禁用”。",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\GeneralSettings.cs",
+        "old": "        - 启用传送的角色将在多角色模式下自动交付专家交付物品，并根据兑换计划购买物品（如果其军衔足够）。",
+        "new": "        - 启用传送的角色将在多角色模式下自动筹备稀有品，并在军衔满足条件时按兑换计划购买物品。",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\GeneralSettings.cs",
+        "old": "                var cnt = C.OfflineData.Count(x => x.NoItemBuffUse);\n                ImGuiEx.Text($\"{(cnt > 0 ? $\"{cnt} character(s) are excluded from buff item usage. \" : \"\")} Navigate to \\\"Functions, Exclusions, Order\\\" section to exclude a character.\");",
+        "new": "                var cnt = C.OfflineData.Count(x => x.NoItemBuffUse);\n                ImGuiEx.Text($\"{(cnt > 0 ? $\"已排除 {cnt} 个角色使用军票加成票券。\" : \"\")}可在“功能、排除与排序”区块中排除角色。\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\GeneralSettings.cs",
+        "old": "                var cnt = C.OfflineData.Count(x => x.NoFcBuffUse);\n                ImGuiEx.Text($\"{(cnt > 0 ? $\"{cnt} character(s) are excluded from buff item usage. \" : \"\")} Navigate to \\\"Functions, Exclusions, Order\\\" section to exclude a character.\");",
+        "new": "                var cnt = C.OfflineData.Count(x => x.NoFcBuffUse);\n                ImGuiEx.Text($\"{(cnt > 0 ? $\"已排除 {cnt} 个角色使用部队军票加成。\" : \"\")}可在“功能、排除与排序”区块中排除角色。\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs",
+        "old": "启用后，AutoRetainer 将等待所有远征探险返回后才登录该角色。如果你因其他原因已登录，它仍会重新派遣已完成的潜水艇——除非全局设置 \"Wait even when already logged in\" 也已开启。",
+        "new": "启用后，AutoRetainer 将等待所有远征探险返回后才登录该角色。如果你因其他原因已登录，它仍会重新派遣已完成的潜水艇，除非全局设置“即使已登录也等待”也已开启。",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs",
+        "old": "改变 \"Wait for Voyage Completion\"（全局和按角色）的行为，使 AutoRetainer 在已登录时不再单独重新派遣潜水艇。相反，它会等待所有潜水艇返回后再采取行动。",
+        "new": "改变“等待航程完成”（全局和按角色）的行为，使 AutoRetainer 在已登录时不再单独重新派遣潜水艇。相反，它会等待所有潜水艇返回后再采取行动。",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs",
+        "old": "如果等待其他远征探险返回的时间将超过此分钟数，AutoRetainer 将忽略 \"Wait for Voyage Completion\" 和 \"Wait even when already logged in\" 设置。",
+        "new": "如果等待其他远征探险返回的时间将超过此分钟数，AutoRetainer 将忽略“等待航程完成”和“即使已登录也等待”设置。",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs",
+        "old": "                Currently: {(Utils.CanShutdownForSubs() ? \"Can shutdown\" : \"Can NOT shutdown\")}\n                Remaining for force shutdown: {EzThrottler.GetRemainingTime(\"ForceShutdownForSubs\")}",
+        "new": "                当前状态：{(Utils.CanShutdownForSubs() ? \"可关闭游戏\" : \"暂不可关闭游戏\")}\n                强制关闭剩余时间：{EzThrottler.GetRemainingTime(\"ForceShutdownForSubs\")}",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\DeployablesTab.cs",
+        "old": "                ImGuiEx.Text($\"Rank {x.MinRank}-{x.MaxRank}, {(x.ConfigurationsInvert ? \"NOT \" : \"\")} {x.Configurations.Print()}\");\n                if(ImGuiEx.HoveredAndClicked(\"Ctrl+click to delete\", default, true))",
+        "new": "                ImGuiEx.Text($\"等级 {x.MinRank}-{x.MaxRank}，{(x.ConfigurationsInvert ? \"非\" : \"\")} {x.Configurations.Print()}\");\n                if(ImGuiEx.HoveredAndClicked(\"按住 Ctrl 单击删除\", default, true))",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeLockout.cs",
+        "old": "        ImGuiEx.TextV(\"For\");\n        ImGui.SameLine();\n        ImGui.SetNextItemWidth(150f);\n        ImGui.InputInt(\"小时内...\", ref Num.ValidateRange(1, 10000));",
+        "new": "        ImGuiEx.TextV(\"在\");\n        ImGui.SameLine();\n        ImGui.SetNextItemWidth(150f);\n        ImGui.InputInt(\"小时内\", ref Num.ValidateRange(1, 10000));",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeLockout.cs",
+        "old": "            if(ImGuiEx.IconButtonWithText(FontAwesomeIcon.Lock, $\"...do not log into {x} region\"))",
+        "new": "            if(ImGuiEx.IconButtonWithText(FontAwesomeIcon.Lock, $\"不登录 {x} 区域\"))",
+    },
+    {
+        "file": r"AutoRetainer\UI\Windows\SubmarineUnlockPlanUI.cs",
+        "old": "    internal string SelectedPlanName => VoyageUtils.GetSubmarineUnlockPlanByGuid(SelectedPlanGuid)?.Name ?? \"No or unknown plan selected\";",
+        "new": "    internal string SelectedPlanName => VoyageUtils.GetSubmarineUnlockPlanByGuid(SelectedPlanGuid)?.Name ?? \"未选择计划或计划不存在\";",
+    },
+    {
+        "file": r"AutoRetainer\UI\Windows\SubmarineUnlockPlanUI.cs",
+        "old": "    public static readonly string DrawButtonText = \"Open Submarine Unlock Plan Editor\";",
+        "new": "    public static readonly string DrawButtonText = \"打开潜水艇解锁计划编辑器\";",
+    },
+    {
+        "file": r"AutoRetainer\UI\Windows\SubmarineUnlockPlanUI.cs",
+        "old": "                x.Name = $\"Plan {x.GUID}\";",
+        "new": "                x.Name = $\"计划 {x.GUID}\";",
+    },
+    {
+        "file": r"AutoRetainer\UI\Windows\SubmarineUnlockPlanUI.cs",
+        "old": "                    Svc.Chat.Print($\"Here is the list of all points that can be unlocked. Whenever a plugin needs to select something to unlock, a first available destination will be chosen from this list. Please note that you can NOT simply specify end point of unlocking, you need to select ALL destinations on your way.\");",
+        "new": "                    Svc.Chat.Print(\"以下列出所有可解锁地点。插件需要选择解锁目标时，会从此列表中选择第一个可用目的地。请注意，不能只指定最终解锁地点，必须选择沿途所有需要经过的目的地。\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\Windows\SubmarineUnlockPlanUI.cs",
+        "old": "                ImGui.Checkbox($\"Unlock submarine slots. Current slots: {GetNumUnlockedSubs()?.ToString() ?? \"Unknown\"}/4\", ref SelectedPlan.UnlockSubs);",
+        "new": "                ImGui.Checkbox($\"解锁潜水艇栏位。当前栏位：{GetNumUnlockedSubs()?.ToString() ?? \"未知\"}/4\", ref SelectedPlan.UnlockSubs);",
+    },
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": "                var text = Environment.TickCount64 % 2000 > 1000 ? \"解锁所有地点\" : \"未选择计划或计划不存在\";\n                if(ImGui.BeginCombo(\"##uplan\", (currentPlan?.Name ?? text) + (isDefault ? \" (default)\" : \"\"), ImGuiComboFlags.HeightLarge))",
+        "new": "                var text = Environment.TickCount64 % 2000 > 1000 ? \"解锁所有地点\" : \"未选择计划或计划不存在\";\n                if(ImGui.BeginCombo(\"##uplan\", (currentPlan?.Name ?? text) + (isDefault ? \"（默认）\" : \"\"), ImGuiComboFlags.HeightLarge))",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\ExchangeLists.cs",
+        "old": "        if(ImGuiEx.BeginDefaultTable(\"GCDeliveryList\", [\"##dragDrop\", \"~Item\", \"GC\", \"Lv\", \"Price\", \"类别\", \"Keep\", \"One-Time\", \"##controls\"]))",
+        "new": "        if(ImGuiEx.BeginDefaultTable(\"GCDeliveryList\", [\"##dragDrop\", \"~物品\", \"军票\", \"等级\", \"价格\", \"类别\", \"保留数量\", \"单次数量\", \"##controls\"]))",
+    },
+    {
+        "file": r"AutoRetainer\UI\Statistics\FcDataManager.cs",
+        "old": "            ImGui.TableSetupColumn($\"Name\", ImGuiTableColumnFlags.WidthStretch);\n            ImGui.TableSetupColumn($\"Characters\");\n            ImGui.TableSetupColumn($\"Gil\");\n            ImGui.TableSetupColumn($\"FC points\");",
+        "new": "            ImGui.TableSetupColumn(\"名称\", ImGuiTableColumnFlags.WidthStretch);\n            ImGui.TableSetupColumn(\"角色\");\n            ImGui.TableSetupColumn(\"金币\");\n            ImGui.TableSetupColumn(\"部队储备\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\Statistics\FcDataManager.cs",
+        "old": "                ImGuiEx.TextV(C.NoNames ? $\"Free company {++i}\" : x.Value.Name);",
+        "new": "                ImGuiEx.TextV(C.NoNames ? $\"部队 {++i}\" : x.Value.Name);",
+    },
+    {
+        "file": r"AutoRetainer\UI\Statistics\FcDataManager.cs",
+        "old": "            if(diff < 1000L * 60) return \"just now\";\n            if(diff < 1000L * 60 * 60) return $\"{(int)(diff / 1000 / 60)} minute(s) ago\";\n            if(diff < 1000L * 60 * 60 * 60) return $\"{(int)(diff / 1000 / 60 / 60)} hour(s) ago\";\n            return $\"{(int)(diff / 1000 / 60 / 60 / 24)} day(s) ago\";",
+        "new": "            if(diff < 1000L * 60) return \"刚刚\";\n            if(diff < 1000L * 60 * 60) return $\"{(int)(diff / 1000 / 60)} 分钟前\";\n            if(diff < 1000L * 60 * 60 * 24) return $\"{(int)(diff / 1000 / 60 / 60)} 小时前\";\n            return $\"{(int)(diff / 1000 / 60 / 60 / 24)} 天前\";",
+    },
+    {
+        "file": r"AutoRetainer\UI\Statistics\VentureStatsManager.cs",
+        "old": "                if(ImGui.CollapsingHeader($\"{Censor.Character(cData.Key)} | Total Ventures: {CharTotal.GetSafe(cData.Key)}###chara{cData.Key}\"))",
+        "new": "                if(ImGui.CollapsingHeader($\"{Censor.Character(cData.Key)} | 探险委托总次数：{CharTotal.GetSafe(cData.Key)}###chara{cData.Key}\"))",
+    },
+    {
+        "file": r"AutoRetainer\UI\Statistics\VentureStatsManager.cs",
+        "old": "                    if(ImGui.CollapsingHeader($\"{Censor.Retainer(x.Key)} | Ventures: {num}###{cData.Key}ret{x.Key}\"))",
+        "new": "                    if(ImGui.CollapsingHeader($\"{Censor.Retainer(x.Key)} | 探险委托次数：{num}###{cData.Key}ret{x.Key}\"))",
+    },
 ]
 
 

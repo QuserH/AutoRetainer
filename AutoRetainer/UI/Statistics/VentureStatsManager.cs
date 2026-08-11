@@ -37,7 +37,7 @@ public sealed class VentureStatsManager
             var display = false;
             if(CharTotal[cData.Key] != 0)
             {
-                if(ImGui.CollapsingHeader($"{Censor.Character(cData.Key)} | Total Ventures: {CharTotal.GetSafe(cData.Key)}###chara{cData.Key}"))
+                if(ImGui.CollapsingHeader($"{Censor.Character(cData.Key)} | 探险委托总次数：{CharTotal.GetSafe(cData.Key)}###chara{cData.Key}"))
                 {
                     display = true;
                 }
@@ -52,7 +52,7 @@ public sealed class VentureStatsManager
                 {
                     ImGui.Dummy(new(10, 1));
                     ImGui.SameLine();
-                    if(ImGui.CollapsingHeader($"{Censor.Retainer(x.Key)} | Ventures: {num}###{cData.Key}ret{x.Key}"))
+                    if(ImGui.CollapsingHeader($"{Censor.Retainer(x.Key)} | 探险委托次数：{num}###{cData.Key}ret{x.Key}"))
                     {
                         foreach(var c in array)
                         {
