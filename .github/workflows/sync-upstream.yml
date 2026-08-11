@@ -94,11 +94,16 @@ jobs:
           Invoke-WebRequest -Uri "https://github.com/goatcorp/dalamud-distrib/raw/main/latest.zip" -OutFile (Join-Path $out "dalamud.zip")
           Expand-Archive -Path (Join-Path $out "dalamud.zip") -DestinationPath $out -Force
           Remove-Item (Join-Path $out "dalamud.zip")
-          "DALAMUD_HOME=$out" >> $env:GITHUB_ENV
+          $dalamudAssembly = Get-ChildItem -Path $out -Recurse -Filter "Dalamud.dll" | Select-Object -First 1
+          if ($null -eq $dalamudAssembly) { throw "Dalamud.dll was not found in the downloaded SDK." }
+          $dalamudRoot = $dalamudAssembly.Directory.FullName
+          "DALAMUD_HOME=$dalamudRoot" >> $env:GITHUB_ENV
+          Write-Output "Using Dalamud SDK at $dalamudRoot"
 
       - name: Build plugin
         if: env.SHOULD_BUILD == 'true'
-        run: dotnet build AutoRetainer/AutoRetainer.csproj -c Release --nologo
+        shell: pwsh
+        run: dotnet build AutoRetainer/AutoRetainer.csproj -c Release --nologo -p:DalamudLibPath="$env:DALAMUD_HOME\"
 
       - name: Read version
         if: env.SHOULD_BUILD == 'true'
