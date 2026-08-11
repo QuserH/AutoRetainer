@@ -447,7 +447,7 @@ internal static unsafe class GCContinuation
                                 if(CleanupUI()) return false;
                                 if(!DebugConf)
                                 {
-                                    Callback.Fire(addon, true, 0, i, 1, Callback.ZeroAtkValue, canPurchase, itemInfo.OpenCurrencyExchange, itemInfo.ItemID, itemInfo.IconID, itemInfo.Seals);
+                                    Callback.Fire(addon, true, 0, i, (int)amount, Callback.ZeroAtkValue, canPurchase, false, Callback.ZeroAtkValue, Callback.ZeroAtkValue, Callback.ZeroAtkValue);
                                 }
                                 else
                                 {
@@ -491,11 +491,7 @@ internal static unsafe class GCContinuation
     {
         TaskManagerConfiguration conf = new(abortOnTimeout: false, timeLimitMS: 5000);
         List<TaskManagerTask> tasks = [];
-        if(listing.ItemID == VentureItem)
-        {
-            tasks.Add(new(() => SetVenturesExchangeAmount((int)itemCount), conf));
-            tasks.Add(new(SelectExchange, conf));
-        }
+        // CN patch: 探险币兑换不再经由货币弹窗（数量已在回调中直接传入）
         tasks.Add(new(ConfirmExchange, conf));
         tasks.Add(new(() => AutoGCHandin.GetSeals() < sealsCount, conf));
         tasks.Add(new(() => exchangeItem.QuantitySingleTime = (int)Math.Max(0, exchangeItem.QuantitySingleTime - itemCount)));

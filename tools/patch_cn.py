@@ -15,7 +15,7 @@ import io
 import os
 import sys
 
-ROOT = r"D:\CodeProjects\DalamudPlugins\Demo\AutoRetainer"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def load_enum_dicts():
     return '''    internal static readonly ReadOnlyDictionary<OpenBellBehavior, string> OpenBellBehaviorNames = new(new Dictionary<OpenBellBehavior, string>()
@@ -266,6 +266,29 @@ PATCHES = [
   "Punchline": "躺在床上就能收取并指派你的雇员冒险委托。",
   "Description": "躺在床上就能收取并指派你的雇员冒险委托。\\n\\n主要功能：\\n\\t- 一键指派/重新指派雇员冒险委托，自动处理繁琐的确认弹窗\\n\\t- 一键部署远征探险（飞空艇/潜水艇）\\n\\t- 创建出售列表，自动清理垃圾物品\\n\\t- 创建存放列表，将贵重物品存入雇员以节省背包空间",''',
     },
+    # ============ GCContinuation.cs：修复军票换探险币每次只买 1 个 ============
+    # 原实现：打开货币兑换弹窗（默认数量 1），再靠硬编码 UI 节点索引
+    # （GrandCompanyExchange.NodeList[52] 读军票数 / ShopExchangeCurrencyDialog.NodeList[8] 写数量）
+    # 改弹窗数字。节点错位时该步静默超时跳过（abortOnTimeout:false），按默认值 1 兑换。
+    # 修复：学 Deliveroo 把数量直接放进回调第 3 个参数、第 6 参传 false 跳过弹窗，不再依赖节点索引。
+    {
+        "file": r"AutoRetainer\Modules\GcHandin\GCContinuation.cs",
+        "old": "Callback.Fire(addon, true, 0, i, 1, Callback.ZeroAtkValue, canPurchase, itemInfo.OpenCurrencyExchange, itemInfo.ItemID, itemInfo.IconID, itemInfo.Seals);",
+        "new": "Callback.Fire(addon, true, 0, i, (int)amount, Callback.ZeroAtkValue, canPurchase, false, Callback.ZeroAtkValue, Callback.ZeroAtkValue, Callback.ZeroAtkValue);",
+    },
+    {
+        "file": r"AutoRetainer\Modules\GcHandin\GCContinuation.cs",
+        "old": '''        List<TaskManagerTask> tasks = [];
+        if(listing.ItemID == VentureItem)
+        {
+            tasks.Add(new(() => SetVenturesExchangeAmount((int)itemCount), conf));
+            tasks.Add(new(SelectExchange, conf));
+        }
+        tasks.Add(new(ConfirmExchange, conf));''',
+        "new": '''        List<TaskManagerTask> tasks = [];
+        // CN patch: 探险币兑换不再经由货币弹窗（数量已在回调中直接传入）
+        tasks.Add(new(ConfirmExchange, conf));''',
+    },
 ]
 
 
@@ -280,6 +303,10 @@ def main():
         with io.open(fp, encoding="utf-8", errors="replace") as f:
             text = f.read()
         if p["old"] not in text:
+            # 幂等：目标文本已存在（补丁曾直接提交进源码，或已应用过）
+            if p["new"] and p["new"] in text:
+                ok += 1
+                continue
             failed.append((p["file"], "匹配失败（上游可能改动过此处）"))
             continue
         if p["new"] in text and text.count(p["old"]) == text.count(p["new"]):
