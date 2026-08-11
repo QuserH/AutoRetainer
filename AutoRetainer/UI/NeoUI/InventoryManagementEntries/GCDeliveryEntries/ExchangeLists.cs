@@ -22,7 +22,17 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
     public override void Draw()
     {
         C.AdditionalGCExchangePlans.Where(x => x.GUID == Guid.Empty).Each(x => x.GUID = Guid.NewGuid());
-        ImGuiEx.TextWrapped($"""\n            选择在大国防联军专家交付操作期间自动购买的物品。\n            购买逻辑:\n            - 系统将尝试从列表中购买第一个可用的物品。\n            - 购买将持续到该物品在你的背包中的数量达到指定的目标数量。\n            如果没有可购买的列表物品，或它们无法放入你的背包:\n            - 系统将改为购买冒险委托。\n            - 委托购买将持续到你的委托数量达到 65,000。\n            一旦达到委托上限且无法再进行其他购买:\n            - 多余的军票将被丢弃。\n            """);
+        ImGuiEx.TextWrapped($"""
+            选择在大国防联军专家交付操作期间自动购买的物品。
+            购买逻辑:
+            - 系统将尝试从列表中购买第一个可用的物品。
+            - 购买将持续到该物品在你的背包中的数量达到指定的目标数量。
+            如果没有可购买的列表物品，或它们无法放入你的背包:
+            - 系统将改为购买冒险委托。
+            - 委托购买将持续到你的委托数量达到 65,000。
+            一旦达到委托上限且无法再进行其他购买:
+            - 多余的军票将被丢弃。
+            """);
 
         var selectedPlan = C.AdditionalGCExchangePlans.FirstOrDefault(x => x.GUID == SelectedPlanGuid);
         ImGuiEx.InputWithRightButtonsArea(() =>

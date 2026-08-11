@@ -74,7 +74,7 @@ internal static unsafe class MultiModeUI
             {
                 Copy($"/ays relog {data.Name}@{data.World}");
             }
-            ImGuiEx.Tooltip($"左键 - 重新登录此角色\\n右键 - 复制重新登录指令到剪贴簿");
+            ImGuiEx.Tooltip($"左键 - 重新登录此角色\n右键 - 复制重新登录指令到剪贴簿");
             ImGui.SameLine(0, 3);
             if(ImGuiEx.IconButton(FontAwesomeIcon.UserCog))
             {

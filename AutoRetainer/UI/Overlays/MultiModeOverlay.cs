@@ -98,7 +98,7 @@ internal class MultiModeOverlay : Window
                     {
                         SchedulerMain.CharacterPostProcessLocked = false;
                     }
-                    ImGui.SetTooltip("AutoRetainer 正在进行后处理阶段\\n左键点击 - 开启 AutoRetainer\\n右键点击 - 中止");
+                    ImGui.SetTooltip("AutoRetainer 正在进行后处理阶段\n左键点击 - 开启 AutoRetainer\n右键点击 - 中止");
                 }
             }
             else
@@ -124,7 +124,7 @@ internal class MultiModeOverlay : Window
                     {
                         P.TaskManager.Abort();
                     }
-                    ImGui.SetTooltip("AutoRetainer 正在处理任务中\\n左键点击 - 开启 AutoRetainer\\n右键点击 - 中止");
+                    ImGui.SetTooltip("AutoRetainer 正在处理任务中\n左键点击 - 开启 AutoRetainer\n右键点击 - 中止");
                 }
             }
             else
@@ -146,7 +146,7 @@ internal class MultiModeOverlay : Window
                     {
                         Svc.Commands.ProcessCommand("/ays");
                     }
-                    ImGui.SetTooltip("传唤铃感应已启用\\n左键点击 - 开启 AutoRetainer");
+                    ImGui.SetTooltip("传唤铃感应已启用\n左键点击 - 开启 AutoRetainer");
                 }
                 var f = (float)(Environment.TickCount64 - P.LastMovementAt) / (float)C.RetainerSenseThreshold;
                 ImGui.ProgressBar(f, new(128, 10), "");
@@ -175,7 +175,7 @@ internal class MultiModeOverlay : Window
                         MultiMode.Enabled = false;
                         MultiMode.SingleMultiMode = null;
                     }
-                    ImGui.SetTooltip("多角色模式已启用\\n左键点击 - 开启 AutoRetainer\\n右键点击 - 禁用多角色模式。");
+                    ImGui.SetTooltip("多角色模式已启用\n左键点击 - 开启 AutoRetainer\n右键点击 - 禁用多角色模式。");
                 }
             }
             else
@@ -254,7 +254,7 @@ internal class MultiModeOverlay : Window
                     {
                         VoyageScheduler.Enabled = false;
                     }
-                    ImGui.SetTooltip("潜水艇模块已启用\\n左键点击 - 开启 AutoRetainer\\n右键点击 - 禁用潜水艇模块");
+                    ImGui.SetTooltip("潜水艇模块已启用\n左键点击 - 开启 AutoRetainer\n右键点击 - 禁用潜水艇模块");
                 }
             }
             else
@@ -280,7 +280,7 @@ internal class MultiModeOverlay : Window
                     {
                         SchedulerMain.DisablePlugin();
                     }
-                    ImGui.SetTooltip("AutoRetainer 已启用\\n左键点击 - 开启 AutoRetainer\\n右键点击 - 禁用 AutoRetainer");
+                    ImGui.SetTooltip("AutoRetainer 已启用\n左键点击 - 开启 AutoRetainer\n右键点击 - 禁用 AutoRetainer");
                 }
             }
             else
@@ -307,7 +307,7 @@ internal class MultiModeOverlay : Window
                     {
                         NotificationHandler.IsHidden = true;
                     }
-                    ImGui.SetTooltip("部分雇员已完成探险任务。\\n左键点击 - 开启 AutoRetainer\\n右键点击 - 关闭提示");
+                    ImGui.SetTooltip("部分雇员已完成探险任务。\n左键点击 - 开启 AutoRetainer\n右键点击 - 关闭提示");
                 }
             }
             else

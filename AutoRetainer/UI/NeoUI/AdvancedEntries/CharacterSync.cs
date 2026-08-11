@@ -61,7 +61,10 @@ public unsafe sealed class CharacterSync : NeoUIEntry
             }
             return;
         }
-        ImGuiEx.TextWrapped($"""\n            1. 输入 /justbackup 创建备份，确保备份成功并保存到安全位置。\n            2. 在 FFXIV 官方角色页（Lodestone）打开你的角色列表。\n            """);
+        ImGuiEx.TextWrapped($"""
+            1. 输入 /justbackup 创建备份，确保备份成功并保存到安全位置。
+            2. 在 FFXIV 官方角色页（Lodestone）打开你的角色列表。
+            """);
         if(ImGuiEx.IconButtonWithText(FontAwesomeIcon.ExternalLinkSquareAlt, "立即开启角色名单"))
         {
             ShellStart("https://eu.finalfantasyxiv.com/lodestone/account/select_character/");

@@ -10,9 +10,12 @@ import os
 import re
 import sys
 
-ROOT = r"D:\CodeProjects\DalamudPlugins\Demo\AutoRetainer"
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SRC = os.path.join(ROOT, "AutoRetainer")
 DICT = os.path.join(ROOT, "tools", "zh-CN.json")
+
+def normalize_newlines(s):
+    return s.replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t")
 
 with open(DICT, encoding="utf-8-sig") as f:
     data = json.load(f)
@@ -20,7 +23,7 @@ with open(DICT, encoding="utf-8-sig") as f:
 dict_lower = {}
 for k, v in data.items():
     if k != v and any("\u4e00" <= c <= "\u9fff" for c in v):
-        dict_lower[k.lower()] = v
+        dict_lower[k.lower()] = normalize_newlines(v)
 
 UI_METHODS = {
     "widget", "checkbox", "button", "radiobutton", "text", "textwrapped", "label",
@@ -133,6 +136,17 @@ def tokenize(text, in_block=0):
             tokens.append(("comment", text[i:j + 2]))
             i = j + 2
             continue
+        if text.startswith('"""', i):
+            flush()
+            j = text.find('"""', i + 3)
+            if j == -1:
+                tokens.append(("raw_string", text[i:]))
+                i = n
+                continue
+            j += 3
+            tokens.append(("raw_string", text[i:j]))
+            i = j
+            continue
         if c == '"':
             flush()
             j = i + 1
@@ -184,33 +198,51 @@ def get_expr_context(line, start):
         return "arrow"
     return None
 
+def normalize_raw_content(raw):
+    raw = raw.replace("\r\n", "\n")
+    if raw.startswith("\n"):
+        raw = raw[1:]
+    lines = raw.split("\n")
+    if lines and not lines[-1].strip():
+        lines.pop()
+    indents = [len(line) - len(line.lstrip(" \t")) for line in lines if line.strip()]
+    if indents:
+        indent = min(indents)
+        lines = [line[indent:] if len(line) >= indent else "" for line in lines]
+    return "\n".join(lines).strip()
+
+def escape_raw_string(value, original):
+    value = normalize_newlines(value).replace("\r\n", "\n")
+    indents = re.findall(r"(?:\n|\\n)([ \t]+)\S", original)
+    indent = min(indents, key=len) if indents else ""
+    body = "\n".join(f"{indent}{line}" if line else "" for line in value.split("\n"))
+    return f'"""\n{body}\n{indent}"""'
+
 def process_text(text, file_rel, stats, collected):
     """对整个文件文本处理。返回替换后的文本。"""
     tokens, _ = tokenize(text, 0)
     pos = 0
     out = []
     for kind, text_tok in tokens:
-        if kind != "string":
+        if kind not in ("string", "raw_string"):
             out.append(text_tok)
             pos += len(text_tok)
             continue
-        if not text_tok.startswith('"'):
-            out.append(text_tok)
-            pos += len(text_tok)
-            continue
-        raw = text_tok[1:-1]
-        content = unescape(raw)
+        is_raw = kind == "raw_string"
+        raw = text_tok[3:-3] if is_raw else text_tok[1:-1]
+        content = normalize_raw_content(raw) if is_raw else unescape(raw)
         if content.startswith("##") or content == "":
             out.append(text_tok)
             pos += len(text_tok)
             continue
         if any("\u4e00" <= c <= "\u9fff" for c in content):
-            out.append(text_tok)
+            content = normalize_newlines(content)
+            out.append(escape_raw_string(content, raw) if is_raw else '"' + escape(content) + '"')
             pos += len(text_tok)
             continue
 
-        interp = (pos > 0 and text[pos - 1] == "$") or \
-                 (pos > 1 and text[pos - 1] == "@" and text[pos - 2] == "$")
+        interp = not is_raw and ((pos > 0 and text[pos - 1] == "$") or \
+                  (pos > 1 and text[pos - 1] == "@" and text[pos - 2] == "$"))
         exprs = []
         template = content
         if interp:
@@ -270,9 +302,13 @@ def process_text(text, file_rel, stats, collected):
                 result = re.sub(r"\{(\d+)\}|\{\}", restore, translated)
             else:
                 result = translated
-            out.append('"' + escape(result) + '"')
+            result = normalize_newlines(result)
+            out.append(escape_raw_string(result, raw) if is_raw else '"' + escape(result) + '"')
         else:
-            out.append(text_tok)
+            if is_raw and "\\n" in raw:
+                out.append(text_tok.replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t"))
+            else:
+                out.append(text_tok)
         pos += len(text_tok)
     return "".join(out)
 

@@ -63,9 +63,9 @@ public class MultiModeCommon : NeoUIEntry
         .Checkbox("启用简易传送", () => ref C.AllowSimpleTeleport)
         .Unindent()
         .Widget(() => ImGuiEx.HelpMarker("""
-            Allows teleporting to houses without registering them in Lifestream. Note: the Lifestream plugin is still required for teleportation to work.
+            允许在未向Lifestream注册房屋的情况下传送。传送功能仍需安装Lifestream外挂才能运作。
 
-            Warning: This option is less reliable than registering your houses in Lifestream. Use it only if necessary.
+            警告：此选项比在Lifestream中注册房屋更不可靠。请仅在必要时使用。
             """, EColor.RedBright, FontAwesomeIcon.ExclamationTriangle.ToIconString()))
 
         .Section("紧急逃生模块")

@@ -38,7 +38,9 @@ public class CharaConfig
             b = b.Section("远征探险").Widget(() =>
             {
                 ImGui.Checkbox($"等待航程完成", ref data.MultiWaitForAllDeployables);
-                ImGuiComponents.HelpMarker("""This setting works like the global option but applies to individual characters. When enabled, AutoRetainer will wait for all deployables to return before logging into the character. If you're already logged in for another reason, it will still resend completed submarines—unless the global setting "Wait even when already logged in" is also turned on.""");
+                ImGuiComponents.HelpMarker("""
+此设置类似于全域选项，但应用於单一角色。启用后，AutoRetainer 将在登录角色之前等待所有远征探险返回。如果您因其他原因已经登录，它仍然会重新派遣已完成的潜水艇/飞艇，除非全域设置「即使已登录也等待」也同时开启。
+""");
             });
         }
         b = b.Section("传送覆盖设置", data.GetAreTeleportSettingsOverriden() ? ImGui.GetStyle().Colors[(int)ImGuiCol.FrameBg] with { X = 1f } : null, true)

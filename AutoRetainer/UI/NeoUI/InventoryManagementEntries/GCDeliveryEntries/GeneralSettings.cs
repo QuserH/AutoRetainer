@@ -28,10 +28,22 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
             C.GCExchangeDelayMinSeconds = NormalizeDelay(C.GCExchangeDelayMinSeconds);
             C.GCExchangeDelayMaxSeconds = Math.Max(C.GCExchangeDelayMinSeconds, NormalizeDelay(C.GCExchangeDelayMaxSeconds));
         })
-        .TextWrapped($"""\n            启用专家交付续传后:\n            - 插件将自动消耗可用的军票，从配置的兑换列表中购买物品。\n            - 如果兑换列表为空，将只购买冒险委托。\n            - 请确保 "Delivery Mode" 未设置为 "Disabled" 在 "Character Configuration" 部分中。\n\n            军票用完后:\n            - 专家交付将自动恢复。\n            - 该过程将重复，直到没有符合条件的物品可交付或没有剩余军票。\n            """)
+        .TextWrapped($"""
+            启用专家交付续传后:
+            - 插件将自动消耗可用的军票，从配置的兑换列表中购买物品。
+            - 如果兑换列表为空，将只购买冒险委托。
+            - 请确保 "Delivery Mode" 未设置为 "Disabled" 在 "Character Configuration" 部分中。
+
+            军票用完后:
+            - 专家交付将自动恢复。
+            - 该过程将重复，直到没有符合条件的物品可交付或没有剩余军票。
+            """)
 
         .Section("多角色模式筹备交换")
-        .TextWrapped($"""\n        启用后:\n        - 启用传送的角色将在多角色模式下自动交付专家交付物品，并根据兑换计划购买物品（如果其军衔足够）。\n        """)
+        .TextWrapped($"""
+        启用后:
+        - 启用传送的角色将在多角色模式下自动交付专家交付物品，并根据兑换计划购买物品（如果其军衔足够）。
+        """)
         .Checkbox("启用多角色筹备交换", () => ref C.FullAutoGCDelivery)
         .Checkbox("仅在工作台未锁定时触发", () => ref C.FullAutoGCDeliveryOnlyWsUnlocked)
         .InputInt(150f, "触发筹备的剩余背包格数 (小于或等于)", () => ref C.FullAutoGCDeliveryInventory, "仅计算主要背包，不包含兵装库")

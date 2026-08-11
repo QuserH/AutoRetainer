@@ -24,7 +24,7 @@ internal unsafe class DebugMisc : DebugSectionBase
     {
         if(ImGui.Button("EnableSingleMultiMode")) ECommonsIPC.AutoRetainer.EnableSingleMultiMode(null);
         if(ImGui.Button("EnableSingleMultiMode (subs)")) ECommonsIPC.AutoRetainer.EnableSingleMultiMode(ECommons.IPC.Subscribers.AutoRetainer.MultiModeType.Submersibles);
-        if(ImGui.CollapsingHeader("Move stuck detection"))
+        if(ImGui.CollapsingHeader("移动卡死检测"))
         {
             ImGuiEx.Text($"""
                 
@@ -91,7 +91,7 @@ internal unsafe class DebugMisc : DebugSectionBase
             ImGui.Unindent();
             ImGuiEx.Text($"""
                 ---------
-                By character:
+                按角色统计:
                 """);
             foreach(var x in C.OfflineData)
             {
