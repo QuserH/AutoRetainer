@@ -154,7 +154,7 @@ internal static unsafe class MultiModeUI
                 }
             }
             ImGui.SameLine(0, 0);
-            List<(bool, string)> texts = [(data.Ventures < C.UIWarningRetVentureNum, $"V: {data.Ventures}"), (data.InventorySpace < C.UIWarningRetSlotNum, $"I: {data.InventorySpace}")];
+            List<(bool, string)> texts = [(data.Ventures < C.UIWarningRetVentureNum, $"探险币: {data.Ventures}"), (data.InventorySpace < C.UIWarningRetSlotNum, $"背包剩余: {data.InventorySpace}")];
             if(C.CharEqualize && MultiMode.Enabled)
             {
                 texts.Insert(0, (false, $"C: {MultiMode.CharaCnt.GetOrDefault(data.CID)}"));

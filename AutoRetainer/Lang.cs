@@ -1,5 +1,6 @@
 ﻿using AutoRetainerAPI.Configuration;
 using Dalamud.Utility;
+using ECommons.ExcelServices;
 using ECommons.ExcelServices.Sheets;
 using Lumina.Excel.Sheets;
 using System.Collections.ObjectModel;
@@ -106,6 +107,19 @@ internal static class Lang
         { PlanCompleteBehavior.Do_nothing, "不执行任何操作" },
         { PlanCompleteBehavior.Repeat_last_venture, "重复上次的探险委托" },
     });
+
+    internal static readonly ReadOnlyDictionary<GCExchangeCategoryTab, string> GCExchangeCategoryNames = new(new Dictionary<GCExchangeCategoryTab, string>()
+    {
+        { GCExchangeCategoryTab.Materiel, "军需品" },
+        { GCExchangeCategoryTab.Weapons, "武器" },
+        { GCExchangeCategoryTab.Armor, "防具" },
+        { GCExchangeCategoryTab.Materials, "素材" },
+    });
+
+    internal static Dictionary<T, string> GetVesselPartNames<T>() where T : struct, Enum
+    {
+        return Enum.GetValues<T>().ToDictionary(x => x, x => ExcelItemHelper.GetName(Convert.ToUInt32(x)));
+    }
 
     internal static readonly (string Normal, string GameFont) Digits = ("0123456789", "");
 

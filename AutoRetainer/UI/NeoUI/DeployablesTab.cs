@@ -141,7 +141,7 @@ public class DeployablesTab : NeoUIEntry
                         name = $"{name}.csv";
                     }
                     Utils.WriteCsv(name, headers, data);
-                }, title: "Save as...", fileTypes: [("Comma-separated values", ["csv"])], save:true);
+                }, title: "另存为...", fileTypes: [("逗号分隔值", ["csv"])], save:true);
             }
         });
     }
@@ -261,7 +261,7 @@ public class DeployablesTab : NeoUIEntry
         ImGui.Separator();
 
         ImGui.SetNextItemWidth(150f);
-        if(ImGui.BeginCombo("##uplan", "解锁计划: " + (SelectedUnlockPlan?.Name ?? "not selected", ImGuiComboFlags.HeightLarge)))
+        if(ImGui.BeginCombo("##uplan", "解锁计划：" + (SelectedUnlockPlan?.Name ?? "未选择"), ImGuiComboFlags.HeightLarge))
         {
             foreach(var plan in C.SubmarineUnlockPlans)
             {
@@ -292,7 +292,7 @@ public class DeployablesTab : NeoUIEntry
         ImGui.Separator();
 
         ImGui.SetNextItemWidth(150f);
-        if(ImGui.BeginCombo("##uplan2", "航点计划: " + (VoyageUtils.GetPointPlanName(SelectedPointPlan) ?? "not selected"), ImGuiComboFlags.HeightLarge))
+        if(ImGui.BeginCombo("##uplan2", "航点计划：" + (VoyageUtils.GetPointPlanName(SelectedPointPlan) ?? "未选择"), ImGuiComboFlags.HeightLarge))
         {
             foreach(var plan in C.SubmarinePointPlans)
             {
@@ -422,22 +422,22 @@ public class DeployablesTab : NeoUIEntry
                 ImGui.Text("船体:");
                 ImGui.SameLine(60f);
                 ImGui.SetNextItemWidth(100f);
-                ImGuiEx.EnumCombo($"##hull{entry.GUID}", ref entry.Part1);
+                ImGuiEx.EnumCombo($"##hull{entry.GUID}", ref entry.Part1, null, Lang.GetVesselPartNames<Hull>());
 
                 ImGui.Text("船尾:");
                 ImGui.SameLine(60f);
                 ImGui.SetNextItemWidth(100f);
-                ImGuiEx.EnumCombo($"##stern{entry.GUID}", ref entry.Part2);
+                ImGuiEx.EnumCombo($"##stern{entry.GUID}", ref entry.Part2, null, Lang.GetVesselPartNames<Stern>());
 
                 ImGui.Text("船首:");
                 ImGui.SameLine(60f);
                 ImGui.SetNextItemWidth(100f);
-                ImGuiEx.EnumCombo($"##bow{entry.GUID}", ref entry.Part3);
+                ImGuiEx.EnumCombo($"##bow{entry.GUID}", ref entry.Part3, null, Lang.GetVesselPartNames<Bow>());
 
                 ImGui.Text("舰桥:");
                 ImGui.SameLine(60f);
                 ImGui.SetNextItemWidth(100f);
-                ImGuiEx.EnumCombo($"##bridge{entry.GUID}", ref entry.Part4);
+                ImGuiEx.EnumCombo($"##bridge{entry.GUID}", ref entry.Part4, null, Lang.GetVesselPartNames<Bridge>());
 
                 ImGui.Text("行为:");
                 ImGui.SameLine(60f);
@@ -467,7 +467,7 @@ public class DeployablesTab : NeoUIEntry
                     ImGui.Text("模式:");
                     ImGui.SameLine(60f);
                     ImGui.SetNextItemWidth(150f);
-                    ImGuiEx.EnumCombo($"##unlockmode{entry.GUID}", ref entry.UnlockMode);
+                    ImGuiEx.EnumCombo($"##unlockmode{entry.GUID}", ref entry.UnlockMode, Lang.UnlockModeNames);
                 }
                 else if(entry.VesselBehavior == VesselBehavior.Use_plan)
                 {
@@ -520,7 +520,7 @@ public class DeployablesTab : NeoUIEntry
                         ImGui.Text("第一艘潜水艇模式:");
                         ImGui.SameLine(150f);
                         ImGui.SetNextItemWidth(150f);
-                        ImGuiEx.EnumCombo($"##firstSubUnlockmode{entry.GUID}", ref entry.FirstSubUnlockMode);
+                        ImGuiEx.EnumCombo($"##firstSubUnlockmode{entry.GUID}", ref entry.FirstSubUnlockMode, Lang.UnlockModeNames);
                     }
                     else if(entry.FirstSubVesselBehavior == VesselBehavior.Use_plan)
                     {

@@ -80,9 +80,108 @@ def load_enum_dicts():
         { PlanCompleteBehavior.Repeat_last_venture, "重复上次的探险委托" },
     });
 
+    internal static readonly ReadOnlyDictionary<GCExchangeCategoryTab, string> GCExchangeCategoryNames = new(new Dictionary<GCExchangeCategoryTab, string>()
+    {
+        { GCExchangeCategoryTab.Materiel, "军需品" },
+        { GCExchangeCategoryTab.Weapons, "武器" },
+        { GCExchangeCategoryTab.Armor, "防具" },
+        { GCExchangeCategoryTab.Materials, "素材" },
+    });
+
+    internal static Dictionary<T, string> GetVesselPartNames<T>() where T : struct, Enum
+    {
+        return Enum.GetValues<T>().ToDictionary(x => x, x => ExcelItemHelper.GetName(Convert.ToUInt32(x)));
+    }
+
 '''
 
 PATCHES = [
+    # ============ 远征与军票兑换界面 ============
+    {
+        "file": r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs",
+        "old": '            List<(bool, string)> texts = [(data.Ventures < C.UIWarningRetVentureNum, $"V: {data.Ventures}"), (data.InventorySpace < C.UIWarningRetSlotNum, $"I: {data.InventorySpace}")];',
+        "new": '            List<(bool, string)> texts = [(data.Ventures < C.UIWarningRetVentureNum, $"探险币: {data.Ventures}"), (data.InventorySpace < C.UIWarningRetSlotNum, $"背包剩余: {data.InventorySpace}")];',
+    },
+    {
+        "file": r"AutoRetainer\Lang.cs",
+        "old": "using Dalamud.Utility;\nusing ECommons.ExcelServices.Sheets;",
+        "new": "using Dalamud.Utility;\nusing ECommons.ExcelServices;\nusing ECommons.ExcelServices.Sheets;",
+    },
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": '            List<(bool, string)> texts = [(data.RepairKits < C.UIWarningDepRepairNum, $"R: {data.RepairKits}"), (data.Ceruleum < C.UIWarningDepTanksNum, $"C: {data.Ceruleum}"), (data.InventorySpace < C.UIWarningDepSlotNum, $"I: {data.InventorySpace}")];',
+        "new": '            List<(bool, string)> texts = [(data.RepairKits < C.UIWarningDepRepairNum, $"修理材料: {data.RepairKits}"), (data.Ceruleum < C.UIWarningDepTanksNum, $"青磷水: {data.Ceruleum}"), (data.InventorySpace < C.UIWarningDepSlotNum, $"背包剩余: {data.InventorySpace}")];',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\ExchangeLists.cs",
+        "old": '                ImGuiEx.EnumCombo("##cat2", ref SelectedCategory2, nullName: "所有类别");',
+        "new": '                ImGuiEx.EnumCombo("##cat2", ref SelectedCategory2, null, Lang.GCExchangeCategoryNames, "所有类别");',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\ExchangeLists.cs",
+        "old": '                    && !x.Value.Category.ToString().Equals(getFilter2(), StringComparison.OrdinalIgnoreCase)',
+        "new": '                    && !Lang.GCExchangeCategoryNames[x.Value.Category].Equals(getFilter2(), StringComparison.OrdinalIgnoreCase)',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\ExchangeLists.cs",
+        "old": '            ImGuiEx.EnumCombo("##cat", ref SelectedCategory, nullName: "所有类别");',
+        "new": '            ImGuiEx.EnumCombo("##cat", ref SelectedCategory, null, Lang.GCExchangeCategoryNames, "所有类别");',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\ExchangeLists.cs",
+        "old": '                    && !meta.Category.ToString().Equals(getFilter(), StringComparison.OrdinalIgnoreCase)',
+        "new": '                    && !Lang.GCExchangeCategoryNames[meta.Category].Equals(getFilter(), StringComparison.OrdinalIgnoreCase)',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\ExchangeLists.cs",
+        "old": '                ImGuiEx.TextV($"{meta.Category}");\n                if(ImGuiEx.HoveredAndClicked()) getFilter() = meta.Category.ToString();',
+        "new": '                ImGuiEx.TextV(Lang.GCExchangeCategoryNames[meta.Category]);\n                if(ImGuiEx.HoveredAndClicked()) getFilter() = Lang.GCExchangeCategoryNames[meta.Category];',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\DeployablesTab.cs",
+        "old": '        if(ImGui.BeginCombo("##uplan", "解锁计划: " + (SelectedUnlockPlan?.Name ?? "not selected"), ImGuiComboFlags.HeightLarge))',
+        "new": '        if(ImGui.BeginCombo("##uplan", "解锁计划：" + (SelectedUnlockPlan?.Name ?? "未选择"), ImGuiComboFlags.HeightLarge))',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\DeployablesTab.cs",
+        "old": '        if(ImGui.BeginCombo("##uplan2", "航点计划: " + (VoyageUtils.GetPointPlanName(SelectedPointPlan) ?? "not selected"), ImGuiComboFlags.HeightLarge))',
+        "new": '        if(ImGui.BeginCombo("##uplan2", "航点计划：" + (VoyageUtils.GetPointPlanName(SelectedPointPlan) ?? "未选择"), ImGuiComboFlags.HeightLarge))',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\DeployablesTab.cs",
+        "old": '                }, title: "Save as...", fileTypes: [("Comma-separated values", ["csv"])], save:true);',
+        "new": '                }, title: "另存为...", fileTypes: [("逗号分隔值", ["csv"])], save:true);',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\DeployablesTab.cs",
+        "old": '                ImGuiEx.EnumCombo($"##hull{entry.GUID}", ref entry.Part1);',
+        "new": '                ImGuiEx.EnumCombo($"##hull{entry.GUID}", ref entry.Part1, null, Lang.GetVesselPartNames<Hull>());',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\DeployablesTab.cs",
+        "old": '                ImGuiEx.EnumCombo($"##stern{entry.GUID}", ref entry.Part2);',
+        "new": '                ImGuiEx.EnumCombo($"##stern{entry.GUID}", ref entry.Part2, null, Lang.GetVesselPartNames<Stern>());',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\DeployablesTab.cs",
+        "old": '                ImGuiEx.EnumCombo($"##bow{entry.GUID}", ref entry.Part3);',
+        "new": '                ImGuiEx.EnumCombo($"##bow{entry.GUID}", ref entry.Part3, null, Lang.GetVesselPartNames<Bow>());',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\DeployablesTab.cs",
+        "old": '                ImGuiEx.EnumCombo($"##bridge{entry.GUID}", ref entry.Part4);',
+        "new": '                ImGuiEx.EnumCombo($"##bridge{entry.GUID}", ref entry.Part4, null, Lang.GetVesselPartNames<Bridge>());',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\DeployablesTab.cs",
+        "old": '                    ImGuiEx.EnumCombo($"##unlockmode{entry.GUID}", ref entry.UnlockMode);',
+        "new": '                    ImGuiEx.EnumCombo($"##unlockmode{entry.GUID}", ref entry.UnlockMode, Lang.UnlockModeNames);',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\DeployablesTab.cs",
+        "old": '                        ImGuiEx.EnumCombo($"##firstSubUnlockmode{entry.GUID}", ref entry.FirstSubUnlockMode);',
+        "new": '                        ImGuiEx.EnumCombo($"##firstSubUnlockmode{entry.GUID}", ref entry.FirstSubUnlockMode, Lang.UnlockModeNames);',
+    },
     # ============ 词典无法安全重放的菜单与动态界面文案 ============
     {
         "file": r"AutoRetainer\Internal\ContextMenuManager.cs",
@@ -156,6 +255,7 @@ PATCHES = [
         "file": r"AutoRetainer\Lang.cs",
         "old": "    internal static readonly (string Normal, string GameFont) Digits =",
         "new": load_enum_dicts() + "    internal static readonly (string Normal, string GameFont) Digits =",
+        "idempotent_marker": "internal static readonly ReadOnlyDictionary<GCExchangeCategoryTab, string> GCExchangeCategoryNames",
     },
     # ============ ExpertTab.cs：行为设置下拉 ============
     {
@@ -523,6 +623,9 @@ def main():
             continue
         with io.open(fp, encoding="utf-8", errors="replace") as f:
             text = f.read()
+        if p.get("idempotent_marker") and p["idempotent_marker"] in text:
+            ok += 1
+            continue
         if p["old"] not in text:
             # 幂等：目标文本已存在（补丁曾直接提交进源码，或已应用过）
             if p["new"] and p["new"] in text:

@@ -201,14 +201,14 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
             }, () =>
             {
                 ImGui.SetNextItemWidth(100f);
-                ImGuiEx.EnumCombo("##cat2", ref SelectedCategory2, nullName: "所有类别");
+                ImGuiEx.EnumCombo("##cat2", ref SelectedCategory2, null, Lang.GCExchangeCategoryNames, "所有类别");
                 ImGuiEx.Tooltip("类别");
             });
             foreach(var x in Utils.SharedGCExchangeListings)
             {
                 if(getFilter2().Length > 0
                     && !x.Value.Data.Name.GetText().Contains(getFilter2(), StringComparison.OrdinalIgnoreCase)
-                    && !x.Value.Category.ToString().Equals(getFilter2(), StringComparison.OrdinalIgnoreCase)
+                    && !Lang.GCExchangeCategoryNames[x.Value.Category].Equals(getFilter2(), StringComparison.OrdinalIgnoreCase)
                     && !Utils.GCRanks[x.Value.MinPurchaseRank].Equals(getFilter2(), StringComparison.OrdinalIgnoreCase)
                     ) continue;
                 if(SelectedCategory2 != null && x.Value.Category != SelectedCategory2.Value) continue;
@@ -282,7 +282,7 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
             ImGui.Checkbox("仅显示已选择", ref onlySelected());
             ImGui.SameLine();
             ImGui.SetNextItemWidth(100f);
-            ImGuiEx.EnumCombo("##cat", ref SelectedCategory, nullName: "所有类别");
+            ImGuiEx.EnumCombo("##cat", ref SelectedCategory, null, Lang.GCExchangeCategoryNames, "所有类别");
             ImGuiEx.Tooltip("类别");
         });
 
@@ -298,7 +298,7 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
                 if(onlySelected() && currentItem.Quantity == 0) continue;
                 if(getFilter().Length > 0
                     && !meta.Data.Name.GetText().Contains(getFilter(), StringComparison.OrdinalIgnoreCase)
-                    && !meta.Category.ToString().Equals(getFilter(), StringComparison.OrdinalIgnoreCase)
+                    && !Lang.GCExchangeCategoryNames[meta.Category].Equals(getFilter(), StringComparison.OrdinalIgnoreCase)
                     && !Utils.GCRanks[meta.MinPurchaseRank].Equals(getFilter(), StringComparison.OrdinalIgnoreCase)
                     ) continue;
                 if(SelectedCategory != null && meta.Category != SelectedCategory.Value) continue;
@@ -351,8 +351,8 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
                 }
                 ImGuiEx.TextV($"{meta.Seals}");
                 ImGui.TableNextColumn();
-                ImGuiEx.TextV($"{meta.Category}");
-                if(ImGuiEx.HoveredAndClicked()) getFilter() = meta.Category.ToString();
+                ImGuiEx.TextV(Lang.GCExchangeCategoryNames[meta.Category]);
+                if(ImGuiEx.HoveredAndClicked()) getFilter() = Lang.GCExchangeCategoryNames[meta.Category];
                 ImGui.TableNextColumn();
                 if(currentItem.Data.Value.IsUnique)
                 {
