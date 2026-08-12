@@ -16,9 +16,9 @@ public class GeneralSettings : InventoryManagementBase
             .InputInt(100f, "单次开启最大数量", () => ref InventoryCleanupCommon.SelectedPlan.MaxCoffersAtOnce)
             .Unindent()
             .Checkbox($"启用将物品出售给雇员", () => ref InventoryCleanupCommon.SelectedPlan.IMEnableAutoVendor, "当 AutoRetainer 将雇员派往任务时，物品将依照背包清理方案自动出售。")
-            .Checkbox($"启用将物品出售给房屋NPC", () => ref InventoryCleanupCommon.SelectedPlan.IMEnableNpcSell, "当 AutoRetainer 进入住宅时，物品将依照背包清理方案出售。住宅 NPC 必须放置在住宅入口附近（非工作台入口），进入后可立即互动。")
+            .Checkbox($"启用向住宅 NPC 出售物品", () => ref InventoryCleanupCommon.SelectedPlan.IMEnableNpcSell, "当 AutoRetainer 进入住宅时，物品将依照背包清理方案出售。住宅 NPC 必须放置在住宅入口附近（非工房入口），进入后可立即互动。")
             .Indent()
-            .Checkbox($"若雇员可用则忽略 NPC", () => ref InventoryCleanupCommon.SelectedPlan.IMSkipVendorIfRetainer)
+            .Checkbox($"雇员可用时不使用住宅 NPC", () => ref InventoryCleanupCommon.SelectedPlan.IMSkipVendorIfRetainer)
             .Widget("立即出售", (x) =>
             {
                 if(ImGuiEx.Button(x, Player.Interactable && InventoryCleanupCommon.SelectedPlan.IMEnableNpcSell && NpcSaleManager.GetValidNPC() != null && !IsOccupied() && !P.TaskManager.IsBusy))

@@ -146,7 +146,7 @@ internal unsafe class AutoRetainerWindow : Window
             if(disabled)
             {
                 ImGui.EndDisabled();
-                ImGuiComponents.HelpMarker($"MultiMode controls this option. Hold CTRL to override.");
+                ImGuiComponents.HelpMarker("此选项由多角色模式控制。按住 Ctrl 可强制覆盖。");
             }
 
             if(P.WasEnabled)
@@ -227,7 +227,7 @@ internal unsafe class AutoRetainerWindow : Window
 
     private void DrawStats()
     {
-        NuiTools.ButtonTabs([[C.RecordStats ? new("雇员派遣", S.VentureStats.DrawVentures) : null, new("Gil", S.GilDisplay.Draw), new("部队信息", S.FCData.Draw)]]);
+            NuiTools.ButtonTabs([[C.RecordStats ? new("雇员派遣", S.VentureStats.DrawVentures) : null, new("金币", S.GilDisplay.Draw), new("部队信息", S.FCData.Draw)]]);
     }
 
     public override void OnClose()

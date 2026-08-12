@@ -47,7 +47,7 @@ internal unsafe class AutoGCHandinOverlay : Window
         if(!Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId == 1078) && InventoryManager.Instance()->GetInventoryItemCount(14946) > 0)
         {
             ImGui.SameLine();
-            ImGuiEx.Text(GradientColor.Get(ImGuiColors.DalamudRed, ImGuiColors.DalamudYellow), $"可使用军票提高buff");
+            ImGuiEx.Text(GradientColor.Get(ImGuiColors.DalamudRed, ImGuiColors.DalamudYellow), $"可使用军票加成票券");
         }
         if(!Player.IsInHomeWorld)
         {

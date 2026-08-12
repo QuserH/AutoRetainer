@@ -399,3 +399,5 @@ FodyWeavers.xsd
 /AutoRetainer/_build/BuildExtensions.targets
 /AutoRetainer/_build/CleanupDeps.ps1
 /AutoRetainer/_build/PostBuild.bat
+tools/_ui_missing.txt
+tools/_ui_english_fragments.txt

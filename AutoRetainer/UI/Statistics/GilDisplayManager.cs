@@ -11,8 +11,8 @@ public sealed class GilDisplayManager
     public void Draw()
     {
         ImGuiEx.SetNextItemWidthScaled(200f);
-        ImGui.InputInt("忽略Gil低于以下值的角色/雇员", ref C.MinGilDisplay.ValidateRange(0, int.MaxValue));
-        ImGuiComponents.HelpMarker($"Ignored retainer gil still contributes to character/DC total. Character is ignored if their gil AND all retainers' gil is less than this value. Ignored characters do not contribute to DC total.");
+        ImGui.InputInt("忽略金币低于此数值的角色/雇员", ref C.MinGilDisplay.ValidateRange(0, int.MaxValue));
+        ImGuiComponents.HelpMarker("被忽略的雇员金币仍会计入角色和数据中心总计。角色本人与所有雇员的金币均低于此数值时，该角色会被忽略，且不计入数据中心总计。");
         ref var filter = ref Ref<string>.Get();
         ImGui.Checkbox("仅显示角色总计", ref C.GilOnlyChars);
         ImGui.SameLine();
@@ -67,7 +67,7 @@ public sealed class GilDisplayManager
                             ImGuiEx.Text(ImGuiColors.DalamudYellow, $"        部队 {fcdata.Name}: {fcdata.Gil:N0}");
                         }
                     }
-                    ImGuiEx.Text(ImGuiColors.DalamudViolet, $"    {Censor.Character(c.Name, c.World)}{(fcdata != null && fcdata.Gil > 0 ? "+FC" : "")} total: {charTotal:N0}");
+                            ImGuiEx.Text(ImGuiColors.DalamudViolet, $"    {Censor.Character(c.Name, c.World)}{(fcdata != null && fcdata.Gil > 0 ? "+部队" : "")} 总计：{charTotal:N0}");
                     if(ImGuiEx.HoveredAndClicked("点击重新登录"))
                     {
                         if(!MultiMode.Relog(c, out var error, Internal.RelogReason.Command))

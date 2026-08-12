@@ -19,7 +19,7 @@ internal static class SharedUI
     internal static void DrawMultiModeHeader(OfflineCharacterData data, string overrideTitle = null)
     {
         var b = true;
-        ImGui.CollapsingHeader($"{Censor.Character(data.Name)} {overrideTitle ?? "Configuration"}##conf", ref b, ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.Bullet | ImGuiTreeNodeFlags.OpenOnArrow);
+        ImGui.CollapsingHeader($"{Censor.Character(data.Name)} {overrideTitle ?? "配置"}##conf", ref b, ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.Bullet | ImGuiTreeNodeFlags.OpenOnArrow);
         if(b == false)
         {
             ImGui.CloseCurrentPopup();
@@ -73,7 +73,7 @@ internal static class SharedUI
             {
                 new TickScheduler(() => C.OfflineData.RemoveAll(x => x.CID == data.CID));
             }
-            ImGuiComponents.HelpMarker("Character's saved data will be removed without excluding it. Character data will be regenerated once you log back into this character.");
+        ImGuiComponents.HelpMarker("将删除该角色的已保存数据，但不会将其排除。再次登录该角色后会重新生成数据。");
 
                 if(ImGui.Button("清除部队数据"))
             {

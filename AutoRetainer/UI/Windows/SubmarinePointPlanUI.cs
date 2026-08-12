@@ -25,7 +25,7 @@ internal unsafe class SubmarinePointPlanUI : Window
         return i;
     }
 
-    public static readonly string DrawButtonText = "Open Submarine Point Plan Editor";
+    public static readonly string DrawButtonText = "打开潜水艇航线计划编辑器";
     public static void DrawButton()
     {
         if(ImGuiEx.IconButtonWithText((FontAwesomeIcon)Lang.IconPlanner[0], DrawButtonText))

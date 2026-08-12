@@ -30,6 +30,7 @@ def walk():
                 yield os.path.join(root, fn)
 
 miss = {}
+english_fragments = {}
 for fp in walk():
     rel = os.path.relpath(fp, ROOT)
     rel_slash = rel.replace("\\", "/")
@@ -48,6 +49,22 @@ for fp in walk():
             )
             if interp:
                 content = re.sub(r"\{[^{}]*\}", "{}", content)
+            method = get_method_name(text, pos)
+            arrow = get_expr_context(text, pos)
+            name_ctx = get_name_context(text, pos)
+            is_ui = method in UI_METHODS or \
+                ((arrow == "arrow" or name_ctx == "name") and "/UI/" in rel_slash)
+            visible = re.sub(r"\{[^{}]*\}", "{}", content)
+            internal_token = (
+                content.startswith("##") or content.startswith("loading ") or
+                content.startswith(("About", "planbuttons")) or content == "LoginCenter" or
+                re.fullmatch(r"[A-Za-z0-9_.:/\\-]+", content or "") is not None or
+                all("\ue000" <= char <= "\uf8ff" for char in content)
+            )
+            if is_ui and not internal_token and re.search(r"[A-Za-z]{3,}", visible):
+                english_fragments.setdefault(visible, [0, set()])
+                english_fragments[visible][0] += 1
+                english_fragments[visible][1].add(rel.split("AutoRetainer\\")[-1].split("AutoRetainer/")[-1])
             if not (content.startswith("##") or content == "" or
                     content.startswith("loading ") or content == "LoginCenter" or
                     content in ("Debug", "Discord") or content.startswith(("About", "planbuttons")) or
@@ -55,17 +72,13 @@ for fp in walk():
                     any(marker in content for marker in ("{", "}", "##", "\\u", "%")) or
                     re.fullmatch(r"[-~/:\\.\s]+", content) or
                     any("\u4e00" <= c <= "\u9fff" for c in content)):
-                method = get_method_name(text, pos)
-                arrow = get_expr_context(text, pos)
-                name_ctx = get_name_context(text, pos)
-                is_ui = method in UI_METHODS or \
-                    ((arrow == "arrow" or name_ctx == "name") and "/UI/" in rel_slash)
                 if is_ui:
                     t = translate_segments(content, dict_lower)
                     if not t:
                         miss.setdefault(content, [0, set()])
                         miss[content][0] += 1
                         miss[content][1].add(rel.split("AutoRetainer\\")[-1].split("AutoRetainer/")[-1])
+
         pos += len(tok)
 
 items = sorted(miss.items(), key=lambda x: -x[1][0])
@@ -74,3 +87,11 @@ with open(os.path.join(ROOT, "tools", "_ui_missing.txt"), "w", encoding="utf-8")
     for content, (cnt, files) in items:
         f.write(f"[{cnt}] {content!r}  # {', '.join(sorted(files))}\n")
 print("清单已写入 tools/_ui_missing.txt")
+
+fragment_items = sorted(english_fragments.items(), key=lambda x: (-x[1][0], x[0]))
+fragment_path = os.path.join(ROOT, "tools", "_ui_english_fragments.txt")
+with open(fragment_path, "w", encoding="utf-8") as f:
+    for content, (cnt, files) in fragment_items:
+        f.write(f"[{cnt}] {content!r}  # {', '.join(sorted(files))}\n")
+print(f"含英文片段的 UI 文本（去重）: {len(fragment_items)}")
+print("清单已写入 tools/_ui_english_fragments.txt")

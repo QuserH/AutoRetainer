@@ -90,7 +90,7 @@ public static unsafe class RetainerConfig
             }
             ImGui.EndPopup();
         }
-        ImGui.Checkbox($"存取 Gil", ref adata.WithdrawGil);
+        ImGui.Checkbox($"存取金币", ref adata.WithdrawGil);
         if(adata.WithdrawGil)
         {
             if(ImGui.RadioButton("取出", !adata.Deposit)) adata.Deposit = false;

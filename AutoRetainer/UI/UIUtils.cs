@@ -106,11 +106,11 @@ internal static class UIUtils
             string error = null;
             if(data.FC == null)
             {
-                error = "Free company house is not registered in Lifestream";
+                error = "尚未在 Lifestream 中登记部队房屋";
             }
             else if(data.FC.PathToEntrance.Count == 0)
             {
-                error = "Free company house is registered in Lifestream but path to entrance is not set";
+                error = "已在 Lifestream 中登记部队房屋，但未设置前往入口的路径";
             }
             ImGui.PushFont(UiBuilder.IconFont);
             ImGuiEx.Text(error == null ? null : ImGuiColors.DalamudGrey3, "\uf1ad");
@@ -123,11 +123,11 @@ internal static class UIUtils
             string error = null;
             if(data.Private == null)
             {
-                error = "Private house is not registered in Lifestream.";
+                error = "尚未在 Lifestream 中登记个人房屋。";
             }
             else if(data.Private.PathToEntrance.Count == 0)
             {
-                error = "Private house is registered in Lifestream but path to entrance is not set.";
+                error = "已在 Lifestream 中登记个人房屋，但未设置前往入口的路径。";
             }
             ImGui.PushFont(UiBuilder.IconFont);
             ImGuiEx.Text(error == null ? null : ImGuiColors.DalamudGrey3, "\ue1b0");
@@ -145,20 +145,20 @@ internal static class UIUtils
                 var sharedData = Lifestream.GetSharedHousePathData();
                 if(sharedData == null)
                 {
-                    error = "Shared estate is not registered in Lifestream.";
+                    error = "尚未在 Lifestream 中登记共享房屋。";
                 }
                 else if(sharedData.PathToEntrance.Count == 0)
                 {
-                    error = "Shared estate is registered in Lifestream but path to entrance is not set.";
+                    error = "已在 Lifestream 中登记共享房屋，但未设置前往入口的路径。";
                 }
                 else
                 {
-                    message = $"Shared estate is registered in Lifestream and path is set. You will be teleported to Shared estate for resending Retainers.\nAddress: {Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault((uint)sharedData.ResidentialDistrict)?.Territory.Value.PlaceNameRegion.Value.Name}, ward {sharedData.Ward + 1}, plot {sharedData.Plot + 1}";
+                    message = $"已在 Lifestream 中登记共享房屋并设置路径。将传送至共享房屋以重新派遣雇员。\n地址：{Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault((uint)sharedData.ResidentialDistrict)?.Territory.Value.PlaceNameRegion.Value.Name}，第 {sharedData.Ward + 1} 区，第 {sharedData.Plot + 1} 号地块";
                 }
             }
             else
             {
-                error = "Can only display shared estate information while player is logged in";
+                error = "仅在角色登录时显示共享房屋信息";
                 black = true;
             }
             ImGui.PushFont(UiBuilder.IconFont);

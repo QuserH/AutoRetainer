@@ -83,6 +83,65 @@ def load_enum_dicts():
 '''
 
 PATCHES = [
+    # ============ 词典无法安全重放的菜单与动态界面文案 ============
+    {
+        "file": r"AutoRetainer\Internal\ContextMenuManager.cs",
+        "old": '''                        Name = new SeStringBuilder().Append(Prefix).AddText("= Item has been protected =").Build(),
+''',
+        "new": '''                        Name = new SeStringBuilder().Append(Prefix).AddText("= 物品已受保护 =").Build(),
+''',
+    },
+    {
+        "file": r"AutoRetainer\Internal\ContextMenuManager.cs",
+        "old": 'AddUiForeground("- Remove from Quick Venture sell list", (ushort)UIColor.Orange)',
+        "new": 'AddUiForeground("- 从快速探险出售清单移除", (ushort)UIColor.Orange)',
+    },
+    {
+        "file": r"AutoRetainer\Internal\ContextMenuManager.cs",
+        "old": 'AddUiForeground("+ Add to Quick Venture sell list", (ushort)UIColor.Yellow)',
+        "new": 'AddUiForeground("+ 添加至快速探险出售清单", (ushort)UIColor.Yellow)',
+    },
+    {
+        "file": r"AutoRetainer\Internal\ContextMenuManager.cs",
+        "old": 'AddUiForeground("- Remove from Unconditional sell list", (ushort)UIColor.Orange)',
+        "new": 'AddUiForeground("- 从无条件出售清单移除", (ushort)UIColor.Orange)',
+    },
+    {
+        "file": r"AutoRetainer\Internal\ContextMenuManager.cs",
+        "old": 'AddUiForeground("+ Add to Unconditional sell list", (ushort)UIColor.Yellow)',
+        "new": 'AddUiForeground("+ 添加至无条件出售清单", (ushort)UIColor.Yellow)',
+    },
+    {
+        "file": r"AutoRetainer\Internal\ContextMenuManager.cs",
+        "old": '''                            Name = new SeStringBuilder().Append(Prefix).AddUiForeground("- Remove from Discard list", (ushort)UIColor.Orange).Build(),
+''',
+        "new": '''                            Name = new SeStringBuilder().Append(Prefix).AddUiForeground("- 从丢弃清单移除", (ushort)UIColor.Orange).Build(),
+''',
+    },
+    {
+        "file": r"AutoRetainer\Internal\ContextMenuManager.cs",
+        "old": '''                            Name = new SeStringBuilder().Append(Prefix).AddUiForeground("+ Add to Discard list", (ushort)UIColor.Yellow).Build(),
+''',
+        "new": '''                            Name = new SeStringBuilder().Append(Prefix).AddUiForeground("+ 添加至丢弃清单", (ushort)UIColor.Yellow).Build(),
+''',
+    },
+    {
+        "file": r"AutoRetainer\Internal\ContextMenuManager.cs",
+        "old": '''                        Name = new SeStringBuilder().Append(Prefix).AddText("Protect item from auto actions").Build(),
+''',
+        "new": '''                        Name = new SeStringBuilder().Append(Prefix).AddText("保护物品，不执行自动操作").Build(),
+''',
+    },
+    {
+        "file": r"AutoRetainer\UI\Overlays\AutoGCHandinOverlay.cs",
+        "old": '            ImGuiEx.Text(GradientColor.Get(ImGuiColors.DalamudRed, ImGuiColors.DalamudYellow), $"可使用军票提高buff");',
+        "new": '            ImGuiEx.Text(GradientColor.Get(ImGuiColors.DalamudRed, ImGuiColors.DalamudYellow), $"可使用军票加成票券");',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\AdvancedEntries\CharacterSync.cs",
+        "old": '            if(ImGuiEx.BeginDefaultTable(["Name", "##control"]))',
+        "new": '            if(ImGuiEx.BeginDefaultTable(["名称", "##control"]))',
+    },
     # ============ Lang.cs ============
     {
         "file": r"AutoRetainer\Lang.cs",

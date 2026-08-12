@@ -41,7 +41,7 @@ UI_METHODS = {
     "confirm", "popup", "beginpopupmodal", "textdisclaimer", "labeltext",
     "iconbuttonwithtext", "textv", "begincombo", "inputtextwithhint", "textwrapped",
     "textcentered", "texttitled", "drawlabel", "hint", "subheader", "samelinehelp",
-    "spinner", "textcopyable",
+    "spinner", "textcopyable", "helpmarker", "hoveredandclicked",
 }
 
 BLACK_METHODS = {

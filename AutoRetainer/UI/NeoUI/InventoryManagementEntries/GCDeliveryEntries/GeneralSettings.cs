@@ -66,7 +66,7 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
                 ImGui.Unindent();
             }
         })
-        .Checkbox("优先使用部队军票加成BUFF，如果可用的话", () => ref C.FullAutoGCDeliveryUseBuffFCAction)
+        .Checkbox("优先使用部队军票加成效果（如可用）", () => ref C.FullAutoGCDeliveryUseBuffFCAction)
         .Widget(() =>
         {
             if(C.FullAutoGCDeliveryUseBuffFCAction)

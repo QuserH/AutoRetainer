@@ -6,7 +6,7 @@ public class MainSettings : NeoUIEntry
     public override NuiBuilder Builder { get; init; } = new NuiBuilder()
         .Section("延迟设置")
         .Widget(100f, "时间不同步补偿", (x) => ImGuiEx.SliderInt(x, ref C.UnsyncCompensation.ValidateRange(-60, 0), -10, 0), "从探险结束时间额外扣除的秒数。这有助于减缓游戏服务器与你电脑之间时间不同步所产生的问题。")
-        .Widget(100f, "额外交互延迟（帧）", (x) => ImGuiEx.SliderInt(x, ref C.ExtraFrameDelay.ValidateRange(-10, 100), 0, 50), "此数值越低，插件执行动作的速度越快。当帧率（FPS）较低或延迟较高时，建议增加此值；若希望插件运行更快，可以降低此值。")
+        .Widget(100f, "额外交互延迟（帧）", (x) => ImGuiEx.SliderInt(x, ref C.ExtraFrameDelay.ValidateRange(-10, 100), 0, 50), "数值越低，操作越快。游戏帧率较低或网络延迟较高时，建议提高此值；想加快操作可适当降低。")
         .Widget("额外日志", (x) => ImGui.Checkbox(x, ref C.ExtraDebug), "此选项会启用用于调试的冗长日志。开启时会产生大量日志并影响效能。此选项会在插件重载或游戏重启时自动关闭。")
 
             .Section("操作模式")

@@ -23,14 +23,14 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
     {
         C.AdditionalGCExchangePlans.Where(x => x.GUID == Guid.Empty).Each(x => x.GUID = Guid.NewGuid());
         ImGuiEx.TextWrapped($"""
-            选择在大国防联军专家交付操作期间自动购买的物品。
+            选择在大国防联军筹备稀有品时自动购买的物品。
             购买逻辑:
             - 系统将尝试从列表中购买第一个可用的物品。
             - 购买将持续到该物品在你的背包中的数量达到指定的目标数量。
             如果没有可购买的列表物品，或它们无法放入你的背包:
-            - 系统将改为购买冒险委托。
-            - 委托购买将持续到你的委托数量达到 65,000。
-            一旦达到委托上限且无法再进行其他购买:
+            - 系统将改为购买探险币。
+            - 探险币将一直购买至数量达到 65,000。
+            一旦探险币达到上限且无法再进行其他购买:
             - 多余的军票将被丢弃。
             """);
 
@@ -173,7 +173,7 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
             if(ReferenceEquals(plan, C.DefaultGCExchangePlan))
             {
                 ImGui.BeginDisabled();
-                var s = "Default exchange plan can not be renamed";
+                var s = "默认兑换计划不能重命名";
                 ImGui.InputText("##name", ref s, 1);
                 ImGui.EndDisabled();
             }
@@ -186,7 +186,7 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
         {
             ImGui.SetNextItemWidth(100f);
             ImGui.InputInt("保留军票数量", ref plan.RemainingSeals.ValidateRange(0, 70000), 0, 0);
-            ImGuiEx.HelpMarker($"This amount of seals will be kept after purchase list is executed. However, this value will be capped to be no more than 20000 seals less than maximum possible, according to character's rank. ");
+            ImGuiEx.HelpMarker($"执行交换清单后保留的军票数量(最大不超过角色军阶可持有上限减 20,000)");
             ImGui.SameLine();
             ImGui.Checkbox("筹备后交换", ref plan.FinalizeByPurchasing);
             ImGuiEx.HelpMarker("勾选后将会在筹备稀有品完成后交换物品；未勾选则在军票到达上限后才交换");
@@ -227,7 +227,7 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
         }
         if(ImGui.BeginPopup("Ex"))
         {
-            if(ImGui.Selectable("自动交换军票武器与装备，最佳化以获取额外部队点数。(FC Point)"))
+            if(ImGui.Selectable("自动兑换军票武器与装备，并筹备以获得额外部队储备"))
             {
                 List<GCExchangeItem> items = [];
                 var qualifyingItems = Utils.SharedGCExchangeListings.Where(x => (x.Value.Category == GCExchangeCategoryTab.Weapons || x.Value.Category == GCExchangeCategoryTab.Armor) && x.Value.Data.GetRarity() == ItemRarity.Green).ToDictionary();

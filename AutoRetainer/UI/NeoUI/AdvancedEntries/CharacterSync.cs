@@ -15,7 +15,7 @@ public unsafe sealed class CharacterSync : NeoUIEntry
     {
         if(ToDelete.Count > 0)
         {
-            if(ImGuiEx.BeginDefaultTable(["Name", "##control"]))
+            if(ImGuiEx.BeginDefaultTable(["名称", "##control"]))
             {
                 foreach(var item in ToDelete)
                 {

@@ -10,7 +10,7 @@ public class HardList : InventoryManagementBase
     {
         Builder = InventoryCleanupCommon.CreateCleanupHeaderBuilder()
             .Section(Name)
-            .TextWrapped("这些物品将始终被出售，不论其来源，只要堆叠数量不超过下方设置的数值。此外，仅这些物品会被出售给 NPC。")
+            .TextWrapped("这些物品会始终出售，不受来源影响；仅当堆叠数量不超过下方设定时出售。向住宅 NPC 出售时也只会处理这些物品。")
             .InputInt(150f, $"可出售的最大堆叠数量", () => ref InventoryCleanupCommon.SelectedPlan.IMAutoVendorHardStackLimit)
             .Widget(() => InventoryManagementCommon.DrawListNew(
                 itemId => InventoryCleanupCommon.SelectedPlan.AddItemToList(IMListKind.HardSell, itemId, out _),

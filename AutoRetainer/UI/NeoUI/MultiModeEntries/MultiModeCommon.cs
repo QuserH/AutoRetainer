@@ -24,7 +24,7 @@ public class MultiModeCommon : NeoUIEntry
             var names = C.OfflineData.Where(s => !s.Name.IsNullOrEmpty()).Select(s => $"{s.Name}@{s.World}");
             var dict = names.ToDictionary(s => s, s => Censor.Character(s));
             dict.Add("", "禁用");
-            dict.Add("~", "Last logged in character");
+            dict.Add("~", "上次登录的角色");
             ImGuiEx.Combo(x, ref C.AutoLogin, ["", "~", .. names], names: dict);
         })
         .SliderInt(150f, "延迟", () => ref C.AutoLoginDelay.ValidateRange(0, 60), 0, 20, "设置适当的延迟，让插件在登录前完全加载，并留出时间以便在需要时取消登录")
@@ -69,6 +69,6 @@ public class MultiModeCommon : NeoUIEntry
             """, EColor.RedBright, FontAwesomeIcon.ExclamationTriangle.ToIconString()))
 
         .Section("紧急逃生模块")
-        .Checkbox("发生连线错误时自动关闭并重试登录", () => ref C.ResolveConnectionErrors, "断线时 AutoRetainer 将尝试重新登录。若会话（Session）已过期，则不会尝试登录。")
+        .Checkbox("发生连线错误时自动关闭并重试登录", () => ref C.ResolveConnectionErrors, "断线时 AutoRetainer 将尝试重新登录。若登录会话已过期，则不会尝试登录。")
         .Widget(() => ImGuiEx.PluginAvailabilityIndicator([new("NoKillPlugin")]));
 }

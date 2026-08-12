@@ -89,7 +89,7 @@ public class DeployablesTab : NeoUIEntry
         .Widget(MassConfigurationChangeWidget)
         .Section("注册、配件与计划自动化")
         .Widget(AutomatedSubPlannerWidget)
-        .Section("导出角色与潜水艇清单至 CSV")
+        .Section("导出角色与潜水艇清单")
         .Widget(() =>
         {
             ImGuiEx.FilteringCheckbox("仅导出已启用多角色模式的角色(否则将导出全部)", out var exportEnabledCharas);

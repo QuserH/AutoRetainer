@@ -34,7 +34,7 @@ public sealed class VenturePlanner : Window
             {
                 foreach(var r in x.RetainerData)
                 {
-                    if(ImGui.Selectable($"{Censor.Character(x.Name, x.World)} - {Censor.Retainer(r.Name)} - Lv{r.Level} {ExcelJobHelper.GetJobNameById(r.Job)}"))
+                    if(ImGui.Selectable($"{Censor.Character(x.Name, x.World)} - {Censor.Retainer(r.Name)} - {Lang.CharLevel}{r.Level} {ExcelJobHelper.GetJobNameById(r.Job)}"))
                     {
                         SelectedRetainer = r;
                         SelectedCharacter = x;

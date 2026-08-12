@@ -9,7 +9,7 @@ public class SoftList : InventoryManagementBase
     {
         Builder = InventoryCleanupCommon.CreateCleanupHeaderBuilder()
             .Section(Name)
-            .TextWrapped("这些物品从快速任务（Quick Venture）获得后会被出售，除非它们与相同物品堆叠。")
+            .TextWrapped("通过快速探险获得的这些物品会自动出售，除非背包中已有同类物品。")
             .Widget(() => InventoryManagementCommon.DrawListNew(
                 itemId => InventoryCleanupCommon.SelectedPlan.AddItemToList(IMListKind.SoftSell, itemId, out _),
                 itemId => InventoryCleanupCommon.SelectedPlan.IMAutoVendorSoft.Remove(itemId), InventoryCleanupCommon.SelectedPlan.IMAutoVendorSoft,

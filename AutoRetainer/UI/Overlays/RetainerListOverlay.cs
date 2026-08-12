@@ -59,7 +59,7 @@ internal unsafe class RetainerListOverlay : Window
         if(disabled)
         {
             ImGui.EndDisabled();
-            ImGuiComponents.HelpMarker($"MultiMode controls this option. Hold CTRL to override.");
+            ImGuiComponents.HelpMarker("此选项由多角色模式控制。按住 Ctrl 可强制覆盖。");
         }
         if(P.WasEnabled)
         {
