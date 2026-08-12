@@ -35,6 +35,19 @@ internal static unsafe class SchedulerMain
 
     internal static PluginEnableReason Reason { get; set; }
 
+    internal static int GetRandomDelayMilliseconds(float minimumSeconds, float maximumSeconds)
+    {
+        var minimumCentiseconds = ToCentiseconds(minimumSeconds);
+        var maximumCentiseconds = Math.Clamp(ToCentiseconds(maximumSeconds), minimumCentiseconds, 360000);
+        return (int)(Random.Shared.NextInt64(minimumCentiseconds, maximumCentiseconds + 1) * 10L);
+    }
+
+    private static int ToCentiseconds(float seconds)
+    {
+        if(!float.IsFinite(seconds)) return 0;
+        return (int)MathF.Round(Math.Clamp(seconds, 0f, 3600f) * 100f, MidpointRounding.AwayFromZero);
+    }
+
     internal static bool? EnablePlugin(PluginEnableReason reason)
     {
         Reason = reason;
@@ -196,13 +209,17 @@ internal static unsafe class SchedulerMain
                                     {
                                         TaskWaitSelectString.Enqueue(C.RetainerMenuDelay);
                                     }
+                                    if(Reason == PluginEnableReason.MultiMode)
+                                    {
+                                        P.TaskManager.EnqueueDelay(GetRandomDelayMilliseconds(C.MultiRetainerOperationDelayMinSeconds, C.MultiRetainerOperationDelayMaxSeconds));
+                                    }
                                     P.TaskManager.Enqueue(RetainerHandlers.SelectQuit);
                                     P.TaskManager.Enqueue(RetainerHandlers.ConfirmCantBuyback);
                                 }
                             }
                             else
                             {
-                                if((C.Stay5 || MultiMode.Active) && !Utils.IsAllCurrentCharacterRetainersHaveMoreThan5Mins())
+                                if(C.Stay5 && !MultiMode.Active && !Utils.IsAllCurrentCharacterRetainersHaveMoreThan5Mins())
                                 {
                                     //nothing
                                 }
@@ -212,6 +229,7 @@ internal static unsafe class SchedulerMain
                                     {
                                         DebugLog($"Scheduling closing and disabling plugin as MultiMode is running");
                                         P.TaskManager.Enqueue(RetainerListHandlers.CloseRetainerList);
+                                        P.TaskManager.EnqueueDelay(GetRandomDelayMilliseconds(C.MultiRetainerExitDelayMinSeconds, C.MultiRetainerExitDelayMaxSeconds));
                                         P.TaskManager.Enqueue(DisablePlugin);
                                         if(Data.GetIMSettings().IMEnableCofferAutoOpen) TaskOpenAllCoffers.Enqueue();
                                         if(Data.GetIMSettings().IMEnableItemDesynthesis) TaskDesynthItems.Enqueue();

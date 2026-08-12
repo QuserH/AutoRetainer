@@ -96,6 +96,83 @@ def load_enum_dicts():
 '''
 
 PATCHES = [
+    # ============ 多角色模式雇员随机延迟 ============
+    {
+        "file": r"AutoRetainer\PluginData\Config.cs",
+        "old": "    public int RetainerMenuDelay = 0;\n    public List<VenturePlan> SavedPlans = [];",
+        "new": "    public int RetainerMenuDelay = 0;\n    public float MultiRetainerOperationDelayMinSeconds = 0;\n    public float MultiRetainerOperationDelayMaxSeconds = 0;\n    public float MultiRetainerExitDelayMinSeconds = 0;\n    public float MultiRetainerExitDelayMaxSeconds = 0;\n    public List<VenturePlan> SavedPlans = [];",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeRetainers.cs",
+        "old": '        .Checkbox("等待探险完成", () => ref C.MultiModeRetainerConfiguration.MultiWaitForAll, "在多角色模式下，AutoRetainer 会等到所有雇员都回归后才切换至下一个角色。")',
+        "new": '        .Checkbox("等待探险完成", () => ref C.MultiModeRetainerConfiguration.MultiWaitForAll, "在多角色模式下，AutoRetainer 会等到所有雇员都回归后才切换至下一个角色。")\n        .Widget(() =>\n        {\n            ImGuiEx.TextWrapped("雇员操作与切换角色的额外随机延迟（单位：秒，保留两位小数；最小值和最大值均为 0 表示不延迟）");\n            ImGui.SetNextItemWidth(120f);\n            ImGui.InputFloat("雇员操作延迟最小值", ref C.MultiRetainerOperationDelayMinSeconds, 0.01f, 0.10f, "%.2f");\n            ImGui.SetNextItemWidth(120f);\n            ImGui.InputFloat("雇员操作延迟最大值", ref C.MultiRetainerOperationDelayMaxSeconds, 0.01f, 0.10f, "%.2f");\n            ImGui.SetNextItemWidth(120f);\n            ImGui.InputFloat("关闭雇员界面并切换角色延迟最小值", ref C.MultiRetainerExitDelayMinSeconds, 0.01f, 0.10f, "%.2f");\n            ImGui.SetNextItemWidth(120f);\n            ImGui.InputFloat("关闭雇员界面并切换角色延迟最大值", ref C.MultiRetainerExitDelayMaxSeconds, 0.01f, 0.10f, "%.2f");\n            C.MultiRetainerOperationDelayMinSeconds = NormalizeDelay(C.MultiRetainerOperationDelayMinSeconds);\n            C.MultiRetainerOperationDelayMaxSeconds = Math.Max(C.MultiRetainerOperationDelayMinSeconds, NormalizeDelay(C.MultiRetainerOperationDelayMaxSeconds));\n            C.MultiRetainerExitDelayMinSeconds = NormalizeDelay(C.MultiRetainerExitDelayMinSeconds);\n            C.MultiRetainerExitDelayMaxSeconds = Math.Max(C.MultiRetainerExitDelayMinSeconds, NormalizeDelay(C.MultiRetainerExitDelayMaxSeconds));\n        })',
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeRetainers.cs",
+        "old": '        .Unindent();\n}',
+        "new": '        .Unindent();\n\n    private static float NormalizeDelay(float seconds)\n    {\n        if(!float.IsFinite(seconds)) return 0f;\n        return Math.Clamp(MathF.Round(seconds, 2, MidpointRounding.AwayFromZero), 0f, 3600f);\n    }\n}',
+    },
+    {
+        "file": r"AutoRetainer\Scheduler\SchedulerMain.cs",
+        "old": "    internal static PluginEnableReason Reason { get; set; }\n\n    internal static bool? EnablePlugin",
+        "new": "    internal static PluginEnableReason Reason { get; set; }\n\n    internal static int GetRandomDelayMilliseconds(float minimumSeconds, float maximumSeconds)\n    {\n        var minimumCentiseconds = ToCentiseconds(minimumSeconds);\n        var maximumCentiseconds = Math.Clamp(ToCentiseconds(maximumSeconds), minimumCentiseconds, 360000);\n        return (int)(Random.Shared.NextInt64(minimumCentiseconds, maximumCentiseconds + 1) * 10L);\n    }\n\n    private static int ToCentiseconds(float seconds)\n    {\n        if(!float.IsFinite(seconds)) return 0;\n        return (int)MathF.Round(Math.Clamp(seconds, 0f, 3600f) * 100f, MidpointRounding.AwayFromZero);\n    }\n\n    internal static bool? EnablePlugin",
+    },
+    {
+        "file": r"AutoRetainer\Scheduler\SchedulerMain.cs",
+        "old": "                                    if(C.RetainerMenuDelay > 0)\n                                    {\n                                        TaskWaitSelectString.Enqueue(C.RetainerMenuDelay);\n                                    }\n                                    P.TaskManager.Enqueue(RetainerHandlers.SelectQuit);",
+        "new": "                                    if(C.RetainerMenuDelay > 0)\n                                    {\n                                        TaskWaitSelectString.Enqueue(C.RetainerMenuDelay);\n                                    }\n                                    if(Reason == PluginEnableReason.MultiMode)\n                                    {\n                                        P.TaskManager.EnqueueDelay(GetRandomDelayMilliseconds(C.MultiRetainerOperationDelayMinSeconds, C.MultiRetainerOperationDelayMaxSeconds));\n                                    }\n                                    P.TaskManager.Enqueue(RetainerHandlers.SelectQuit);",
+    },
+    {
+        "file": r"AutoRetainer\Scheduler\SchedulerMain.cs",
+        "old": "                                if((C.Stay5 || MultiMode.Active) && !Utils.IsAllCurrentCharacterRetainersHaveMoreThan5Mins())",
+        "new": "                                if(C.Stay5 && !MultiMode.Active && !Utils.IsAllCurrentCharacterRetainersHaveMoreThan5Mins())",
+    },
+    {
+        "file": r"AutoRetainer\Scheduler\SchedulerMain.cs",
+        "old": "                                        DebugLog($\"Scheduling closing and disabling plugin as MultiMode is running\");\n                                        P.TaskManager.Enqueue(RetainerListHandlers.CloseRetainerList);\n                                        P.TaskManager.Enqueue(DisablePlugin);",
+        "new": "                                        DebugLog($\"Scheduling closing and disabling plugin as MultiMode is running\");\n                                        P.TaskManager.Enqueue(RetainerListHandlers.CloseRetainerList);\n                                        P.TaskManager.EnqueueDelay(GetRandomDelayMilliseconds(C.MultiRetainerExitDelayMinSeconds, C.MultiRetainerExitDelayMaxSeconds));\n                                        P.TaskManager.Enqueue(DisablePlugin);",
+    },
+    {
+        "file": r"AutoRetainer\Modules\Multi\MultiMode.cs",
+        "old": "                            BlockInteraction(20);\n                            if(!Relog(next, out var error, RelogReason.MultiMode))",
+        "new": "                            BlockInteraction(0);\n                            if(!Relog(next, out var error, RelogReason.MultiMode))",
+    },
+    {
+        "file": r"AutoRetainer\Modules\Multi\MultiMode.cs",
+        "old": "                                BlockInteraction(20);\n                                if(!Relog(null, out var error, RelogReason.MultiMode))",
+        "new": "                                BlockInteraction(0);\n                                if(!Relog(null, out var error, RelogReason.MultiMode))",
+    },
+    # ============ 国服青磷水购买与传送后入屋修复（业务逻辑） ============
+    {
+        "file": r"AutoRetainer\Scheduler\Tasks\TaskRecursivelyBuyFuel.cs",
+        "old": '                if(m.IsAddonReady && m.Text.ContainsAny(StringComparison.OrdinalIgnoreCase, "ceruleum", "青燐水バレル", "Erdseim", "céruleum"))',
+        "new": '                if(m.IsAddonReady && m.Text.ContainsAny(StringComparison.OrdinalIgnoreCase, "ceruleum", "青燐水バレル", "青磷水", "青燐水", "Erdseim", "céruleum"))',
+    },
+    {
+        "file": r"AutoRetainer\Scheduler\Tasks\TaskRecursivelyBuyFuel.cs",
+        "old": '                var remaining = ignoreMax?(int)Utils.GetAmountThatCanFit(Utils.PlayerInvetories, 10155, false, out _):(C.AutoFuelPurchaseMax - playerHas);',
+        "new": '                var canFit = (int)Utils.GetAmountThatCanFit(Utils.PlayerInvetories, 10155, false, out _);\n                var remaining = ignoreMax ? canFit : Math.Min(canFit, C.AutoFuelPurchaseMax - playerHas);',
+    },
+    {
+        "file": r"AutoRetainer\Scheduler\Tasks\TaskRecursivelyBuyFuel.cs",
+        "old": '                var amount = Math.Clamp(reader.Credits / 100, 1, Math.Min(99, remaining));\n                var numeric = a->GetComponentNodeById(27)->Component->GetNodeById(5)->GetAsAtkComponentListItemRenderer()->GetNodeById(5)->GetAsAtkComponentNumericInput();\n                if(numeric->Value != amount)\n                {\n                    numeric->SetValue((int)amount);\n                }',
+        "new": '                var shop = new AddonMaster.FreeCompanyCreditShop(a);\n                var fuel = shop.Items.FirstOrDefault(x => x.ItemId == 10155);\n                if(fuel.ItemId != 10155 || fuel.Price == 0)\n                {\n                    PluginLog.Warning("Unable to find ceruleum tanks in the Free Company credit shop.");\n                    return true;\n                }\n                var amount = Math.Clamp((int)(reader.Credits / fuel.Price), 1, Math.Min(fuel.MaxPurchaseSize, remaining));',
+    },
+    {
+        "file": r"AutoRetainer\Scheduler\Tasks\TaskRecursivelyBuyFuel.cs",
+        "old": '                    new FreeCompanyCreditShop(a).Buy(0);',
+        "new": '                    shop.Buy(10155, amount);',
+    },
+    {
+        "file": r"AutoRetainer\Modules\Multi\TaskNeoHET.cs",
+        "old": '        P.TaskManager.EnqueueTask(NeoTasks.WaitForNotOccupied(new(timeLimitMS: 10 * 60 * 1000)));\n        P.TaskManager.Enqueue(() =>',
+        "new": '        P.TaskManager.EnqueueTask(NeoTasks.WaitForNotOccupied(new(timeLimitMS: 10 * 60 * 1000)));\n        P.TaskManager.Enqueue((Func<bool?>)(() => GetFcOrPrivateEntranceFromMarkers() != null || GetApartmentEntrance() != null),\n            "Wait for housing entrance to load", new(timeLimitMS: 120000, abortOnTimeout: false));\n        P.TaskManager.Enqueue(() =>',
+    },
+    {
+        "file": r"AutoRetainer\Modules\Multi\TaskNeoHET.cs",
+        "old": '                onFailure?.Invoke();\n            }\n        }, "TaskNeoHET");',
+        "new": '                onFailure?.Invoke();\n            }\n            return true;\n        }, "TaskNeoHET");',
+    },
     # ============ 远征与军票兑换界面 ============
     {
         "file": r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs",

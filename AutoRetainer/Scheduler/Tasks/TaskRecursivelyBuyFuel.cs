@@ -15,7 +15,7 @@ public unsafe class TaskRecursivelyBuyFuel
         {
             if(TryGetAddonMaster<AddonMaster.SelectYesno>(out var m))
             {
-                if(m.IsAddonReady && m.Text.ContainsAny(StringComparison.OrdinalIgnoreCase, "ceruleum", "青燐水バレル", "Erdseim", "céruleum"))
+                if(m.IsAddonReady && m.Text.ContainsAny(StringComparison.OrdinalIgnoreCase, "ceruleum", "青燐水バレル", "青磷水", "青燐水", "Erdseim", "céruleum"))
                 {
                     if(EzThrottler.Throttle("CeruleumYesNo")) m.Yes();
                 }
@@ -31,20 +31,23 @@ public unsafe class TaskRecursivelyBuyFuel
                 }
                 if(reader.Credits < 100) return true;
                 var playerHas = Utils.CountItemsInInventory(10155, null, Utils.PlayerEntireInventory);
-                var remaining = ignoreMax?(int)Utils.GetAmountThatCanFit(Utils.PlayerInvetories, 10155, false, out _):(C.AutoFuelPurchaseMax - playerHas);
+                var canFit = (int)Utils.GetAmountThatCanFit(Utils.PlayerInvetories, 10155, false, out _);
+                var remaining = ignoreMax ? canFit : Math.Min(canFit, C.AutoFuelPurchaseMax - playerHas);
                 if(remaining <= 0)
                 {
                     return true;
                 }
-                var amount = Math.Clamp(reader.Credits / 100, 1, Math.Min(99, remaining));
-                var numeric = a->GetComponentNodeById(27)->Component->GetNodeById(5)->GetAsAtkComponentListItemRenderer()->GetNodeById(5)->GetAsAtkComponentNumericInput();
-                if(numeric->Value != amount)
+                var shop = new AddonMaster.FreeCompanyCreditShop(a);
+                var fuel = shop.Items.FirstOrDefault(x => x.ItemId == 10155);
+                if(fuel.ItemId != 10155 || fuel.Price == 0)
                 {
-                    numeric->SetValue((int)amount);
+                    PluginLog.Warning("Unable to find ceruleum tanks in the Free Company credit shop.");
+                    return true;
                 }
+                var amount = Math.Clamp((int)(reader.Credits / fuel.Price), 1, Math.Min(fuel.MaxPurchaseSize, remaining));
                 if(EzThrottler.Throttle("FCBuy", 2000))
                 {
-                    new FreeCompanyCreditShop(a).Buy(0);
+                    shop.Buy(10155, amount);
                 }
             }
             else

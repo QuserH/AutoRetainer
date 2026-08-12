@@ -364,7 +364,7 @@ internal static unsafe class MultiMode
                         if(next != null)
                         {
                             DebugLog($"Enqueueing relog");
-                            BlockInteraction(20);
+                            BlockInteraction(0);
                             if(!Relog(next, out var error, RelogReason.MultiMode))
                             {
                                 DuoLog.Error(error);
@@ -381,7 +381,7 @@ internal static unsafe class MultiMode
                             if(MultiMode.WaitOnLoginScreen)
                             {
                                 DebugLog($"Enqueueing logoff");
-                                BlockInteraction(20);
+                                BlockInteraction(0);
                                 if(!Relog(null, out var error, RelogReason.MultiMode))
                                 {
                                     DuoLog.Error(error);

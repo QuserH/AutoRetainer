@@ -75,6 +75,10 @@ internal unsafe class Config
     public LimitedKeys TempCollectB = LimitedKeys.LeftShiftKey;
 
     public int RetainerMenuDelay = 0;
+    public float MultiRetainerOperationDelayMinSeconds = 0;
+    public float MultiRetainerOperationDelayMaxSeconds = 0;
+    public float MultiRetainerExitDelayMinSeconds = 0;
+    public float MultiRetainerExitDelayMaxSeconds = 0;
     public List<VenturePlan> SavedPlans = [];
     public bool MultiWaitOnLoginScreen = false;
     public UnavailableVentureDisplay UnavailableVentureDisplay = UnavailableVentureDisplay.Hide;

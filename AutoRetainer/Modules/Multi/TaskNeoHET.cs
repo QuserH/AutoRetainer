@@ -27,6 +27,8 @@ public static unsafe class TaskNeoHET
     {
         DebugLog($"Enqueued HouseEnterTask from {new StackTrace().GetFrames().Select(x => x.GetMethod()?.Name).Prepend("      ").Print("\n")}");
         P.TaskManager.EnqueueTask(NeoTasks.WaitForNotOccupied(new(timeLimitMS: 10 * 60 * 1000)));
+        P.TaskManager.Enqueue((Func<bool?>)(() => GetFcOrPrivateEntranceFromMarkers() != null || GetApartmentEntrance() != null),
+            "Wait for housing entrance to load", new(timeLimitMS: 120000, abortOnTimeout: false));
         P.TaskManager.Enqueue(() =>
         {
             var entrance = GetFcOrPrivateEntranceFromMarkers();
@@ -70,6 +72,7 @@ public static unsafe class TaskNeoHET
             {
                 onFailure?.Invoke();
             }
+            return true;
         }, "TaskNeoHET");
     }
 
