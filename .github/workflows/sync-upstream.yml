@@ -1,6 +1,9 @@
 name: Sync Upstream and Build
 
 on:
+  push:
+    branches:
+      - master
   schedule:
     - cron: "0 2 * * *"
   workflow_dispatch:
@@ -102,7 +105,8 @@ jobs:
         shell: pwsh
         run: |
           $manualBuild = "${{ github.event_name }}" -eq "workflow_dispatch" -and "${{ inputs.build_current }}" -eq "true"
-          $shouldBuild = $manualBuild -or ($env:UPSTREAM_CHANGED -eq "true")
+          $pushBuild = "${{ github.event_name }}" -eq "push"
+          $shouldBuild = $manualBuild -or $pushBuild -or ($env:UPSTREAM_CHANGED -eq "true")
           "SHOULD_BUILD=$($shouldBuild.ToString().ToLowerInvariant())" >> $env:GITHUB_ENV
 
       - name: Download Dalamud SDK
