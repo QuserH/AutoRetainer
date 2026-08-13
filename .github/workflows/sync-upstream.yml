@@ -78,6 +78,26 @@ jobs:
           }
           git push origin HEAD:master
 
+      - name: Keep plugin version synchronized with upstream
+        shell: pwsh
+        run: |
+          $upstreamProject = git show upstream/master:AutoRetainer/AutoRetainer.csproj
+          $upstreamVersion = [regex]::Match(($upstreamProject -join "`n"), '<Version>([^<]+)</Version>').Groups[1].Value
+          if ([string]::IsNullOrWhiteSpace($upstreamVersion)) {
+            throw "Unable to read the upstream plugin version."
+          }
+
+          $projectPath = "AutoRetainer/AutoRetainer.csproj"
+          $project = Get-Content $projectPath -Raw -Encoding utf8
+          $currentVersion = [regex]::Match($project, '<Version>([^<]+)</Version>').Groups[1].Value
+          if ($currentVersion -ne $upstreamVersion) {
+            $project = [regex]::Replace($project, '<Version>[^<]+</Version>', "<Version>$upstreamVersion</Version>", 1)
+            Set-Content $projectPath -Value $project -Encoding utf8 -NoNewline
+            git add $projectPath
+            git commit -m "chore: align version with upstream v$upstreamVersion"
+            git push origin HEAD:master
+          }
+
       - name: Decide whether to build
         shell: pwsh
         run: |
