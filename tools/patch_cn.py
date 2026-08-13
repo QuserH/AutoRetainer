@@ -1071,6 +1071,29 @@ def main():
 
     print(f"补丁应用成功: {ok}/{len(all_patches)}")
     if failed:
+        retry_failed = []
+        for file, _ in failed:
+            for p in (x for x in all_patches if x["file"] == file):
+                fp = os.path.join(ROOT, p["file"])
+                if not os.path.exists(fp):
+                    retry_failed.append((p["file"], "文件不存在"))
+                    continue
+                with io.open(fp, encoding="utf-8", errors="replace") as f:
+                    text = f.read()
+                final_new = refine_localization(p["new"])
+                if p.get("idempotent_marker") and p["idempotent_marker"] in text:
+                    continue
+                if final_new and final_new in text:
+                    continue
+                if p["old"] in text:
+                    text = text.replace(p["old"], final_new)
+                    with io.open(fp, "w", encoding="utf-8", newline="") as f:
+                        f.write(text)
+                    continue
+                retry_failed.append((p["file"], "重试后仍匹配失败（上游可能改动过此处）"))
+        failed = retry_failed
+
+    if failed:
         print("以下补丁失败，需要人工处理:")
         for f, reason in failed:
             print(f"  - {f}: {reason}")
