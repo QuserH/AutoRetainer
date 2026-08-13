@@ -101,9 +101,20 @@ jobs:
             git push origin HEAD:master
           }
 
-      - name: Apply localization patches for build
+      - name: Localize shared selector tooltips
         shell: pwsh
-        run: python tools/patch_cn.py
+        run: |
+          $path = "ECommons/ECommons/ImGuiMethods/ImGuiEx/ImGuiEx.cs"
+          $english = "Drag this selector to other selectors to set their values to the same"
+          $chinese = "拖动此选项到其他同类选项，可快速复制当前设置"
+          $source = Get-Content $path -Raw -Encoding utf8
+          if ($source.Contains($english)) {
+            $source = $source.Replace($english, $chinese)
+            Set-Content $path -Value $source -Encoding utf8 -NoNewline
+          }
+          if (-not (Get-Content $path -Raw -Encoding utf8).Contains($chinese)) {
+            throw "Unable to localize the shared selector tooltip."
+          }
 
       - name: Decide whether to build
         shell: pwsh
