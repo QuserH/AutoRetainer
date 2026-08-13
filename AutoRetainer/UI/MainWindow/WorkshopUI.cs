@@ -361,39 +361,39 @@ internal static unsafe class WorkshopUI
         ImGui.SameLine();
         if(adata.VesselBehavior == VesselBehavior.Finalize)
         {
-            ImGuiEx.IconButton(Lang.IconAnchor);
+            DrawBehaviorIcon(Lang.IconAnchor, "仅结算：收取航行结果后不再派遣");
             repop();
         }
         else if(adata.VesselBehavior == VesselBehavior.Redeploy)
         {
-            ImGuiEx.IconButton(Lang.IconResend);
+            DrawBehaviorIcon(Lang.IconResend, "重新派遣：沿用上一条航线再次出航");
             repop();
         }
         else if(adata.VesselBehavior == VesselBehavior.LevelUp)
         {
-            ImGuiEx.IconButton(Lang.IconLevelup);
+            DrawBehaviorIcon(Lang.IconLevelup, "升级：自动选择经验收益较高的航线");
             repop();
         }
         else if(adata.VesselBehavior == VesselBehavior.Unlock)
         {
-            ImGuiEx.IconButton(Lang.IconUnlock);
+            DrawBehaviorIcon(Lang.IconUnlock, "解锁：按照潜水艇解锁计划派遣");
             repop();
             ImGui.SameLine();
             if(adata.UnlockMode == UnlockMode.WhileLevelling)
             {
-                ImGuiEx.IconButton(Lang.IconLevelup);
+                DrawBehaviorIcon(Lang.IconLevelup, "升级并解锁：升级期间加入一个可解锁航点", "unlock-level");
             }
             else if(adata.UnlockMode == UnlockMode.SpamOne)
             {
-                ImGuiEx.IconButton(Lang.IconRepeat);
+                DrawBehaviorIcon(Lang.IconRepeat, "单点解锁：反复派遣至一个解锁航点", "unlock-repeat");
             }
             else if(adata.UnlockMode == UnlockMode.MultiSelect)
             {
-                ImGuiEx.IconButton(Lang.IconPath);
+                DrawBehaviorIcon(Lang.IconPath, "多点解锁：单次选择最多五个解锁航点", "unlock-path");
             }
             else
             {
-                ImGuiEx.IconButton(Lang.IconWarning);
+                DrawBehaviorIcon(Lang.IconWarning, "解锁模式无效，请打开潜水艇设置检查", "unlock-warning");
             }
         }
         else if(adata.VesselBehavior == VesselBehavior.Use_plan)
@@ -403,7 +403,7 @@ internal static unsafe class WorkshopUI
             var fast = plan != null && plan.Points.SequenceEqual(adata.Points.Where(x => x != 0).Select(x => (uint)x));
             Vector4? col = valid ? (fast ? EColor.GreenBright : null) : EColor.RedBright;
             if(col != null) ImGui.PushStyleColor(ImGuiCol.Text, col.Value);
-            ImGuiEx.IconButton(Lang.IconPlanner);
+            DrawBehaviorIcon(Lang.IconPlanner, valid ? "航线方案：按照已设置的航点顺序派遣" : "航线方案无效：请设置 1 至 5 个航点");
             if(col != null) ImGui.PopStyleColor();
             if(valid) ImGuiEx.Tooltip(plan.Points.Select(x => $"{VoyageUtils.GetSubmarineExploration(x)?.FancyDestination()}").Print("\n"));
             repop();
@@ -416,7 +416,12 @@ internal static unsafe class WorkshopUI
         }
         else
         {
-            ImGuiEx.IconButton(Lang.IconWarning);
+            DrawBehaviorIcon(Lang.IconWarning, "潜水艇行为设置无效，请打开设置检查");
+        }
+        void DrawBehaviorIcon(string icon, string tooltip, string id = "behavior")
+        {
+            ImGuiEx.IconButton(icon, id);
+            ImGuiEx.Tooltip(tooltip);
         }
         void repop()
         {
@@ -475,7 +480,7 @@ internal static unsafe class WorkshopUI
             {
                 if(x != 0)
                 {
-                    var d = Svc.Data.GetExcelSheet<SubmarineExploration>(ClientLanguage.Japanese).GetRowOrDefault(x);
+                    var d = Svc.Data.GetExcelSheet<SubmarineExploration>().GetRowOrDefault(x);
                     if(d != null && d.Value.Location.ToString().Length > 0)
                     {
                         points.Add(d.Value.Location.ToString());

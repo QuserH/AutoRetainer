@@ -119,7 +119,7 @@ public class DeployablesTab : NeoUIEntry
                             {
                                 if(s != 0)
                                 {
-                                    var d = Svc.Data.GetExcelSheet<SubmarineExploration>(ClientLanguage.Japanese).GetRowOrDefault(s);
+                                    var d = Svc.Data.GetExcelSheet<SubmarineExploration>().GetRowOrDefault(s);
                                     if(d != null && d.Value.Location.ToString().Length > 0)
                                     {
                                         points.Add(d.Value.Location.ToString());

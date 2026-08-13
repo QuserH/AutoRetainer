@@ -101,6 +101,10 @@ jobs:
             git push origin HEAD:master
           }
 
+      - name: Apply localization patches for build
+        shell: pwsh
+        run: python tools/patch_cn.py
+
       - name: Decide whether to build
         shell: pwsh
         run: |

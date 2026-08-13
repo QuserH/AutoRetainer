@@ -87,7 +87,7 @@ internal static unsafe class VoyageUtils
                     //PluginLog.Information($"{conf} vs {x.Configurations.Print()}={conf.EqualsIgnoreCaseAny(x.Configurations)}");
                     if(!conf.EqualsIgnoreCaseAny(x.Configurations))
                     {
-                        justification = $"Build is not {x.Configurations.Print()}";
+                        justification = $"配件组合不是 {x.Configurations.Print()}";
                         return true;
                     }
                 }
@@ -97,7 +97,7 @@ internal static unsafe class VoyageUtils
                     {
                         if(conf.EqualsIgnoreCase(inv))
                         {
-                            justification = $"Build is {conf}";
+                            justification = $"配件组合为 {conf}";
                             return true;
                         }
                     }
@@ -165,7 +165,7 @@ internal static unsafe class VoyageUtils
             {
                 if(!P.SubmarineUnlockPlanUI.IsMapExplored(x.Key, true) && P.SubmarineUnlockPlanUI.IsMapUnlocked(x.Key, true))
                 {
-                    ret.Add((x.Key, $"submarine slot from {VoyageUtils.GetSubmarineExplorationName(x.Key)}"));
+                    ret.Add((x.Key, $"解锁潜水艇槽位（来源：{VoyageUtils.GetSubmarineExplorationName(x.Key)}）"));
                 }
             }
             foreach(var unlock in Unlocks.PointToUnlockPoint.Where(x => x.Value.Sub))
@@ -176,7 +176,7 @@ internal static unsafe class VoyageUtils
                 {
                     if(!ret.Any(z => z.point == x.Item2.Point) && !P.SubmarineUnlockPlanUI.IsMapUnlocked(x.Item1, true))
                     {
-                        ret.Add((x.Item2.Point, $"{GetSubmarineExplorationName(x.Item1)} on the path to {GetSubmarineExplorationName(unlock.Key)} not unlocked"));
+                        ret.Add((x.Item2.Point, $"通往 {GetSubmarineExplorationName(unlock.Key)} 的路径中，{GetSubmarineExplorationName(x.Item1)} 尚未解锁"));
                     }
                 }
             }
@@ -187,7 +187,7 @@ internal static unsafe class VoyageUtils
             if(ret.Count > 0 && Svc.Data.GetExcelSheet<SubmarineExploration>().GetRowOrDefault(ret.First().point)?.Map.RowId != Svc.Data.GetExcelSheet<SubmarineExploration>().GetRowOrDefault(x.Key)?.Map.RowId) break;
             if(!P.SubmarineUnlockPlanUI.IsMapUnlocked(x.Key, true) && P.SubmarineUnlockPlanUI.IsMapUnlocked(x.Value.Point, true) && !ret.Any(z => z.point == x.Value.Point))
             {
-                ret.Add((x.Value.Point, $"{VoyageUtils.GetSubmarineExplorationName(x.Key)} not unlocked"));
+                ret.Add((x.Value.Point, $"{VoyageUtils.GetSubmarineExplorationName(x.Key)} 尚未解锁"));
             }
         }
         return ret;
@@ -211,10 +211,10 @@ internal static unsafe class VoyageUtils
 
     internal static string GetPointPlanName(this SubmarinePointPlan plan)
     {
-        if(plan == null) return "No or unknown plan selected";
+        if(plan == null) return "未选择方案或方案不存在";
         if(plan.Name.Length > 0) return plan.Name;
-        if(plan.Points.Count == 0) return $"Plan {plan.GUID}";
-        return $"{plan.GetMap()?.Name}: {plan.Points.Select(x => Svc.Data.GetExcelSheet<SubmarineExploration>(ClientLanguage.Japanese).GetRow(x).Location.ToString()).Join("→")}";
+        if(plan.Points.Count == 0) return $"方案 {plan.GUID}";
+        return $"{plan.GetMap()?.Name}: {plan.Points.Select(x => Svc.Data.GetExcelSheet<SubmarineExploration>().GetRow(x).Location.ToString()).Join("→")}";
     }
 
     internal static uint GetMapId(this SubmarinePointPlan plan)

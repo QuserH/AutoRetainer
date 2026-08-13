@@ -690,6 +690,141 @@ PATCHES = [
         "old": "                    if(ImGui.CollapsingHeader($\"{Censor.Retainer(x.Key)} | Ventures: {num}###{cData.Key}ret{x.Key}\"))",
         "new": "                    if(ImGui.CollapsingHeader($\"{Censor.Retainer(x.Key)} | 探险委托次数：{num}###{cData.Key}ret{x.Key}\"))",
     },
+    # ============ 潜水艇列表图标说明与国服航点名称 ============
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": "            ImGuiEx.IconButton(Lang.IconAnchor);",
+        "new": "            DrawBehaviorIcon(Lang.IconAnchor, \"仅结算：收取航行结果后不再派遣\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": "            ImGuiEx.IconButton(Lang.IconResend);",
+        "new": "            DrawBehaviorIcon(Lang.IconResend, \"重新派遣：沿用上一条航线再次出航\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": "            ImGuiEx.IconButton(Lang.IconLevelup);",
+        "new": "            DrawBehaviorIcon(Lang.IconLevelup, \"升级：自动选择经验收益较高的航线\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": "            ImGuiEx.IconButton(Lang.IconUnlock);",
+        "new": "            DrawBehaviorIcon(Lang.IconUnlock, \"解锁：按照潜水艇解锁计划派遣\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": "                ImGuiEx.IconButton(Lang.IconLevelup);",
+        "new": "                DrawBehaviorIcon(Lang.IconLevelup, \"升级并解锁：升级期间加入一个可解锁航点\", \"unlock-level\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": "                ImGuiEx.IconButton(Lang.IconRepeat);",
+        "new": "                DrawBehaviorIcon(Lang.IconRepeat, \"单点解锁：反复派遣至一个解锁航点\", \"unlock-repeat\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": "                ImGuiEx.IconButton(Lang.IconPath);",
+        "new": "                DrawBehaviorIcon(Lang.IconPath, \"多点解锁：单次选择最多五个解锁航点\", \"unlock-path\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": "                ImGuiEx.IconButton(Lang.IconWarning);",
+        "new": "                DrawBehaviorIcon(Lang.IconWarning, \"解锁模式无效，请打开潜水艇设置检查\", \"unlock-warning\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": "            ImGuiEx.IconButton(Lang.IconPlanner);",
+        "new": "            DrawBehaviorIcon(Lang.IconPlanner, valid ? \"航线方案：按照已设置的航点顺序派遣\" : \"航线方案无效：请设置 1 至 5 个航点\");",
+    },
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": """        else
+        {
+            ImGuiEx.IconButton(Lang.IconWarning);
+        }
+        void repop()""",
+        "new": """        else
+        {
+            DrawBehaviorIcon(Lang.IconWarning, \"潜水艇行为设置无效，请打开设置检查\");
+        }
+        void DrawBehaviorIcon(string icon, string tooltip, string id = \"behavior\")
+        {
+            ImGuiEx.IconButton(icon, id);
+            ImGuiEx.Tooltip(tooltip);
+        }
+        void repop()""",
+    },
+    {
+        "file": r"AutoRetainer\UI\MainWindow\WorkshopUI.cs",
+        "old": "Svc.Data.GetExcelSheet<SubmarineExploration>(ClientLanguage.Japanese).GetRowOrDefault(x)",
+        "new": "Svc.Data.GetExcelSheet<SubmarineExploration>().GetRowOrDefault(x)",
+    },
+    {
+        "file": r"AutoRetainer\UI\NeoUI\DeployablesTab.cs",
+        "old": "Svc.Data.GetExcelSheet<SubmarineExploration>(ClientLanguage.Japanese).GetRowOrDefault(s)",
+        "new": "Svc.Data.GetExcelSheet<SubmarineExploration>().GetRowOrDefault(s)",
+    },
+    {
+        "file": r"AutoRetainer\Modules\Voyage\VoyageUtils.cs",
+        "old": "Svc.Data.GetExcelSheet<SubmarineExploration>(ClientLanguage.Japanese).GetRow(x).Location.ToString()",
+        "new": "Svc.Data.GetExcelSheet<SubmarineExploration>().GetRow(x).Location.ToString()",
+    },
+    {
+        "file": r"AutoRetainer\Modules\Voyage\VoyageUtils.cs",
+        "old": "justification = $\"Build is not {x.Configurations.Print()}\";",
+        "new": "justification = $\"配件组合不是 {x.Configurations.Print()}\";",
+    },
+    {
+        "file": r"AutoRetainer\Modules\Voyage\VoyageUtils.cs",
+        "old": "justification = $\"Build is {conf}\";",
+        "new": "justification = $\"配件组合为 {conf}\";",
+    },
+    {
+        "file": r"AutoRetainer\Modules\Voyage\VoyageUtils.cs",
+        "old": "ret.Add((x.Key, $\"submarine slot from {VoyageUtils.GetSubmarineExplorationName(x.Key)}\"));",
+        "new": "ret.Add((x.Key, $\"解锁潜水艇栏位（来源：{VoyageUtils.GetSubmarineExplorationName(x.Key)}）\"));",
+    },
+    {
+        "file": r"AutoRetainer\Modules\Voyage\VoyageUtils.cs",
+        "old": "ret.Add((x.Item2.Point, $\"{GetSubmarineExplorationName(x.Item1)} on the path to {GetSubmarineExplorationName(unlock.Key)} not unlocked\"));",
+        "new": "ret.Add((x.Item2.Point, $\"通往 {GetSubmarineExplorationName(unlock.Key)} 的路径中，{GetSubmarineExplorationName(x.Item1)} 尚未解锁\"));",
+    },
+    {
+        "file": r"AutoRetainer\Modules\Voyage\VoyageUtils.cs",
+        "old": "ret.Add((x.Value.Point, $\"{VoyageUtils.GetSubmarineExplorationName(x.Key)} not unlocked\"));",
+        "new": "ret.Add((x.Value.Point, $\"{VoyageUtils.GetSubmarineExplorationName(x.Key)} 尚未解锁\"));",
+    },
+    {
+        "file": r"AutoRetainer\Modules\Voyage\VoyageUtils.cs",
+        "old": "if(plan == null) return \"No or unknown plan selected\";",
+        "new": "if(plan == null) return \"未选择方案或方案不存在\";",
+    },
+    {
+        "file": r"AutoRetainer\Modules\Voyage\VoyageUtils.cs",
+        "old": "if(plan.Points.Count == 0) return $\"Plan {plan.GUID}\";",
+        "new": "if(plan.Points.Count == 0) return $\"方案 {plan.GUID}\";",
+    },
+    {
+        "file": r"AutoRetainer\Modules\Voyage\VoyageCalculator\SubmarineExplorationPretty.cs",
+        "old": """        return $\"{Svc.Data.GetExcelSheet<SubmarineExploration>(ClientLanguage.Japanese).GetRowOrDefault(Row.RowId)?.Location}\";
+    }
+
+    public static string FancyDestination(this SubmarineExploration Row)
+    {
+        return $\"[{Svc.Data.GetExcelSheet<SubmarineExploration>(ClientLanguage.Japanese).GetRowOrDefault(Row.RowId)?.Location}] \" + Utils.UpperCaseStr(Row.Destination);""",
+        "new": """        return $\"{Svc.Data.GetExcelSheet<SubmarineExploration>().GetRowOrDefault(Row.RowId)?.Location}\";
+    }
+
+    public static string FancyDestination(this SubmarineExploration Row)
+    {
+        var localizedRow = Svc.Data.GetExcelSheet<SubmarineExploration>().GetRowOrDefault(Row.RowId);
+        return $\"[{localizedRow?.Location}] \" + Utils.UpperCaseStr(localizedRow?.Destination ?? Row.Destination);""",
+    },
+    {
+        "file": r"ECommons\ECommons\ImGuiMethods\ImGuiEx\ImGuiEx.cs",
+        "old": "Drag this selector to other selectors to set their values to the same",
+        "new": "拖动此选项到其他同类选项，可快速复制当前设置",
+    },
 ]
 
 LOCALIZATION_REFINEMENTS = [
