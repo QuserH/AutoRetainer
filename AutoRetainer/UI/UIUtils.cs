@@ -115,7 +115,7 @@ internal static class UIUtils
             ImGui.PushFont(UiBuilder.IconFont);
             ImGuiEx.Text(error == null ? null : ImGuiColors.DalamudGrey3, "\uf1ad");
             ImGui.PopFont();
-            ImGuiEx.Tooltip(error ?? $"已在 Lifestream 中登记部队房屋并设置路径。将传送你到部队房屋以重新派遣远征探险。如已启用，也会传送你到部队房屋以重新派遣雇员。\n地址: {Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault((uint)data.FC.ResidentialDistrict)?.Territory.Value.PlaceNameRegion.Value.Name}，区 {data.FC.Ward + 1}，地块 {data.FC.Plot + 1}");
+            ImGuiEx.Tooltip(error ?? $"已在 Lifestream 中登记部队房屋并设置路径。插件会传送至部队房屋重新派遣远航探索；如已启用，也会重新派遣雇员。\n地址：{Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault((uint)data.FC.ResidentialDistrict)?.Territory.Value.PlaceNameRegion.Value.Name}，第 {data.FC.Ward + 1} 区，{data.FC.Plot + 1} 号地");
             ImGui.SameLine(0, 3);
         }
         if(offlineData.GetAllowPrivateTeleportForRetainers())
@@ -132,7 +132,7 @@ internal static class UIUtils
             ImGui.PushFont(UiBuilder.IconFont);
             ImGuiEx.Text(error == null ? null : ImGuiColors.DalamudGrey3, "\ue1b0");
             ImGui.PopFont();
-            ImGuiEx.Tooltip(error ?? $"已在 Lifestream 中登记私人房屋并设置路径。将传送你到私人房屋以重新派遣雇员。\n地址: {Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault((uint)data.Private.ResidentialDistrict)?.Territory.Value.PlaceNameRegion.Value.Name}，区 {data.Private.Ward + 1}，地块 {data.Private.Plot + 1}");
+            ImGuiEx.Tooltip(error ?? $"已在 Lifestream 中登记私人房屋并设置路径。插件会传送至私人房屋重新派遣雇员。\n地址：{Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault((uint)data.Private.ResidentialDistrict)?.Territory.Value.PlaceNameRegion.Value.Name}，第 {data.Private.Ward + 1} 区，{data.Private.Plot + 1} 号地");
             ImGui.SameLine(0, 3);
         }
         if(offlineData.GetAllowSharedTeleportForRetainers())
@@ -261,7 +261,7 @@ internal static class UIUtils
             }
             else
             {
-                if(ImGui.Selectable("自动侦测新按键", false, ImGuiSelectableFlags.DontClosePopups))
+                if(ImGui.Selectable("自动检测新按键", false, ImGuiSelectableFlags.DontClosePopups))
                 {
                     KeyInputActive = text;
                 }

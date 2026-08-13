@@ -52,7 +52,7 @@ internal static unsafe class WorkshopUI
             ImGuiEx.ButtonCheckbox($"\uf21a##{data.CID}", ref data.WorkshopEnabled, 0xFF097000);
             ImGui.PopFont();
             ImGuiEx.Tooltip($"在此角色启用多角色模式下的潜水艇自动化");
-            ImGuiEx.DragDropRepopulate("工作坊资料重整", data.WorkshopEnabled, ref data.WorkshopEnabled);
+            ImGuiEx.DragDropRepopulate("工作坊数据重整", data.WorkshopEnabled, ref data.WorkshopEnabled);
             ImGui.SameLine(0, 3);
             if(ImGuiEx.IconButton(FontAwesomeIcon.DoorOpen))
             {
@@ -131,7 +131,7 @@ internal static unsafe class WorkshopUI
                     ImGui.PushFont(UiBuilder.IconFont);
                     ImGuiEx.TextV("\uf252");
                     ImGui.PopFont();
-                    ImGuiEx.Tooltip($"已全域启用等待所有远征探险功能");
+                    ImGuiEx.Tooltip($"已全局启用等待所有远航探索功能");
                     ImGui.SameLine(0, 3);
                 }
                 else if(data.MultiWaitForAllDeployables)
@@ -139,7 +139,7 @@ internal static unsafe class WorkshopUI
                     ImGui.PushFont(UiBuilder.IconFont);
                     ImGuiEx.TextV("\uf252");
                     ImGui.PopFont();
-                    ImGuiEx.Tooltip($"已为此角色启用等待所有远征探险功能");
+                    ImGuiEx.Tooltip($"已为此角色启用等待所有远航探索功能");
                     ImGui.SameLine(0, 3);
                 }
             }
@@ -212,7 +212,7 @@ internal static unsafe class WorkshopUI
                 {
                     if(!P.TaskManager.IsBusy)
                     {
-                        /*if (ImGui.Button("Resend currently selected submarine on previous voyage"))
+                        /*if (ImGui.Button("按上次航线重新派遣当前潜水艇"))
                         {
                             TaskDeployOnPreviousVoyage.Enqueue();
                         }*/
@@ -256,7 +256,7 @@ internal static unsafe class WorkshopUI
                                 }
                                 else
                                 {
-                                    Notify.Error("你目前不在潜水艇选单中");
+                                    Notify.Error("你目前不在潜水艇菜单中");
                                 }
                             }
                         }
@@ -270,12 +270,12 @@ internal static unsafe class WorkshopUI
                             TaskInteractWithNearestPanel.Enqueue(false);
                         }
 
-                        /*if (ImGui.Button("Redeploy current vessel on previous voyage"))
+                        /*if (ImGui.Button("按上次航线重新派遣当前舰船"))
                         {
                             TaskRedeployPreviousLog.Enqueue();
                         }*/
 
-                        //if (ImGui.Button($"Deploy current submarine on best experience route")) TaskDeployOnBestExpVoyage.Enqueue();
+                        //if (ImGui.Button($"按最佳经验航线派遣当前潜水艇")) TaskDeployOnBestExpVoyage.Enqueue();
 
                     }
                     else

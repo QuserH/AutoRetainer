@@ -133,7 +133,7 @@ internal unsafe class Memory : IDisposable
             }
             else
             {
-                PluginLog.Warning($"请求出售的背包栏位 {type}({slot}) 中没有物品。");
+                PluginLog.Warning($"请求出售的背包槽位 {type}({slot}) 中没有物品。");
             }
         }
         else

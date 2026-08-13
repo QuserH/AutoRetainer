@@ -156,7 +156,7 @@ PATCHES = [
     {
         "file": r"AutoRetainer\Scheduler\Tasks\TaskRecursivelyBuyFuel.cs",
         "old": '                var amount = Math.Clamp(reader.Credits / 100, 1, Math.Min(99, remaining));\n                var numeric = a->GetComponentNodeById(27)->Component->GetNodeById(5)->GetAsAtkComponentListItemRenderer()->GetNodeById(5)->GetAsAtkComponentNumericInput();\n                if(numeric->Value != amount)\n                {\n                    numeric->SetValue((int)amount);\n                }',
-        "new": '                var shop = new AddonMaster.FreeCompanyCreditShop(a);\n                var fuel = shop.Items.FirstOrDefault(x => x.ItemId == 10155);\n                if(fuel.ItemId != 10155 || fuel.Price == 0)\n                {\n                    PluginLog.Warning("Unable to find ceruleum tanks in the Free Company credit shop.");\n                    return true;\n                }\n                var amount = Math.Clamp((int)(reader.Credits / fuel.Price), 1, Math.Min(fuel.MaxPurchaseSize, remaining));',
+        "new": '                var shop = new AddonMaster.FreeCompanyCreditShop(a);\n                var fuel = shop.Items.FirstOrDefault(x => x.ItemId == 10155);\n                if(fuel.ItemId != 10155 || fuel.Price == 0)\n                {\n                    PluginLog.Warning("未在部队用品商店中找到青磷水。");\n                    return true;\n                }\n                var amount = Math.Clamp((int)(reader.Credits / fuel.Price), 1, Math.Min(fuel.MaxPurchaseSize, remaining));',
     },
     {
         "file": r"AutoRetainer\Scheduler\Tasks\TaskRecursivelyBuyFuel.cs",
@@ -501,6 +501,7 @@ PATCHES = [
   "InternalName": "AutoRetainer",
   "Punchline": "躺在床上就能收取并指派你的雇员冒险委托。",
   "Description": "躺在床上就能收取并指派你的雇员冒险委托。\\n\\n主要功能：\\n\\t- 一键指派/重新指派雇员冒险委托，自动处理繁琐的确认弹窗\\n\\t- 一键部署远征探险（飞空艇/潜水艇）\\n\\t- 创建出售列表，自动清理垃圾物品\\n\\t- 创建存放列表，将贵重物品存入雇员以节省背包空间",''',
+        "idempotent_marker": '"Name": "AutoRetainer (自动雇员)"',
     },
     # ============ GCContinuation.cs：修复军票换探险币每次只买 1 个 ============
     # 原实现：打开货币兑换弹窗（默认数量 1），再靠硬编码 UI 节点索引
@@ -596,6 +597,7 @@ PATCHES = [
         "file": r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs",
         "old": "启用后，AutoRetainer 将等待所有远征探险返回后才登录该角色。如果你因其他原因已登录，它仍会重新派遣已完成的潜水艇——除非全局设置 \"Wait even when already logged in\" 也已开启。",
         "new": "启用后，AutoRetainer 将等待所有远征探险返回后才登录该角色。如果你因其他原因已登录，它仍会重新派遣已完成的潜水艇，除非全局设置“即使已登录也等待”也已开启。",
+        "idempotent_marker": "启用后，AutoRetainer 会等待所有远航探索返回后再登录该角色。",
     },
     {
         "file": r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs",
@@ -606,6 +608,7 @@ PATCHES = [
         "file": r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs",
         "old": "如果等待其他远征探险返回的时间将超过此分钟数，AutoRetainer 将忽略 \"Wait for Voyage Completion\" 和 \"Wait even when already logged in\" 设置。",
         "new": "如果等待其他远征探险返回的时间将超过此分钟数，AutoRetainer 将忽略“等待航程完成”和“即使已登录也等待”设置。",
+        "idempotent_marker": "如果等待其他远航探索返回所需的时间超过此值",
     },
     {
         "file": r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs",
@@ -689,36 +692,249 @@ PATCHES = [
     },
 ]
 
+LOCALIZATION_REFINEMENTS = [
+    # ============ 界面残留英文与国服术语精修 ============
+    (r"AutoRetainer\UI\NeoUI\!Definitions\NeoWindow.cs", 'base("AutoRetainer Configuration")', 'base("AutoRetainer 设置")'),
+    (r"AutoRetainer\Services\AnomalyWindow.cs", 'base("AutoRetainer has detected anomalies")', 'base("AutoRetainer 异常记录")'),
+    (r"AutoRetainer\Services\AnomalyWindow.cs", '["Date", "~Description", "Character"]', '["时间", "~说明", "角色"]'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\EntrustManager.cs", '$"Entrust plan {C.EntrustPlans.Count}"', '$"存放计划 {C.EntrustPlans.Count}"'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\EntrustManager.cs", '$"Entrust categories ({selectedPlan.EntrustCategories.Count} selected)###ecats"', '$"按类别存放（已选 {selectedPlan.EntrustCategories.Count} 项）###ecats"'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\EntrustManager.cs", '$"Entrust individual items ({selectedPlan.EntrustItems.Count} selected)###eitems"', '$"按物品存放（已选 {selectedPlan.EntrustItems.Count} 项）###eitems"'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\EntrustManager.cs", '$"Fast addition/removal"', '"快速添加与移除"'),
+    (r"AutoRetainer\UI\NeoUI\AdvancedEntries\CharacterSync.cs", 'Notify.Error("未读取任何字元")', 'Notify.Error("未读取到任何角色")'),
+    (r"AutoRetainer\UI\NeoUI\AdvancedEntries\ExpertTab.cs", 'DuoLog.Information($"Cleaned {i} entries")', 'DuoLog.Information($"已清理 {i} 条无效雇员记录")'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\RetainerTable.cs", '"\\nThis is manual processing plan"', '"\\n这是手动执行的存放计划"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\RetainerTable.cs", '"\\nClick to Entrust."', '"\\n点击立即存放物品。"'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\ExchangeLists.cs", '" (unavailable)"', '"（不可兑换）"'),
+    (r"AutoRetainer\UI\Overlays\MultiModeOverlay.cs", 'ImGui.SetTooltip($"AutoRetainer was requested to temporarily wait for valid character on login screen. \\nLeft click - open AutoRetainer. \\nRight click - abort.")', 'ImGui.SetTooltip("AutoRetainer 正在登录界面等待可用角色。\\n左键点击 - 打开 AutoRetainer\\n右键点击 - 中止等待")'),
+    (r"AutoRetainer\UI\Overlays\MultiModeOverlay.cs", '$"Single pass MultiMode enabled.\\nCharacters processed:\\n{MultiMode.SingleMultiMode?.Select(x => $"- {Censor.Character(x)}").Print("\\n")} \\n\\nLeft click - open AutoRetainer. \\nRight click - convert to regular Multi Mode."', '$"单轮多角色模式已启用。\\n待处理角色：\\n{MultiMode.SingleMultiMode?.Select(x => $"- {Censor.Character(x)}").Print("\\n")}\\n\\n左键点击 - 打开 AutoRetainer\\n右键点击 - 转为常规多角色模式"'),
+    (r"AutoRetainer\UI\Overlays\MultiModeOverlay.cs", '$"Night mode enabled. \\nLeft click - open AutoRetainer. \\nRight click - disable."', '"夜间模式已启用。\\n左键点击 - 打开 AutoRetainer\\n右键点击 - 禁用夜间模式"'),
+    (r"AutoRetainer\Helpers\Utils.cs", '$"Insufficient fuel. To ensure stable operation, you must have 30 or more ceruleum tanks, this is a hard requirement. You have only {fuelInInventory} ceruleum tanks. Please replenish your fuel. Character excluded from submarines."', '$"青磷水不足。为保证流程稳定，背包中至少需要 30 个青磷水；当前只有 {fuelInInventory} 个。请补充青磷水。该角色已停止处理潜水艇。"'),
+    (r"AutoRetainer\Modules\BailoutManager.cs", '$"UI stuck during multi mode ({x}). Cleaning up operations and trying to resume."', '$"多角色模式的界面操作卡住（{x}）。正在清理当前操作并尝试恢复。"'),
+    (r"AutoRetainer\Modules\BailoutManager.cs", '"Stuck character select encountered. Retrying login..."', '"角色选择界面卡住，正在重新尝试登录……"'),
+    (r"AutoRetainer\Modules\BailoutManager.cs", '"Disconnected. Trying to log back in..."', '"连接已断开，正在尝试重新登录……"'),
+    (r"AutoRetainer\Modules\BailoutManager.cs", '"You need to restart your game to continue playing."', '"登录会话已失效，需要重启游戏才能继续。"'),
+    (r"AutoRetainer\Modules\BailoutManager.cs", '"Wrath Combo autorotation is on. Autoretainer has turned it off."', '"Wrath Combo 的自动循环已开启，AutoRetainer 已将其关闭。"'),
+    (r"AutoRetainer\Modules\BailoutManager.cs", '"Boss mod was active. Autoretainer has turned it off."', '"BossMod 处于启用状态，AutoRetainer 已将其关闭。"'),
+    (r"AutoRetainer\Modules\BailoutManager.cs", '"Questionable was active. Autoretainer has turned it off."', '"Questionable 正在执行任务，AutoRetainer 已将其停止。"'),
+    (r"AutoRetainer\Modules\BailoutManager.cs", '$"Movement stuck. Character excluded from submarines and retainers. Check your house registration."', '"角色移动卡住，已停止处理该角色的潜水艇和雇员。请检查房屋登记与传送设置。"'),
+    (r"AutoRetainer\Modules\Voyage\VoyageMain.cs", '$"Your inventory is full. Character excluded from submarines."', '"背包空间不足，已停止处理该角色的潜水艇。"'),
+    (r"AutoRetainer\Modules\Voyage\VoyageMain.cs", '$"Out of repair materials, could not repair {TaskRepairAll.Type} {TaskRepairAll.Name}"', '$"魔导修理材料不足，无法修理 {TaskRepairAll.Name}（{TaskRepairAll.Type}）。"'),
+    (r"AutoRetainer\Modules\Multi\MultiMode.cs", '$"Your Auto Afk Switching Time option was incompatible with current AutoRetainer configuration and was set to (Never). This is not an error."', '"游戏的自动离开模式等待时间与当前 AutoRetainer 设置冲突，已改为“从不”。这不是错误。"'),
+    (r"AutoRetainer\Modules\Multi\MultiMode.cs", '$"Your Idling Camera AFK option was incompatible with current AutoRetainer configuration and was set to (Disabled). This is not an error."', '"游戏的空闲镜头设置与当前 AutoRetainer 设置冲突，已将其关闭。这不是错误。"'),
+    (r"AutoRetainer\Modules\GcHandin\GCContinuation.cs", '$"Purchasing {i}\'th item {itemInfo.Name} (venture)"', '$"正在兑换第 {i + 1} 项：{itemInfo.Name}（探险币）"'),
+    (r"AutoRetainer\Modules\GcHandin\GCContinuation.cs", '$"Purchasing {i}\'th item {itemInfo.Name}"', '$"正在兑换第 {i + 1} 项：{itemInfo.Name}"'),
+    (r"AutoRetainer\UI\NeoUI\Experiments\Notifications.cs", '"当有雇员完成探险时显示复盖层通知"', '"有雇员完成探险时显示覆盖层通知"'),
+    (r"AutoRetainer\UI\NeoUI\Experiments\Notifications.cs", '"在副本或战斗中不显示复盖层"', '"在副本或战斗中隐藏覆盖层"'),
+    (r"AutoRetainer\UI\NeoUI\Experiments\Notifications.cs", '"忽略未在多重模式中启用的其他角色"', '"忽略未启用多角色模式的其他角色"'),
+    (r"AutoRetainer\UI\NeoUI\MiscTab.cs", '.Section("效能")', '.Section("性能")'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\GeneralSettings.cs", '"当当探险币耗尽时触发"', '"探险币不足时触发"'),
+    (r"AutoRetainer\UI\Windows\SingletonNotifyWindow.cs", '"为防止资料遗失，插件载入已中止。"', '"为防止数据丢失，已中止加载插件。"'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\GCCharacterConfiguration.cs", '["~Character", "计划", "筹备模式"]', '["~角色", "计划", "筹备模式"]'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\InventoryCleanupEntries\CleanupCharacterConfiguration.cs", '["~Character", "计划"]', '["~角色", "计划"]'),
+    (r"AutoRetainer\UI\Overlays\AutoGCHandinOverlay.cs", 'base("AutoRetainer GC Handin overlay",', 'base("AutoRetainer 筹备稀有品覆盖层",'),
+    (r"AutoRetainer\UI\Overlays\MarketCooldownOverlay.cs", 'base("AutoRetainer MarketCooldownOverlay",', 'base("AutoRetainer 市场冷却覆盖层",'),
+    (r"AutoRetainer\Services\AnomalyWindow.cs", 'BeginDefaultTable("Anomanies",', 'BeginDefaultTable("异常记录",'),
+    (r"AutoRetainer\Scheduler\Tasks\TaskRecursivelyBuyFuel.cs", 'PluginLog.Warning("Unable to find ceruleum tanks in the Free Company credit shop.")', 'PluginLog.Warning("未在部队用品商店中找到青磷水。")'),
+    (r"AutoRetainer\UI\MainWindow\AutoRetainerWindow.cs", '"为避免不必要的后果，使用AutoRetainer时请遵守下列规则 :"', '"为避免不必要的后果，使用 AutoRetainer 时请遵守以下规则："'),
+    (r"AutoRetainer\UI\MainWindow\AutoRetainerWindow.cs", '"1. 不要在游戏聊天中提及您使用AutoRetainer;"', '"1. 不要在游戏聊天中提及你正在使用 AutoRetainer；"'),
+    (r"AutoRetainer\UI\MainWindow\AutoRetainerWindow.cs", '"3. 确保您的实际游戏+AutoRetainer使用时间每天不超过16小时；确保在雇员/潜水艇检查流程之间存在非活动间隔;"', '"3. 每天实际运行游戏和 AutoRetainer 的时间不要超过 16 小时，并在雇员或潜水艇处理流程之间留出空闲时间；"'),
+    (r"AutoRetainer\UI\MainWindow\AutoRetainerWindow.cs", '"4. 永远不要回应那些试图透过交易或聊天进行所谓\'机器人检测\'的玩家；应立即将这些玩家加入黑名单;"', '"4. 不要回应通过交易或聊天进行所谓“机器人检测”的玩家；请立即将其加入黑名单；"'),
+    (r"AutoRetainer\UI\MainWindow\AutoRetainerWindow.cs", '"违反这些规则可能导致您的帐号受到处罚。"', '"违反这些规则可能导致你的账号受到处罚。"'),
+    (r"AutoRetainer\UI\MainWindow\AutoRetainerWindow.cs", '"您不得将 AutoRetainer 用于RMT行为或其他商业用途。如果您将其用于上述用途，我们将不提供任何支援。"', '"不得将 AutoRetainer 用于 RMT 或其他商业用途。用于上述用途时，我们不会提供任何支持。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"本分页将检查您的配置是否有常见问题，您可以在联络技术支援前自行解决这些问题。"', '"此页面会检查配置中的常见问题，方便你在联系技术支持前自行排查。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"已启用DontLogout调试选项"', '"已启用 DontLogout 调试选项。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"已启用传送功能但未安装或未加载 Lifestream 插件。在此配置下 AutoRetainer 无法运作。请禁用传送功能或安装 Lifestream 插件。"', '"已启用传送功能，但未安装或加载 Lifestream 插件。AutoRetainer 无法在此配置下运行，请禁用传送功能或安装 Lifestream。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"您正在访问其他服务器。必须返回原始服务器后，AutoRetainer才能继续处理此角色。"', '"当前正在跨服。返回所属服务器后，AutoRetainer 才能继续处理此角色。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"目前角色已完全排除在AutoRetainer处理之外。请前往设置→排除项进行变更。"', '"当前角色已被 AutoRetainer 完全排除。请前往“设置 → 排除项”修改。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"目前角色已被排除在雇员清单外。请前往设置→排除项进行变更。"', '"当前角色已被排除在雇员列表外。请前往“设置 → 排除项”修改。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"当前角色已被排除在远征探险清单外。请前往设置→排除项进行变更。"', '"当前角色已被排除在远征探索列表外。请前往“设置 → 排除项”修改。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"已启用简单传送选项。此选项不如在Lifestream中登记房屋可靠。如遇到传送问题，请考虑禁用此选项并在Lifestream中登记您的房屋。"', '"已启用简易传送。此方式不如在 Lifestream 中登记房屋可靠；如遇传送问题，请关闭此选项并登记房屋。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"部分角色已启用了\\"等待所有待处理潜艇\\"选项。这代表对于这些角色，AutoRetainer 会等到所有潜艇回归后才开始处理。将游标悬停在此处可查看启用了此选项的角色清单。"', '"部分角色启用了“等待所有待处理潜艇”。AutoRetainer 会等这些角色的全部潜艇返航后再开始处理。鼠标悬停可查看角色列表。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"潜艇已启用「即使已登录也等待」选项。这代表即使你已在线上，AutoRetainer 仍会等到该角色的所有潜艇任务完成后才进行处理。"', '"潜艇已启用“即使已登录也等待”。即使角色当前在线，AutoRetainer 也会等该角色的全部潜艇返航后再处理。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"雇员已启用\\"即使已登录也等待\\"选项。这代表即使你已在线上，AutoRetainer 仍会等到该角色的所有雇员探险完成后才进行处理。"', '"雇员已启用“即使已登录也等待”。即使角色当前在线，AutoRetainer 也会等该角色的全部雇员探险完成后再处理。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"你的一些雇员设置了手动存放计划。这些计划在重新派遣雇员后不会自动执行，只能透过点击覆盖界面上的按钮来手动触发。将游标悬停以查看名单。"', '"部分雇员使用手动存放计划。重新派遣后不会自动执行，只能点击覆盖层按钮触发。鼠标悬停可查看列表。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"你的一些雇员存放计划先前已被删除。这些雇员将不会存放任何物品。将游标悬停以查看名单。"', '"部分雇员使用的存放计划已被删除，因此不会存放任何物品。鼠标悬停可查看列表。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"侦测到 Simple Tweaks 插件。任何与雇员或潜水艇相关的微调都可能对 AutoRetainer 的功能造成负面影响。请确保微调设置不会干扰 AutoRetainer 的运作。"', '"检测到 Simple Tweaks 插件。与雇员或潜水艇有关的调整可能干扰 AutoRetainer，请检查相关设置。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"侦测到 Pandora\'s Box 插件。在 AutoRetainer 启用时自动执行动作可能会造成负面影响。请确保当 AutoRetainer 处于活动状态时，Pandora\'s Box 不会自动执行任何动作。"', '"检测到 Pandora\'s Box 插件。请确保 AutoRetainer 运行时，Pandora\'s Box 不会自动执行动作。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"侦测到 Automaton 插件。在 AutoRetainer 启用时自动执行动作或自动输入数值可能会造成负面影响。请确保在 AutoRetainer 活动期间，Automaton 不会自动执行动作。"', '"检测到 Automaton 插件。请确保 AutoRetainer 运行时，Automaton 不会自动执行动作或输入数值。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"侦测到 RotationSolver 插件。在 AutoRetainer 启用时自动执行技能可能会造成负面影响。请确保在 AutoRetainer 活动期间，RotationSolver 不会自动执行动作。"', '"检测到 RotationSolver 插件。请确保 AutoRetainer 运行时，RotationSolver 不会自动执行技能或其他动作。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"侦测到 BossMod 插件。在 AutoRetainer 启用时自动执行动作可能会造成负面影响。请确保在 AutoRetainer 活动期间，BossMod 不会自动执行动作。"', '"检测到 BossMod 插件。请确保 AutoRetainer 运行时，BossMod 不会自动执行动作。"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"如果 5 分钟内有雇员将完成探险，则停留在雇员选单中"', '"如果 5 分钟内有雇员将完成探险，则停留在雇员菜单中"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"AutoRetainer尝试解除卡死前的超时时间(秒)"', '"AutoRetainer 尝试解除卡死前的超时时间（秒）"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"在插件UI栏显示多角色模式复选框"', '"在插件界面栏显示多角色模式复选框"'),
+    (r"AutoRetainer\UI\MainWindow\TroubleshootingUI.cs", '"雇员选单延迟(秒)"', '"雇员菜单延迟（秒）"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\CharaConfig.cs", '此设置类似于全域选项，但应用於单一角色。启用后，AutoRetainer 将在登录角色之前等待所有远征探险返回。如果您因其他原因已经登录，它仍然会重新派遣已完成的潜水艇/飞艇，除非全域设置「即使已登录也等待」也同时开启。', '此设置与全局选项类似，但仅应用于单个角色。启用后，AutoRetainer 会在登录前等待该角色的全部远征探索返回。如果角色因其他原因已登录，插件仍会重新派遣已完成的潜水艇或飞艇，除非同时启用了全局设置“即使已登录也等待”。'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\CharaConfig.cs", '"标记此图示的选项将使用全域配置中的值"', '"带此图标的选项使用全局配置值"'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeCommon.cs", '"你必须在 Lifestream 插件中为每个角色注册房屋，此选项才会生效，或者启用简易传送"', '"请在 Lifestream 中为每个角色登记房屋，或启用简易传送，否则此功能不会生效。"'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeCommon.cs", '警告：此选项比在Lifestream中注册房屋更不可靠。请仅在必要时使用。', '警告：此方式不如在 Lifestream 中登记房屋可靠，请仅在必要时使用。'),
+    (r"AutoRetainer\UI\NeoUI\AdvancedEntries\CharacterSync.cs", '"一键删除已不存在的角色资料"', '"一键删除已不存在的角色数据"'),
+    (r"AutoRetainer\UI\NeoUI\AdvancedEntries\CharacterSync.cs", '"3. 确保你登录了正确的帐号，并按下 CTRL+A 全选后 CTRL+C 复制整个页面内容。"', '"3. 确认已登录正确的账号，按 CTRL+A 全选，再按 CTRL+C 复制整个页面内容。"'),
+    (r"AutoRetainer\UI\NeoUI\AdvancedEntries\CharacterSync.cs", '"准备角色资料清理"', '"准备清理角色数据"'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\CharaOrder.cs", '"删除资料"', '"删除数据"'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\CharaOrder.cs", '"重置此角色的部队资料与潜艇资料。资料将在你登录并访问管制面板后重新生成。"', '"重置此角色的部队和潜艇数据。登录并访问管制面板后会重新生成。"'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\CharaOrder.cs", '$"按住CTRL + 左键以删除储存的角色资料。重新登录后会自动重建。"', '$"按住 CTRL 并左键点击可删除保存的角色数据。重新登录后会自动重建。"'),
+    (r"AutoRetainer\UI\UIUtils.cs", '$"已在 Lifestream 中登记部队房屋并设置路径。将传送你到部队房屋以重新派遣远征探险。如已启用，也会传送你到部队房屋以重新派遣雇员。\\n地址: {Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault((uint)data.FC.ResidentialDistrict)?.Territory.Value.PlaceNameRegion.Value.Name}，区 {data.FC.Ward + 1}，地块 {data.FC.Plot + 1}"', '$"已在 Lifestream 中登记部队房屋并设置路径。插件会传送至部队房屋重新派遣远征探索；如已启用，也会重新派遣雇员。\\n地址：{Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault((uint)data.FC.ResidentialDistrict)?.Territory.Value.PlaceNameRegion.Value.Name}，第 {data.FC.Ward + 1} 区，{data.FC.Plot + 1} 号地"'),
+    (r"AutoRetainer\UI\UIUtils.cs", '$"已在 Lifestream 中登记私人房屋并设置路径。将传送你到私人房屋以重新派遣雇员。\\n地址: {Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault((uint)data.Private.ResidentialDistrict)?.Territory.Value.PlaceNameRegion.Value.Name}，区 {data.Private.Ward + 1}，地块 {data.Private.Plot + 1}"', '$"已在 Lifestream 中登记私人房屋并设置路径。插件会传送至私人房屋重新派遣雇员。\\n地址：{Svc.Data.GetExcelSheet<Aetheryte>().GetRowOrDefault((uint)data.Private.ResidentialDistrict)?.Territory.Value.PlaceNameRegion.Value.Name}，第 {data.Private.Ward + 1} 区，{data.Private.Plot + 1} 号地"'),
+    (r"AutoRetainer\UI\UIUtils.cs", '"自动侦测新按键"', '"自动检测新按键"'),
+    (r"AutoRetainer\UI\Windows\SingletonNotifyWindow.cs", '"关闭此窗口且不载入 AutoRetainer"', '"关闭窗口且不加载 AutoRetainer"'),
+    (r"AutoRetainer\UI\Windows\SingletonNotifyWindow.cs", '"载入 AutoRetainer"', '"加载 AutoRetainer"'),
+    (r"AutoRetainer\UI\Statistics\VentureStatsManager.cs", '"重新载入"', '"重新加载"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"GetCurrentTargetCharacter: {MultiMode.GetCurrentTargetCharacter()}"', '$"当前目标角色：{MultiMode.GetCurrentTargetCharacter()}"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"IsCurrentCharacterDone: {MultiMode.IsCurrentCharacterDone()}"', '$"当前角色已处理完毕：{MultiMode.IsCurrentCharacterDone()}"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"NextInteraction: {Math.Max(0, MultiMode.NextInteractionAt - Environment.TickCount64)}"', '$"距下次操作：{Math.Max(0, MultiMode.NextInteractionAt - Environment.TickCount64)} 毫秒"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"EnsureCharacterValidity: {MultiMode.EnsureCharacterValidity(true)}"', '$"角色有效：{MultiMode.EnsureCharacterValidity(true)}"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"IsInteractionAllowed: {MultiMode.IsInteractionAllowed()}"', '$"允许交互：{MultiMode.IsInteractionAllowed()}"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"GetPreferredCharacter: {MultiMode.GetPreferredCharacter()}"', '$"首选角色：{MultiMode.GetPreferredCharacter()}"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"IsAllRetainersHaveMoreThan15Mins: {MultiMode.IsAllRetainersHaveMoreThan15Mins()}"', '$"所有雇员剩余时间均超过 15 分钟：{MultiMode.IsAllRetainersHaveMoreThan15Mins()}"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"Target ?? Preferred: {MultiMode.GetCurrentTargetCharacter() ?? MultiMode.GetPreferredCharacter()}"', '$"目标或首选角色：{MultiMode.GetCurrentTargetCharacter() ?? MultiMode.GetPreferredCharacter()}"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"LastLongin: {MultiMode.LastLogin:X16}"', '$"上次登录角色：{MultiMode.LastLogin:X16}"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"AnyRetainersAvailable: {MultiMode.AnyRetainersAvailable()}"', '$"存在可处理雇员：{MultiMode.AnyRetainersAvailable()}"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"IsAnySelectedRetainerFinishesWithin, 60: {MultiMode.IsAnySelectedRetainerFinishesWithin(60)}"', '$"有雇员将在 60 秒内完成：{MultiMode.IsAnySelectedRetainerFinishesWithin(60)}"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"IsAnySelectedRetainerFinishesWithin, 5*60: {MultiMode.IsAnySelectedRetainerFinishesWithin(5 * 60)}"', '$"有雇员将在 5 分钟内完成：{MultiMode.IsAnySelectedRetainerFinishesWithin(5 * 60)}"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", '$"Chatacter {data}\\n  GetNeededVentureAmount: {data.GetNeededVentureAmount()}"', '$"角色 {data}\\n  所需探险币：{data.GetNeededVentureAmount()}"'),
+    (r"AutoRetainer\UI\NeoUI\AdvancedEntries\ExpertTab.cs", '"插件运作期间任务完成的行为："', '"插件运行期间任务完成的行为："'),
+    (r"AutoRetainer\UI\NeoUI\AdvancedEntries\ExpertTab.cs", '"在部队工房中显示远航探险"', '"在部队工房中显示远航探索"'),
+    (r"AutoRetainer\UI\NeoUI\AdvancedEntries\ExpertTab.cs", '"AutoRetainer尝试解除卡死前的超时时间(秒)"', '"AutoRetainer 尝试解除卡死前的超时时间（秒）"'),
+    (r"AutoRetainer\UI\NeoUI\AdvancedEntries\ExpertTab.cs", '"在插件UI栏显示多角色模式复选框"', '"在插件界面栏显示多角色模式复选框"'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs", 'public override string Path => "多角色模式/远征探险";', 'public override string Path => "多角色模式/远航探索";'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs", '启用后，AutoRetainer 将等待所有远征探险返回后才登录该角色。如果你因其他原因已登录，它仍会重新派遣已完成的潜水艇，除非全局设置“即使已登录也等待”也已开启。', '启用后，AutoRetainer 会等待所有远航探索返回后再登录该角色。如果角色因其他原因已登录，插件仍会重新派遣已完成的潜水艇，除非同时启用了全局设置“即使已登录也等待”。'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs", '如果等待其他远征探险返回的时间将超过此分钟数，AutoRetainer 将忽略“等待航程完成”和“即使已登录也等待”设置。', '如果等待其他远航探索返回所需的时间超过此值，AutoRetainer 将忽略“等待航程完成”和“即使已登录也等待”。'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs", '"处理完所有远征探险后关闭游戏"', '"处理完所有远航探索后关闭游戏"'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs", '"如果有远征探险将在此小时内返回，则不关闭游戏"', '"若有远航探索将在此小时数内返回，则不关闭游戏"'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs", '$"若要启用/禁用其他角色的燃料购买，请前往「功能、排除与排序」区块。"', '$"如需更改其他角色的燃料购买设置，请前往“功能、排除与排序”。"'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs", '"部属完成后退出游戏"', '"部署完成后退出游戏"'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\MultiModeDeployables.cs", '"重要提示：启用后，多角色模式将仅处理远征探险，不处理雇员。"', '"重要：启用后，多角色模式只处理远航探索，不处理雇员。"'),
+    (r"AutoRetainer\UI\NeoUI\DeployablesTab.cs", 'public override string Path => "远征探险";', 'public override string Path => "远航探索";'),
+    (r"AutoRetainer\UI\NeoUI\DeployablesTab.cs", '$"配置项目:"', '$"配件组合："'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\InventoryCleanupEntries\CleanupCharacterConfiguration.cs", '$"在这边可以将预设的背包清理清单指派给已注册角色。"', '$"可在此为已记录的角色分配预设背包清理方案。"'),
+    (r"AutoRetainer\UI\NeoUI\Experiments\NightMode.cs", '$"- 游戏看起来可能会像当机，但在你重新激活游戏窗口后，请给它最多 5 秒的时间恢复运作。\\n"', '$"- 游戏画面可能会暂时卡死；重新激活游戏窗口后，请等待最多 5 秒恢复。\\n"'),
+    (r"AutoRetainer\UI\MainWindow\MultiModeTab\MultiModeUI.cs", 'ImGui.CollapsingHeader("Debug")', 'ImGui.CollapsingHeader("调试")'),
+    (r"AutoRetainer\UI\Windows\VenturePlanner.cs", 'ImGui.CollapsingHeader("Debug")', 'ImGui.CollapsingHeader("调试")'),
+    (r"AutoRetainer\UI\Windows\VenturePlanner.cs", 'ImGuiEx.InputUint("Index", ref adata.VenturePlanIndex)', 'ImGuiEx.InputUint("索引", ref adata.VenturePlanIndex)'),
+    (r"AutoRetainer\UI\Windows\SingletonNotifyWindow.cs", 'base("AutoRetainer - 警告!")', 'base("AutoRetainer - 警告！")'),
+    (r"AutoRetainer\Modules\GcHandin\AutoGCHandinUI.cs", '"筹备稀有品完成时发送托盘通知（需要NotificationMaster插件）"', '"筹备稀有品完成时发送托盘通知（需要 NotificationMaster 插件）"'),
+    (r"AutoRetainer\UI\NeoUI\MiscTab.cs", '"筹备稀有品完成时发送托盘通知（需要NotificationMaster插件）"', '"筹备稀有品完成时发送托盘通知（需要 NotificationMaster 插件）"'),
+    (r"AutoRetainer\UI\NeoUI\MultiModeEntries\CharaOrder.cs", '$"按住CTRL + 左键以永久删除角色数据，该角色将完全排除在AutoRetainer的处理范围之外。"', '$"按住 CTRL 并左键点击可永久删除角色数据，并将该角色完全排除在 AutoRetainer 的处理范围外。"'),
+    (r"AutoRetainer\UI\NeoUI\UserInterface.cs", '"这将使AutoRetainer在第二个游戏客户端中自动跳过加载，除非在主要客户端中禁用此选项"', '"AutoRetainer 会自动跳过第二个游戏客户端，除非在主客户端中关闭此选项。"'),
+    (r"AutoRetainer\UI\NeoUI\RetainersTab.cs", '"未选择任何项目"', '"未选择"'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\InventoryManagementCommon.cs", '"未选择任何项目"', '"未选择"'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\InventoryManagementCommon.cs", '"如果你有使用 Discard Helper 插件，可以点击此按钮导入项目。这些项目将与你现有的清单合并。请按住 CTRL 并点击。"', '"可从 Discard Helper 导入物品并与现有清单合并。请按住 CTRL 并点击。"'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\ExchangeLists.cs", '"将此计划设为预设计划，当前预设计划将会被覆盖。按住CTRL + 左键"', '"设为预设计划并覆盖当前预设。按住 CTRL 并左键点击。"'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\ExchangeLists.cs", '"删除此计划。按住CTRL + 左键"', '"删除此计划。按住 CTRL 并左键点击。"'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\GCDeliveryEntries\ExchangeLists.cs", '"清除清单(按住 CTRL + 左键)"', '"清除清单（按住 CTRL 并左键点击）"'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\InventoryCleanupEntries\InventoryCleanupCommon.cs", '"将此计划设为预设计划，当前预设计划将会被覆盖。按住CTRL + 左键"', '"设为预设计划并覆盖当前预设。按住 CTRL 并左键点击。"'),
+    (r"AutoRetainer\UI\NeoUI\InventoryManagementEntries\InventoryCleanupEntries\InventoryCleanupCommon.cs", '"删除此计划。按住CTRL + 左键"', '"删除此计划。按住 CTRL 并左键点击。"'),
+]
+
+# 在精确补丁之后统一常见台服措辞和历史译名。这里只替换中文词组，
+# 不触碰游戏 Addon 名称、命令、IPC 键或其他程序标识。
+GLOBAL_LOCALIZATION_REFINEMENTS = [
+    ("远征探险", "远航探索"),
+    ("远征探索", "远航探索"),
+    ("远航探险", "远航探索"),
+    ("遠征探險", "远航探索"),
+    ("遠征探索", "远航探索"),
+    ("遠航探索", "远航探索"),
+    ("全域", "全局"),
+    ("资料", "数据"),
+    ("資料", "数据"),
+    ("储存", "保存"),
+    ("儲存", "保存"),
+    ("栏位", "槽位"),
+    ("欄位", "槽位"),
+    ("选单", "菜单"),
+    ("選單", "菜单"),
+    ("图示", "图标"),
+    ("圖示", "图标"),
+    ("侦测", "检测"),
+    ("偵測", "检测"),
+    ("载入", "加载"),
+    ("載入", "加载"),
+    ("运作", "运行"),
+    ("運作", "运行"),
+    ("支援", "支持"),
+    ("游标", "鼠标"),
+    ("遊標", "鼠标"),
+    ("透过", "通过"),
+    ("透過", "通过"),
+    ("帐号", "账号"),
+    ("帳號", "账号"),
+    ("分页", "页面"),
+    ("分頁", "页面"),
+    ("联络", "联系"),
+    ("聯絡", "联系"),
+    ("贴上", "粘贴"),
+    ("貼上", "粘贴"),
+    ("区块", "区域"),
+    ("區塊", "区域"),
+    ("部属完成", "部署完成"),
+    ("当机", "卡死"),
+    ('$"loading bailoutTitleRestart.png"', '"正在加载界面…"'),
+    ('$"loading timer.png"', '"正在加载界面…"'),
+    ('$"loading multi.png"', '"正在加载界面…"'),
+    ('$"loading bellalert.png"', '"正在加载界面…"'),
+    ('$"loading Night.png"', '"正在加载界面…"'),
+    ('$"loading submarine.png"', '"正在加载界面…"'),
+    ('$"loading bell.png"', '"正在加载界面…"'),
+    ('$"loading notify.png"', '"正在加载界面…"'),
+    ('$"loading wait.png"', '"正在加载界面…"'),
+]
+
+
+def refine_localization(text):
+    for old, new in GLOBAL_LOCALIZATION_REFINEMENTS:
+        text = text.replace(old, new)
+    return text
+
 
 def main():
+    all_patches = PATCHES + [
+        {"file": file, "old": old, "new": new}
+        for file, old, new in LOCALIZATION_REFINEMENTS
+    ]
     ok = 0
     failed = []
-    for p in PATCHES:
+    for p in all_patches:
         fp = os.path.join(ROOT, p["file"])
         if not os.path.exists(fp):
             failed.append((p["file"], "文件不存在"))
             continue
         with io.open(fp, encoding="utf-8", errors="replace") as f:
             text = f.read()
+        final_new = refine_localization(p["new"])
         if p.get("idempotent_marker") and p["idempotent_marker"] in text:
             ok += 1
             continue
         if p["old"] not in text:
             # 幂等：目标文本已存在（补丁曾直接提交进源码，或已应用过）
-            if p["new"] and p["new"] in text:
+            if final_new and final_new in text:
                 ok += 1
                 continue
             failed.append((p["file"], "匹配失败（上游可能改动过此处）"))
             continue
-        if p["new"] in text and text.count(p["old"]) == text.count(p["new"]):
+        if final_new in text and text.count(p["old"]) == text.count(final_new):
             ok += 1
             continue
-        text = text.replace(p["old"], p["new"])
+        text = text.replace(p["old"], final_new)
         with io.open(fp, "w", encoding="utf-8", newline="") as f:
             f.write(text)
         ok += 1
 
-    print(f"补丁应用成功: {ok}/{len(PATCHES)}")
+    for root, dirs, files in os.walk(os.path.join(ROOT, "AutoRetainer")):
+        dirs[:] = [d for d in dirs if d not in ("bin", "obj")]
+        for filename in files:
+            if not filename.endswith(".cs"):
+                continue
+            fp = os.path.join(root, filename)
+            with io.open(fp, encoding="utf-8", errors="replace") as f:
+                text = f.read()
+            refined = refine_localization(text)
+            if refined != text:
+                with io.open(fp, "w", encoding="utf-8", newline="") as f:
+                    f.write(refined)
+
+    print(f"补丁应用成功: {ok}/{len(all_patches)}")
     if failed:
         print("以下补丁失败，需要人工处理:")
         for f, reason in failed:

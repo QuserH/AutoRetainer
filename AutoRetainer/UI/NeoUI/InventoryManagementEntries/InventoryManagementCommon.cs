@@ -50,7 +50,7 @@ public unsafe class InventoryManagementCommon
         ImGuiEx.TreeNodeCollapsingHeader("批量新增/移除", () =>
         {
             ImGui.SetNextItemWidth(200f);
-            if(ImGui.BeginCombo("选择类别", SelectedCategories.Count != 0 ? $"已选择 {SelectedCategories.Count}" : "未选择任何项目", ImGuiComboFlags.HeightLarge))
+            if(ImGui.BeginCombo("选择类别", SelectedCategories.Count != 0 ? $"已选择 {SelectedCategories.Count}" : "未选择", ImGuiComboFlags.HeightLarge))
             {
                 if(ImGuiEx.IconButtonWithText(FontAwesomeIcon.Plus, "全部"))
                 {
@@ -265,7 +265,7 @@ public unsafe class InventoryManagementCommon
                 ex.Log();
             }
         }
-        ImGuiEx.HelpMarker("如果你有使用 Discard Helper 插件，可以点击此按钮导入项目。这些项目将与你现有的清单合并。请按住 CTRL 并点击。");
+        ImGuiEx.HelpMarker("可从 Discard Helper 导入物品并与现有清单合并。请按住 CTRL 并点击。");
     }
 
     public void ImportBlacklistFromArDiscard()
@@ -288,7 +288,7 @@ public unsafe class InventoryManagementCommon
                 ex.Log();
             }
         }
-        ImGuiEx.HelpMarker("如果你有使用 Discard Helper 插件，可以点击此按钮导入项目。这些项目将与你现有的清单合并。请按住 CTRL 并点击。");
+        ImGuiEx.HelpMarker("可从 Discard Helper 导入物品并与现有清单合并。请按住 CTRL 并点击。");
     }
 
     private static void DrawListOfItems(List<uint> ItemList)

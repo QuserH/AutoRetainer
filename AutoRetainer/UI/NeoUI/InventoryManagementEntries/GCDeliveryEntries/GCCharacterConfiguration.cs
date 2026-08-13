@@ -16,7 +16,7 @@ public sealed unsafe class GCCharacterConfiguration : InventoryManagementBase
         ImGuiEx.TextWrapped($"在这里您可以将预先设置好的兑换清单指派给已注册的角色，并选择筹备模式。");
         ImGuiEx.SetNextItemFullWidth();
         ImGuiEx.FilteringInputTextWithHint("##search", "搜索...", out var filter);
-        if(ImGuiEx.BeginDefaultTable(["~Character", "计划", "筹备模式"]))
+        if(ImGuiEx.BeginDefaultTable(["~角色", "计划", "筹备模式"]))
         {
             foreach(var characterData in C.OfflineData)
             {

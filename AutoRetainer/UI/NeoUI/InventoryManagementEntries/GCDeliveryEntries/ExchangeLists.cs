@@ -82,7 +82,7 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
                     Notify.Error(e.Message);
                 }
             }
-            ImGuiEx.Tooltip("贴上");
+            ImGuiEx.Tooltip("粘贴");
             if(selectedPlan != null)
             {
                 ImGui.SameLine(0, 1);
@@ -93,13 +93,13 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
                     C.DefaultGCExchangePlan.GUID.Regenerate();
                     new TickScheduler(() => C.AdditionalGCExchangePlans.Remove(selectedPlan));
                 }
-                ImGuiEx.Tooltip("将此计划设为预设计划，当前预设计划将会被覆盖。按住CTRL + 左键");
+                ImGuiEx.Tooltip("设为预设计划并覆盖当前预设。按住 CTRL 并左键点击。");
                 ImGui.SameLine(0, 1);
                 if(ImGuiEx.IconButton(FontAwesomeIcon.Trash, enabled: ImGuiEx.Ctrl && selectedPlan != null))
                 {
                     new TickScheduler(() => C.AdditionalGCExchangePlans.Remove(selectedPlan));
                 }
-                ImGuiEx.Tooltip("删除此计划。按住CTRL + 左键");
+                ImGuiEx.Tooltip("删除此计划。按住 CTRL 并左键点击。");
             }
         });
 
@@ -243,7 +243,7 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
                     x.Quantity = Utils.SharedGCExchangeListings[x.ItemID].Data.IsUnique ? 1 : 999;
                 }
             }
-            ImGuiEx.Tooltip("选择此选项将自动填入所有可交换的武器与装备；交换的武器与装备将会立即筹备至军队，以最大化产生部队点数。这些物品将会被放在清单末端，且仅在没有其他可购买物品时才会购买。");
+            ImGuiEx.Tooltip("启用后会自动加入所有可兑换的武器与防具，并立即将其提交筹备任务以获取部队点数。这些物品位于清单末尾，仅在没有其他可兑换物品时购买。");
             if(ImGui.Selectable("加入所有缺少的物品"))
             {
                 foreach(var x in Utils.SharedGCExchangeListings)
@@ -263,7 +263,7 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
             {
                 plan.Items.RemoveAll(x => x.Quantity == 0 && x.QuantitySingleTime == 0);
             }
-            if(ImGuiEx.Selectable("清除清单(按住 CTRL + 左键)", enabled: ImGuiEx.Ctrl))
+            if(ImGuiEx.Selectable("清除清单（按住 CTRL 并左键点击）", enabled: ImGuiEx.Ctrl))
             {
                 plan.Items.Clear();
             }
@@ -334,7 +334,7 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
                         if(trans) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.2f);
                         ImGui.Image(ctex.Handle, new(ImGui.GetFrameHeight()));
                         if(trans) ImGui.PopStyleVar();
-                        ImGuiEx.Tooltip($"{c}" + (trans ? " (unavailable)" : ""));
+                        ImGuiEx.Tooltip($"{c}" + (trans ? "（不可兑换）" : ""));
                         ImGui.SameLine(0, 1);
                     }
                 }
@@ -367,7 +367,7 @@ public sealed unsafe class ExchangeLists : InventoryManagementBase
                 ImGui.TableNextColumn();
                 ImGui.SetNextItemWidth(100f.Scale());
                 ImGui.InputInt("##qtyonetime", ref currentItem.QuantitySingleTime.ValidateRange(0, currentItem.Data.Value.IsUnique ? 1 : int.MaxValue), 0, 0);
-                ImGuiEx.Tooltip("每次交换的数量：当使用此方案在任意角色上进行交换时，该数量将从此值中扣除。当数值降至 0 时，将自动恢复为\"维持\"数量。");
+                ImGuiEx.Tooltip("一次性兑换数量：任意角色使用此计划兑换后都会扣减。降至 0 时，将恢复使用“维持数量”。");
                 ImGui.TableNextColumn();
                 if(ImGuiEx.IconButton(FontAwesomeIcon.Clone))
                 {

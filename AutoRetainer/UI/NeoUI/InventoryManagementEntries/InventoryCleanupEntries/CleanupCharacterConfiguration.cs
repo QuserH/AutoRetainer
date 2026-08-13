@@ -13,10 +13,10 @@ public sealed unsafe class CleanupCharacterConfiguration : InventoryManagementBa
 
     public override void Draw()
     {
-        ImGuiEx.TextWrapped($"在这边可以将预设的背包清理清单指派给已注册角色。");
+        ImGuiEx.TextWrapped($"可在此为已记录的角色分配预设背包清理方案。");
         ImGuiEx.SetNextItemFullWidth();
         ImGuiEx.FilteringInputTextWithHint("##search", "搜索...", out var filter);
-        if(ImGuiEx.BeginDefaultTable(["~Character", "计划"]))
+        if(ImGuiEx.BeginDefaultTable(["~角色", "计划"]))
         {
             foreach(var characterData in C.OfflineData)
             {

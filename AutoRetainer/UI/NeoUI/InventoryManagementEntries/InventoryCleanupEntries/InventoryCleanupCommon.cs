@@ -98,7 +98,7 @@ public static unsafe class InventoryCleanupCommon
                     Notify.Error(e.Message);
                 }
             }
-            ImGuiEx.Tooltip("贴上");
+            ImGuiEx.Tooltip("粘贴");
             if(selectedPlan != null)
             {
                 ImGui.SameLine(0, 1);
@@ -109,13 +109,13 @@ public static unsafe class InventoryCleanupCommon
                     C.DefaultIMSettings.Name = "";
                     new TickScheduler(() => C.AdditionalIMSettings.Remove(selectedPlan));
                 }
-                ImGuiEx.Tooltip("将此计划设为预设计划，当前预设计划将会被覆盖。按住CTRL + 左键");
+                ImGuiEx.Tooltip("设为预设计划并覆盖当前预设。按住 CTRL 并左键点击。");
                 ImGui.SameLine(0, 1);
                 if(ImGuiEx.IconButton(FontAwesomeIcon.Trash, enabled: ImGuiEx.Ctrl && selectedPlan != null))
                 {
                     new TickScheduler(() => C.AdditionalIMSettings.Remove(selectedPlan));
                 }
-                ImGuiEx.Tooltip("删除此计划。按住CTRL + 左键");
+                ImGuiEx.Tooltip("删除此计划。按住 CTRL 并左键点击。");
             }
         });
         if(selectedPlan != null)

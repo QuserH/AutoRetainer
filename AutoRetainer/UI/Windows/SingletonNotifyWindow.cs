@@ -3,7 +3,7 @@ public class SingletonNotifyWindow : NotifyWindow
 {
     private bool IAmIdiot = false;
     private WindowSystem ws;
-    public SingletonNotifyWindow() : base("AutoRetainer - 警告!")
+    public SingletonNotifyWindow() : base("AutoRetainer - 警告！")
     {
         IsOpen = true;
         ws = new();
@@ -18,9 +18,9 @@ public class SingletonNotifyWindow : NotifyWindow
 
     public override void DrawContent()
     {
-        ImGuiEx.Text($"AutoRetainer 侦测到另一个插件实例正在运行，且使用了相同的数据路径配置。");
-        ImGuiEx.Text($"为防止资料遗失，插件载入已中止。");
-        if(ImGui.Button("关闭此窗口且不载入 AutoRetainer"))
+        ImGuiEx.Text("AutoRetainer 检测到另一个插件实例正在使用相同的数据路径。");
+        ImGuiEx.Text("为防止数据丢失，已中止加载插件。");
+        if(ImGui.Button("关闭窗口且不加载 AutoRetainer"))
         {
             IsOpen = false;
         }
@@ -29,9 +29,9 @@ public class SingletonNotifyWindow : NotifyWindow
             ShellStart("https://github.com/PunishXIV/AutoRetainer/issues/62");
         }
         ImGui.Separator();
-        ImGui.Checkbox($"勾选代表您同意可能会遗失所有 AutoRetainer 资料", ref IAmIdiot);
+        ImGui.Checkbox("我了解这可能导致所有 AutoRetainer 数据丢失", ref IAmIdiot);
         if(!IAmIdiot) ImGui.BeginDisabled();
-        if(ImGui.Button("载入 AutoRetainer"))
+        if(ImGui.Button("加载 AutoRetainer"))
         {
             IsOpen = false;
             new TickScheduler(P.Load);

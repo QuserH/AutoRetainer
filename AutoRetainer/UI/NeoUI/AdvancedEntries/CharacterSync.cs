@@ -50,7 +50,7 @@ public unsafe sealed class CharacterSync : NeoUIEntry
             return;
         }
 
-        ImGuiEx.TextWrapped($"一键删除已不存在的角色资料");
+        ImGuiEx.TextWrapped($"一键删除已不存在的角色数据");
         var jbInstalled = Svc.PluginInterface.InstalledPlugins.Any(x => x.InternalName == "JustBackup" && x.IsLoaded);
         if(!jbInstalled)
         {
@@ -69,9 +69,9 @@ public unsafe sealed class CharacterSync : NeoUIEntry
         {
             ShellStart("https://eu.finalfantasyxiv.com/lodestone/account/select_character/");
         }
-        ImGuiEx.TextWrapped($"3. 确保你登录了正确的帐号，并按下 CTRL+A 全选后 CTRL+C 复制整个页面内容。");
+        ImGuiEx.TextWrapped($"3. 确认已登录正确的账号，按 CTRL+A 全选，再按 CTRL+C 复制整个页面内容。");
         ImGuiEx.TextWrapped($"4. 完成后，点击以下按钮：");
-        if(ImGuiEx.IconButtonWithText(FontAwesomeIcon.Paste, "准备角色资料清理"))
+        if(ImGuiEx.IconButtonWithText(FontAwesomeIcon.Paste, "准备清理角色数据"))
         {
             Parse();
         }
@@ -111,7 +111,7 @@ public unsafe sealed class CharacterSync : NeoUIEntry
             }
             if(charas.Count == 0)
             {
-                Notify.Error("未读取任何字元");
+                Notify.Error("未读取到任何角色");
             }
             else
             {

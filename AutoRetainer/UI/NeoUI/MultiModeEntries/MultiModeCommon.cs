@@ -14,7 +14,7 @@ public class MultiModeCommon : NeoUIEntry
 
         .Section("游戏启动")
         .Checkbox($"游戏启动时启用多角色模式", () => ref C.MultiAutoStart)
-        .Checkbox($"外挂启动时启用多角色模式", () => ref C.MultiOnPluginLoad)
+        .Checkbox($"插件加载时启用多角色模式", () => ref C.MultiOnPluginLoad)
         .Indent()
         .SliderInt(150f, "延迟（秒）", () => ref C.MultiModeOnPluginLoadDelay, 0, 20)
         .Unindent()
@@ -28,7 +28,7 @@ public class MultiModeCommon : NeoUIEntry
             ImGuiEx.Combo(x, ref C.AutoLogin, ["", "~", .. names], names: dict);
         })
         .SliderInt(150f, "延迟", () => ref C.AutoLoginDelay.ValidateRange(0, 60), 0, 20, "设置适当的延迟，让插件在登录前完全加载，并留出时间以便在需要时取消登录")
-        .Checkbox("在外挂程式重新载入后维持多角色模式", () => ref C.PreserveMultiModeState)
+        .Checkbox("插件重新加载后保持多角色模式", () => ref C.PreserveMultiModeState)
 
         .Section("背包空间警告")
         .InputInt(100f, $"雇员清单：剩余背包空格警告", () => ref C.UIWarningRetSlotNum.ValidateRange(2, 1000))
@@ -40,8 +40,8 @@ public class MultiModeCommon : NeoUIEntry
         .Section("传送设置")
         .Widget(() => ImGuiEx.Text("需要安装 Lifestream 插件"))
         .Widget(() => ImGuiEx.PluginAvailabilityIndicator([new("Lifestream", new Version("2.2.1.1"))]))
-        .TextWrapped("你必须在 Lifestream 插件中为每个角色注册房屋，此选项才会生效，或者启用简易传送")
-        .TextWrapped("你可以在角色配置选单中为每个角色自定义这些设置。")
+        .TextWrapped("请在 Lifestream 中为每个角色登记房屋，或启用简易传送，否则此功能不会生效。")
+        .TextWrapped("你可以在角色配置菜单中为每个角色单独设置这些选项。")
         .Widget(() =>
         {
             if(Data != null && Data.GetAreTeleportSettingsOverriden())
@@ -63,9 +63,9 @@ public class MultiModeCommon : NeoUIEntry
         .Checkbox("启用简易传送", () => ref C.AllowSimpleTeleport)
         .Unindent()
         .Widget(() => ImGuiEx.HelpMarker("""
-            允许在未向Lifestream注册房屋的情况下传送。传送功能仍需安装Lifestream外挂才能运作。
+            允许在未向 Lifestream 登记房屋的情况下传送。传送功能仍需安装 Lifestream 插件。
 
-            警告：此选项比在Lifestream中注册房屋更不可靠。请仅在必要时使用。
+            警告：此方式不如在 Lifestream 中登记房屋可靠，请仅在必要时使用。
             """, EColor.RedBright, FontAwesomeIcon.ExclamationTriangle.ToIconString()))
 
         .Section("紧急逃生模块")

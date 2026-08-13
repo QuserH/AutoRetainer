@@ -11,7 +11,7 @@ public static unsafe class RetainerConfig
         //ImGui.Checkbox($"Entrust Duplicates", ref adata.EntrustDuplicates);
         var selectedPlan = C.EntrustPlans.FirstOrDefault(x => x.Guid == adata.EntrustPlan);
         ImGuiEx.TextV($"委托物品:");
-        if(!C.EnableEntrustManager) ImGuiEx.HelpMarker("已在设置中全域禁用", EColor.RedBright, FontAwesomeIcon.ExclamationTriangle.ToIconString());
+        if(!C.EnableEntrustManager) ImGuiEx.HelpMarker("已在设置中全局禁用", EColor.RedBright, FontAwesomeIcon.ExclamationTriangle.ToIconString());
         ImGui.SameLine();
         ImGui.SetNextItemWidth(150f);
         if(ImGui.BeginCombo($"##select", selectedPlan?.Name ?? "禁用", ImGuiComboFlags.HeightLarge))

@@ -27,7 +27,7 @@ public class CharaOrder : NeoUIEntry
                 ImGui.TableSetupColumn("角色", ImGuiTableColumnFlags.WidthStretch);
                 ImGui.TableSetupColumn("Functions");
                 ImGui.TableSetupColumn("Exclusions");
-                ImGui.TableSetupColumn("删除资料");
+                ImGui.TableSetupColumn("删除数据");
                 ImGui.TableHeadersRow();
 
                 for(var index = 0; index < C.OfflineData.Count; index++)
@@ -101,19 +101,19 @@ public class CharaOrder : NeoUIEntry
                     {
                         chr.ClearFCData();
                     }
-                    ImGuiEx.Tooltip("重置此角色的部队资料与潜艇资料。资料将在你登录并访问管制面板后重新生成。");
+                    ImGuiEx.Tooltip("重置此角色的部队和潜艇数据。登录并访问管制面板后会重新生成。");
                     ImGui.SameLine();
                     if(ImGuiEx.IconButton(FontAwesomeIcon.Trash, enabled: ImGuiEx.Ctrl))
                     {
                         new TickScheduler(() => C.OfflineData.Remove(chr));
                     }
-                    ImGuiEx.Tooltip($"按住CTRL + 左键以删除储存的角色资料。重新登录后会自动重建。");
+                    ImGuiEx.Tooltip($"按住 CTRL 并左键点击可删除保存的角色数据。重新登录后会自动重建。");
                     ImGui.SameLine();
                     if(ImGuiEx.IconButton("\uf057", enabled: ImGuiEx.Ctrl))
                     {
                         C.Blacklist.Add((chr.CID, chr.Name));
                     }
-                    ImGuiEx.Tooltip($"按住CTRL + 左键以永久删除角色数据，该角色将完全排除在AutoRetainer的处理范围之外。");
+                    ImGuiEx.Tooltip($"按住 CTRL 并左键点击可永久删除角色数据，并将该角色完全排除在 AutoRetainer 的处理范围外。");
 
                     ImGui.PopID();
                 }

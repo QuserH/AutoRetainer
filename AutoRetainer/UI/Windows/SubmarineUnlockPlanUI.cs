@@ -187,7 +187,7 @@ internal unsafe class SubmarineUnlockPlanUI : Window
                     Copy(JsonConvert.SerializeObject(SelectedPlan));
                 }
                 ImGui.SameLine();
-                if(ImGui.Button($"贴上计划设置"))
+                if(ImGui.Button($"粘贴计划设置"))
                 {
                     try
                     {
@@ -224,8 +224,8 @@ internal unsafe class SubmarineUnlockPlanUI : Window
                 {
                     ImGuiEx.TextWrapped($"请访问潜水艇名单以获取数据");
                 }
-                ImGui.Checkbox($"解锁潜水艇栏位。当前栏位：{GetNumUnlockedSubs()?.ToString() ?? "未知"}/4", ref SelectedPlan.UnlockSubs);
-                ImGuiEx.TextWrapped($"解锁栏位的优先级总是高于解锁航线");
+                ImGui.Checkbox($"解锁潜水艇槽位。当前槽位：{GetNumUnlockedSubs()?.ToString() ?? "未知"}/4", ref SelectedPlan.UnlockSubs);
+                ImGuiEx.TextWrapped($"解锁槽位的优先级总是高于解锁航线");
                 ImGui.Checkbox("在沉船区（翠浪海）强制执行「重复刷单一目的地」模式", ref SelectedPlan.EnforceDSSSinglePoint);
                 ImGui.Checkbox("将此计划设为强制执行", ref SelectedPlan.EnforcePlan);
                 ImGuiEx.HelpMarker("在此地图中选择要解锁的任何地点，都将由每一艘符合条件的潜水艇执行，直到该地点被正式解锁为止。");

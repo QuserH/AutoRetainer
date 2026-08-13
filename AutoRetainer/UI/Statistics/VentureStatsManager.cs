@@ -21,7 +21,7 @@ public sealed class VentureStatsManager
         {
             Load();
         }
-        if(ImGui.Button("重新载入"))
+        if(ImGui.Button("重新加载"))
         {
             Load();
         }

@@ -11,7 +11,7 @@ internal static class SharedUI
         if(data.IsLockedOut())
         {
             FontAwesome.PrintV(EColor.RedBright, FontAwesomeIcon.Lock);
-            ImGuiEx.Tooltip("此角色位于您已暂时禁用的资料中心。请前往配置界面取消禁用。");
+            ImGuiEx.Tooltip("此角色所在的数据中心已被临时禁用。请前往设置中重新启用。");
             ImGui.SameLine();
         }
     }
@@ -61,7 +61,7 @@ internal static class SharedUI
 
     internal static void DrawExcludeReset(OfflineCharacterData data)
     {
-        new NuiBuilder().Section("角色资料清除/重置", collapsible: true)
+        new NuiBuilder().Section("清除/重置角色数据", collapsible: true)
         .Widget(() =>
         {
             if(ImGuiEx.ButtonCtrl("排除角色"))
@@ -79,7 +79,7 @@ internal static class SharedUI
             {
                 data.ClearFCData();
             }
-            ImGuiComponents.HelpMarker("角色保存的资料将被清除但不会排除该角色。当您再次登录此角色时，角色资料将重新产生。");
+            ImGuiComponents.HelpMarker("将清除已保存的角色数据，但不会排除该角色。再次登录后会重新生成数据。");
         }).Draw();
     }
 }

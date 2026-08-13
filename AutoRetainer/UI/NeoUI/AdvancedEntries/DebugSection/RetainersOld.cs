@@ -16,7 +16,7 @@ internal unsafe class RetainersOld : DebugSectionBase
 
         var slots = Utils.GetInventoryFreeSlotCount();
         var ventures = InventoryManager.Instance()->GetInventoryItemCount(21072);
-        ImGuiEx.Text($"背包栏位: ");
+        ImGuiEx.Text($"背包槽位: ");
         ImGui.SameLine(0, 0);
         ImGuiEx.Text(slots < GameRetainerManager.Count ? ImGuiColors.DalamudRed : slots < 14 * GameRetainerManager.Count ? ImGuiColors.DalamudOrange : ImGuiColors.ParsedGreen,
                 $"{slots}");

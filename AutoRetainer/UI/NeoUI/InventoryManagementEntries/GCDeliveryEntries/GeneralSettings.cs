@@ -47,7 +47,7 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
         .Checkbox("启用多角色筹备交换", () => ref C.FullAutoGCDelivery)
         .Checkbox("仅在工作台未锁定时触发", () => ref C.FullAutoGCDeliveryOnlyWsUnlocked)
         .InputInt(150f, "触发筹备的剩余背包格数 (小于或等于)", () => ref C.FullAutoGCDeliveryInventory, "仅计算主要背包，不包含兵装库")
-        .Checkbox("当当探险币耗尽时触发", () => ref C.FullAutoGCDeliveryDeliverOnVentureExhaust, "此选项可能导致每次登录时都会前往军队兑换。请确保已设置足够探险币的方案。")
+        .Checkbox("探险币不足时触发", () => ref C.FullAutoGCDeliveryDeliverOnVentureExhaust, "此选项可能导致每次登录时都前往大国防联军兑换。请确保兑换计划中设置了足够的探险币。")
         .Indent()
         .InputInt(150f, "触发筹备的剩余探险币数量 (小于或等于)", () => ref C.FullAutoGCDeliveryDeliverOnVentureLessThan)
         .Unindent()
@@ -62,7 +62,7 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
                     ImGuiEx.Checkbox($"排除 {Data.NameWithWorldCensored}##item", ref Data.NoItemBuffUse);
                 }
                 var cnt = C.OfflineData.Count(x => x.NoItemBuffUse);
-                ImGuiEx.Text($"{(cnt > 0 ? $"已排除 {cnt} 个角色使用军票加成票券。" : "")}可在“功能、排除与排序”区块中排除角色。");
+                ImGuiEx.Text($"{(cnt > 0 ? $"已排除 {cnt} 个角色使用军票加成票券。" : "")}可在“功能、排除与排序”区域中排除角色。");
                 ImGui.Unindent();
             }
         })
@@ -77,7 +77,7 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
                     ImGuiEx.Checkbox($"排除 {Data.NameWithWorldCensored}", ref Data.NoFcBuffUse);
                 }
                 var cnt = C.OfflineData.Count(x => x.NoFcBuffUse);
-                ImGuiEx.Text($"{(cnt > 0 ? $"已排除 {cnt} 个角色使用部队军票加成。" : "")}可在“功能、排除与排序”区块中排除角色。");
+                ImGuiEx.Text($"{(cnt > 0 ? $"已排除 {cnt} 个角色使用部队军票加成。" : "")}可在“功能、排除与排序”区域中排除角色。");
                 ImGui.Unindent();
             }
         })

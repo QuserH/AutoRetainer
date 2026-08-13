@@ -33,7 +33,7 @@ public unsafe class DebugInventoryManagement : DebugSectionBase
         if(ImGui.CollapsingHeader("商店出售测试"))
         {
             ImGuiEx.EnumCombo($"类型", ref Type);
-            ImGui.InputInt("栏位", ref slot);
+            ImGui.InputInt("槽位", ref slot);
             ImGuiEx.Text(ExcelItemHelper.GetName(InventoryManager.Instance()->GetInventoryContainer(Type)->GetInventorySlot(slot)->ItemId));
             if(ImGui.Button("出售"))
             {

@@ -16,7 +16,7 @@ public unsafe class FastAddition : InventoryManagementBase
         .Widget(() =>
         {
             var selectedSettings = InventoryCleanupCommon.SelectedPlan;
-            ImGuiEx.TextWrapped(GradientColor.Get(EColor.RedBright, EColor.YellowBright), $"当此文字可见时，将滑鼠悬停在物品上并按住按键:");
+            ImGuiEx.TextWrapped(GradientColor.Get(EColor.RedBright, EColor.YellowBright), "显示此说明时，将鼠标移到物品上并按住对应按键：");
             ImGuiEx.Text(!ImGui.GetIO().KeyShift ? ImGuiColors.DalamudGrey : ImGuiColors.DalamudRed, $"Shift - 添加至快速雇员出售清单");
             ImGuiEx.Text($"* 已在「无条件出售」及「丢弃」清单内的物品不会添加至快速雇员出售清单");
             ImGuiEx.Text(!ImGui.GetIO().KeyCtrl ? ImGuiColors.DalamudGrey : ImGuiColors.DalamudRed, $"Ctrl - 添加至无条件出售清单");

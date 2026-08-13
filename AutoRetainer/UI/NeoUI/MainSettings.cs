@@ -7,7 +7,7 @@ public class MainSettings : NeoUIEntry
         .Section("延迟设置")
         .Widget(100f, "时间不同步补偿", (x) => ImGuiEx.SliderInt(x, ref C.UnsyncCompensation.ValidateRange(-60, 0), -10, 0), "从探险结束时间额外扣除的秒数。这有助于减缓游戏服务器与你电脑之间时间不同步所产生的问题。")
         .Widget(100f, "额外交互延迟（帧）", (x) => ImGuiEx.SliderInt(x, ref C.ExtraFrameDelay.ValidateRange(-10, 100), 0, 50), "数值越低，操作越快。游戏帧率较低或网络延迟较高时，建议提高此值；想加快操作可适当降低。")
-        .Widget("额外日志", (x) => ImGui.Checkbox(x, ref C.ExtraDebug), "此选项会启用用于调试的冗长日志。开启时会产生大量日志并影响效能。此选项会在插件重载或游戏重启时自动关闭。")
+        .Widget("额外日志", (x) => ImGui.Checkbox(x, ref C.ExtraDebug), "启用详细调试日志。开启后会产生大量日志并影响性能；插件重载或游戏重启时会自动关闭。")
 
             .Section("操作模式")
         .Widget("指派 + 重新指派", (x) =>
@@ -25,7 +25,7 @@ public class MainSettings : NeoUIEntry
                 C.EnableAssigningQuickExploration = false;
                 C.DontReassign = true;
             }
-        }, "仅领取雇员的探险奖励，不会重新派遣。与雇员铃互动时按住 CTRL 可暂时套用此模式。")
+        }, "仅领取雇员的探险奖励，不会重新派遣。与传唤铃互动时按住 CTRL 可临时使用此模式。")
         .Widget("重新指派", (x) =>
         {
             if(ImGui.RadioButton("重新指派", !C.EnableAssigningQuickExploration && !C._dontReassign))

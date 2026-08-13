@@ -36,7 +36,7 @@ public class GeneralSettings : InventoryManagementBase
                 ImGuiEx.RadioButtonBool("分解", "跳过", ref InventoryCleanupCommon.SelectedPlan.IMEnableItemDesynthesisFromArmory, true);
             })
             .Unindent()
-            .Checkbox($"启用右键选单整合", () => ref InventoryCleanupCommon.SelectedPlan.IMEnableContextMenu)
+            .Checkbox($"启用右键菜单整合", () => ref InventoryCleanupCommon.SelectedPlan.IMEnableContextMenu)
             .Checkbox($"允许从兵装库出售/丢弃物品", () => ref InventoryCleanupCommon.SelectedPlan.AllowSellFromArmory)
             .Checkbox("多角色模式下将符合条件的物品放入置衣柜", () => ref InventoryCleanupCommon.SelectedPlan.EnableCabinetAutoDelivery, "不在置衣柜中的物品将被放入其中。符合条件的物品也将被排除在丢弃、分解、存放至雇员或上交大国防联军之外（仅在多角色模式运行时）。此操作将在多角色模式专家交付之前触发。")
             .Checkbox("多角色模式下将符合条件的物品放入投影柜（需要 Glamour Log 插件）", () => ref InventoryCleanupCommon.SelectedPlan.EnableMirageAutoDelivery)

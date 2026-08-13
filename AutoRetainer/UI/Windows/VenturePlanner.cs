@@ -147,7 +147,7 @@ public sealed class VenturePlanner : Window
                 if(C.SavedPlans.Count > 0)
                 {
                     ImGuiEx.SetNextItemFullWidth();
-                    if(ImGui.BeginCombo("##load", "读取已储存的计划...", ImGuiComboFlags.HeightLarge))
+                    if(ImGui.BeginCombo("##load", "读取已保存的计划...", ImGuiComboFlags.HeightLarge))
                     {
                         int? toRem = null;
                         for(var i = 0; i < C.SavedPlans.Count; i++)
@@ -192,7 +192,7 @@ public sealed class VenturePlanner : Window
                     ImGuiEx.EnumCombo("##cBeh", ref adata.VenturePlan.PlanCompleteBehavior, null, Lang.PlanCompleteBehaviorNames);
                     //ImGui.Separator();
                     var overwrite = C.SavedPlans.Any(x => x.Name == adata.VenturePlan.Name);
-                    ImGuiEx.InputWithRightButtonsArea("储存计划", delegate
+                    ImGuiEx.InputWithRightButtonsArea("保存计划", delegate
                     {
                         if(overwrite) ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudYellow);
                         ImGui.InputTextWithHint("##name", "输入计划名称...", ref adata.VenturePlan.Name, 50);
@@ -208,7 +208,7 @@ public sealed class VenturePlanner : Window
                             C.SavedPlans.Add(adata.VenturePlan.JSONClone());
                             Notify.Success($"方案 {adata.VenturePlan.Name} 已保存！");
                         }
-                        ImGuiEx.Tooltip(overwrite ? "覆盖现有的探险计划" : $"储存探险计划");
+                        ImGuiEx.Tooltip(overwrite ? "覆盖现有的探险计划" : $"保存探险计划");
                     });
                 }
 
@@ -313,9 +313,9 @@ public sealed class VenturePlanner : Window
 
                 if(C.Verbose)
                 {
-                    if(ImGui.CollapsingHeader("Debug"))
+                    if(ImGui.CollapsingHeader("调试"))
                     {
-                        ImGuiEx.InputUint("Index", ref adata.VenturePlanIndex);
+                        ImGuiEx.InputUint("索引", ref adata.VenturePlanIndex);
                     }
                 }
 

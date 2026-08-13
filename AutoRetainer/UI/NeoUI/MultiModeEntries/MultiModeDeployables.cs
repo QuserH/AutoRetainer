@@ -3,19 +3,19 @@
 namespace AutoRetainer.UI.NeoUI.MultiModeEntries;
 public class MultiModeDeployables : NeoUIEntry
 {
-    public override string Path => "多角色模式/远征探险";
+    public override string Path => "多角色模式/远航探索";
 
     public override NuiBuilder Builder { get; init; } = new NuiBuilder()
         .Section("多角色模式 - 潜艇/飞空艇")
         .Checkbox("等待航程完成", () => ref C.MultiModeWorkshopConfiguration.MultiWaitForAll, """
-启用后，AutoRetainer 将等待所有远征探险返回后才登录该角色。如果你因其他原因已登录，它仍会重新派遣已完成的潜水艇，除非全局设置“即使已登录也等待”也已开启。
+启用后，AutoRetainer 会等待所有远航探索返回后再登录该角色。如果角色因其他原因已登录，插件仍会重新派遣已完成的潜水艇，除非同时启用了全局设置“即使已登录也等待”。
 """)
         .Indent()
         .Checkbox("即使已登录也等待", () => ref C.MultiModeWorkshopConfiguration.WaitForAllLoggedIn, """
 改变“等待航程完成”（全局和按角色）的行为，使 AutoRetainer 在已登录时不再单独重新派遣潜水艇。相反，它会等待所有潜水艇返回后再采取行动。
 """)
         .InputInt(120f, "最大等待时间（分钟）", () => ref C.MultiModeWorkshopConfiguration.MaxMinutesOfWaiting.ValidateRange(0, 9999), 10, 60, """
-如果等待其他远征探险返回的时间将超过此分钟数，AutoRetainer 将忽略“等待航程完成”和“即使已登录也等待”设置。
+如果等待其他远航探索返回所需的时间超过此值，AutoRetainer 将忽略“等待航程完成”和“即使已登录也等待”。
 """)
         .Unindent()
         .DragInt(60f, "提前登录阈值（秒）", () => ref C.MultiModeWorkshopConfiguration.AdvanceTimer.ValidateRange(0, 300), 0.1f, 0, 300, "该角色的潜水艇可重新派遣前，AutoRetainer 提前登录的秒数。")
@@ -29,9 +29,9 @@ public class MultiModeDeployables : NeoUIEntry
             if(ImGuiEx.Button(x, C.FCChestGilCheckTimes.Count > 0)) C.FCChestGilCheckTimes.Clear();
         })
         .Unindent()
-        .Checkbox("处理完所有远征探险后关闭游戏", () => ref C.ShutdownOnSubExhaustion)
+        .Checkbox("处理完所有远航探索后关闭游戏", () => ref C.ShutdownOnSubExhaustion)
         .Indent()
-        .SliderFloat(150f, "如果有远征探险将在此小时内返回，则不关闭游戏", () => ref C.HoursForShutdown, 0f, 10f)
+        .SliderFloat(150f, "若有远航探索将在此小时数内返回，则不关闭游戏", () => ref C.HoursForShutdown, 0f, 10f)
         .Widget(() =>
         {
             ImGuiEx.HelpMarker($"""
@@ -48,13 +48,13 @@ public class MultiModeDeployables : NeoUIEntry
             {
                 ImGui.Checkbox($"在 {Data.NameWithWorldCensored} 上启用", ref Data.AutoFuelPurchase);
             }
-            ImGuiEx.TextWrapped($"若要启用/禁用其他角色的燃料购买，请前往「功能、排除与排序」区块。");
+            ImGuiEx.TextWrapped($"如需更改其他角色的燃料购买设置，请前往“功能、排除与排序”。");
         })
         .InputInt(150f, "触发购买的剩余青磷水数量", () => ref C.AutoFuelPurchaseLow.ValidateRange(100, 99999))
         .InputInt(150f, "购买至背包内达到此数量", () => ref C.AutoFuelPurchaseMax)
         .Checkbox("仅在工作站解锁时进行购买", () => ref C.AutoFuelPurchaseOnlyWsUnlocked)
         .Unindent()
-        .Checkbox("部属完成后退出游戏", () => ref C.ExitOnSubCompletion, "重要提示：启用后，多角色模式将仅处理远征探险，不处理雇员。")
+        .Checkbox("部署完成后退出游戏", () => ref C.ExitOnSubCompletion, "重要：启用后，多角色模式只处理远航探索，不处理雇员。")
         .Indent()
         .InputInt(150f, "等待潜水艇返回的最长时间（分钟）", () => ref C.ExitOnSubCompletionTime)
         .Unindent()

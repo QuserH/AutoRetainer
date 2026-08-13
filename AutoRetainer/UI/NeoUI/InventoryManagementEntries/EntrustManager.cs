@@ -15,7 +15,7 @@ public class EntrustManager : InventoryManagementBase
 
     public override void Draw()
     {
-        ImGuiEx.TextWrapped("使用高级存放管理器将特定物品存入特定雇员。在此窗口中可设置具体存放方案；随后，您可在雇员配置窗口中将存放方案指派给雇员。");
+        ImGuiEx.TextWrapped("使用存放管理器将指定物品存入指定雇员。在此创建存放计划，再到雇员配置中为雇员选择计划。");
         ImGui.Checkbox("启用", ref C.EnableEntrustManager);
         ImGui.Checkbox("将委托的物品输出至聊天频道", ref C.EnableEntrustChat);
         var selectedPlan = C.EntrustPlans.FirstOrDefault(x => x.Guid == SelectedGuid);
@@ -43,14 +43,14 @@ public class EntrustManager : InventoryManagementBase
                 var plan = new EntrustPlan();
                 C.EntrustPlans.Add(plan);
                 SelectedGuid = plan.Guid;
-                plan.Name = $"Entrust plan {C.EntrustPlans.Count}";
+                plan.Name = $"存放计划 {C.EntrustPlans.Count}";
             }
             ImGui.SameLine();
             if(ImGuiEx.IconButton(FontAwesomeIcon.Trash, enabled: selectedPlan != null && ImGuiEx.Ctrl))
             {
                 C.EntrustPlans.Remove(selectedPlan);
             }
-            ImGuiEx.Tooltip("按住 CTRL 并点击");
+            ImGuiEx.Tooltip("按住 CTRL 点击");
             ImGui.SameLine();
             if(ImGuiEx.IconButton(FontAwesomeIcon.Copy, enabled: selectedPlan != null))
             {
@@ -86,11 +86,11 @@ public class EntrustManager : InventoryManagementBase
             ImGuiEx.HelpMarker("允许在存放重复物品时，于所选雇员背包中建立该物品的新堆叠。");
             ImGui.Unindent();
             ImGui.Checkbox("允许从兵装库存放物品", ref selectedPlan.AllowEntrustFromArmory);
-            ImGui.Checkbox("仅限手动执行", ref selectedPlan.ManualPlan);
-            ImGuiEx.HelpMarker("将此计划标记为仅限手动执行。此计划只会在手动点击 \"存放物品\" 按钮时执行，绝不会自动运行。");
+            ImGui.Checkbox("仅手动执行", ref selectedPlan.ManualPlan);
+            ImGuiEx.HelpMarker("此计划只会在你手动点击“存放物品”时执行，不会自动运行。");
             ImGui.Checkbox("排除存在于保护清单中的物品", ref selectedPlan.ExcludeProtected);
             ImGui.Separator();
-            ImGuiEx.TreeNodeCollapsingHeader($"Entrust categories ({selectedPlan.EntrustCategories.Count} selected)###ecats", () =>
+            ImGuiEx.TreeNodeCollapsingHeader($"按类别存放（已选 {selectedPlan.EntrustCategories.Count} 项）###ecats", () =>
             {
                 ImGuiEx.TextWrapped($"你可以在此选择要整类存放的物品类别。下方单独选取的特定物品将不受此规则限制。");
                 if(ImGui.BeginTable("存放清单表格", 3, ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.BordersInner))
@@ -131,7 +131,7 @@ public class EntrustManager : InventoryManagementBase
                     ImGui.EndTable();
                 }
             });
-            ImGuiEx.TreeNodeCollapsingHeader($"Entrust individual items ({selectedPlan.EntrustItems.Count} selected)###eitems", () =>
+            ImGuiEx.TreeNodeCollapsingHeader($"按物品存放（已选 {selectedPlan.EntrustItems.Count} 项）###eitems", () =>
             {
                 InventoryManagementCommon.DrawListNew(
                     itemId => selectedPlan.EntrustItems.Add(itemId), 
@@ -148,11 +148,11 @@ public class EntrustManager : InventoryManagementBase
                     ImGuiEx.Tooltip("保留在自己背包中的数量");
                 });
             });
-            ImGuiEx.TreeNodeCollapsingHeader($"Fast addition/removal", () =>
+            ImGuiEx.TreeNodeCollapsingHeader("快速添加与移除", () =>
             {
-                ImGuiEx.TextWrapped(GradientColor.Get(EColor.RedBright, EColor.YellowBright), $"当此文字可见时，将滑鼠悬停在物品上并按住按键:");
+                ImGuiEx.TextWrapped(GradientColor.Get(EColor.RedBright, EColor.YellowBright), "显示此说明时，将鼠标移到物品上并按住对应按键：");
                 ImGuiEx.Text(!ImGui.GetIO().KeyShift ? ImGuiColors.DalamudGrey : ImGuiColors.DalamudRed, $"Shift - 添加至存入计划");
-                ImGuiEx.Text(!ImGui.GetIO().KeyAlt ? ImGuiColors.DalamudGrey : ImGuiColors.DalamudRed, $"Alt - 从委托方案删除");
+                ImGuiEx.Text(!ImGui.GetIO().KeyAlt ? ImGuiColors.DalamudGrey : ImGuiColors.DalamudRed, "Alt - 从存放计划移除");
                 if(Svc.GameGui.HoveredItem > 0)
                 {
                     var id = (uint)(Svc.GameGui.HoveredItem % 1000000);

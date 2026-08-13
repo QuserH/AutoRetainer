@@ -73,7 +73,7 @@ public static unsafe class TaskDesynthItems
 
     private static void DesynthItem(InventoryItem* item)
     {
-        Svc.Log.Info($"分解 {ExcelItemHelper.GetName(ExcelItemHelper.Get(item->ItemId), true)} [容器={item->Container}，栏位={item->Slot}]");
+        Svc.Log.Info($"分解 {ExcelItemHelper.GetName(ExcelItemHelper.Get(item->ItemId), true)} [容器={item->Container}，槽位={item->Slot}]");
         AgentSalvage.Instance()->SalvageItem(item);
         var retval = new AtkValue();
         Span<AtkValue> param = [

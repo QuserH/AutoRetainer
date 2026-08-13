@@ -100,14 +100,14 @@ internal unsafe class AutoRetainerWindow : Window
                 new NuiBuilder()
                     .Section("免责声明")
                     .TextWrapped(ImGuiColors.DalamudYellow, "请注意，严禁将 AutoRetainer 用于 RMT 目的")
-                    .TextWrapped(ImGuiColors.DalamudRed, "为避免不必要的后果，使用AutoRetainer时请遵守下列规则 :")
-                    .TextWrapped("1. 不要在游戏聊天中提及您使用AutoRetainer;")
+                    .TextWrapped(ImGuiColors.DalamudRed, "为避免不必要的后果，使用 AutoRetainer 时请遵守以下规则：")
+                    .TextWrapped("1. 不要在游戏聊天中提及你正在使用 AutoRetainer；")
                     .TextWrapped("2. 请勿长时间在无人看管的情况下执行 AutoRetainer；")
-                    .TextWrapped("3. 确保您的实际游戏+AutoRetainer使用时间每天不超过16小时；确保在雇员/潜水艇检查流程之间存在非活动间隔;")
-                    .TextWrapped("4. 永远不要回应那些试图透过交易或聊天进行所谓'机器人检测'的玩家；应立即将这些玩家加入黑名单;")
+                    .TextWrapped("3. 每天实际运行游戏和 AutoRetainer 的时间不要超过 16 小时，并在雇员或潜水艇处理流程之间留出空闲时间；")
+                    .TextWrapped("4. 不要回应通过交易或聊天进行所谓“机器人检测”的玩家；请立即将其加入黑名单；")
                     .TextWrapped("5. 如果GM询问，始终声称所有操作都是手动完成的，绝不承认使用插件。")
-                    .TextWrapped("违反这些规则可能导致您的帐号受到处罚。")
-                    .TextWrapped(GradientColor.Get(ImGuiColors.DalamudYellow, ImGuiColors.DalamudRed), "您不得将 AutoRetainer 用于RMT行为或其他商业用途。如果您将其用于上述用途，我们将不提供任何支援。")
+                    .TextWrapped("违反这些规则可能导致你的账号受到处罚。")
+                    .TextWrapped(GradientColor.Get(ImGuiColors.DalamudYellow, ImGuiColors.DalamudRed), "不得将 AutoRetainer 用于 RMT 或其他商业用途。用于上述用途时，我们不会提供任何支持。")
                     .Widget(() =>
                     {
                         if(ImGuiEx.IconButtonWithText(FontAwesomeIcon.Check, "接受并继续"))
@@ -141,7 +141,7 @@ internal unsafe class AutoRetainerWindow : Window
             if(C.ShowDeployables && (VoyageUtils.Workshops.Contains(Svc.ClientState.TerritoryType) || VoyageScheduler.Enabled))
             {
                 ImGui.SameLine();
-                ImGui.Checkbox($"远征探险", ref VoyageScheduler.Enabled);
+                ImGui.Checkbox($"远航探索", ref VoyageScheduler.Enabled);
             }
             if(disabled)
             {
@@ -208,7 +208,7 @@ internal unsafe class AutoRetainerWindow : Window
             PatreonBanner.DrawRight();
             ImGuiEx.EzTabBar("tabbar", PatreonBanner.Text,
                             ("雇员管理", MultiModeUI.Draw, null, true),
-                            ("远征探险", WorkshopUI.Draw, null, true),
+                            ("远航探索", WorkshopUI.Draw, null, true),
                             ("故障排除", TroubleshootingUI.Draw, null, true),
                             ("统计信息", DrawStats, null, true),
                             ("关于", CustomAboutTab.Draw, null, true)

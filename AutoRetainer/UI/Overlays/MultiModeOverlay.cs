@@ -45,12 +45,12 @@ internal class MultiModeOverlay : Window
                     {
                         BailoutManager.IsLogOnTitleEnabled = false;
                     }
-                    ImGui.SetTooltip($"AutoRetainer was requested to temporarily wait for valid character on login screen. \nLeft click - open AutoRetainer. \nRight click - abort.");
+                    ImGui.SetTooltip("AutoRetainer 正在登录界面等待可用角色。\n左键点击 - 打开 AutoRetainer\n右键点击 - 中止等待");
                 }
             }
             else
             {
-                ImGuiEx.Text($"loading bailoutTitleRestart.png");
+                ImGuiEx.Text("正在加载界面…");
             }
             ImGui.SameLine();
         }
@@ -72,12 +72,12 @@ internal class MultiModeOverlay : Window
                         Shutdown.ForceShutdownAt = 0;
                         Shutdown.ShutdownAt = 0;
                     }
-                    ImGui.SetTooltip($"A shutdown timer is set.\nShutting down in {TimeSpan.FromMilliseconds(Shutdown.ShutdownAt - Environment.TickCount64)}\nForce shutdown in {TimeSpan.FromMilliseconds(Shutdown.ForceShutdownAt - Environment.TickCount64)} \nLeft click - open AutoRetainer. \nRight click - clear timer.");
+                    ImGui.SetTooltip($"已设置关机计时器。\n将在 {TimeSpan.FromMilliseconds(Shutdown.ShutdownAt - Environment.TickCount64)} 后关机\n将在 {TimeSpan.FromMilliseconds(Shutdown.ForceShutdownAt - Environment.TickCount64)} 后强制关机\n左键点击 - 打开 AutoRetainer\n右键点击 - 清除计时器");
                 }
             }
             else
             {
-                ImGuiEx.Text($"loading timer.png");
+                ImGuiEx.Text("正在加载界面…");
             }
             ImGui.SameLine();
         }
@@ -103,7 +103,7 @@ internal class MultiModeOverlay : Window
             }
             else
             {
-                ImGuiEx.Text($"loading multi.png");
+                ImGuiEx.Text("正在加载界面…");
             }
             ImGui.SameLine();
         }
@@ -129,7 +129,7 @@ internal class MultiModeOverlay : Window
             }
             else
             {
-                ImGuiEx.Text($"loading multi.png");
+                ImGuiEx.Text("正在加载界面…");
             }
             ImGui.SameLine();
         }
@@ -153,7 +153,7 @@ internal class MultiModeOverlay : Window
             }
             else
             {
-                ImGuiEx.Text($"loading bellalert.png");
+                ImGuiEx.Text("正在加载界面…");
             }
             ImGui.SameLine();
         }
@@ -180,7 +180,7 @@ internal class MultiModeOverlay : Window
             }
             else
             {
-                ImGuiEx.Text($"loading multi.png");
+                ImGuiEx.Text("正在加载界面…");
             }
             ImGui.SameLine();
         }
@@ -201,12 +201,12 @@ internal class MultiModeOverlay : Window
                     {
                         MultiMode.SingleMultiMode = null;
                     }
-                    ImGui.SetTooltip($"Single pass MultiMode enabled.\nCharacters processed:\n{MultiMode.SingleMultiMode?.Select(x => $"- {Censor.Character(x)}").Print("\n")} \n\nLeft click - open AutoRetainer. \nRight click - convert to regular Multi Mode.");
+                    ImGui.SetTooltip($"单轮多角色模式已启用。\n待处理角色：\n{MultiMode.SingleMultiMode?.Select(x => $"- {Censor.Character(x)}").Print("\n")}\n\n左键点击 - 打开 AutoRetainer\n右键点击 - 转为常规多角色模式");
                 }
             }
             else
             {
-                ImGuiEx.Text($"loading multi.png");
+                ImGuiEx.Text("正在加载界面…");
             }
             ImGui.SameLine();
         }
@@ -228,12 +228,12 @@ internal class MultiModeOverlay : Window
                         C.NightMode = false;
                         MultiMode.BailoutNightMode();
                     }
-                    ImGui.SetTooltip($"Night mode enabled. \nLeft click - open AutoRetainer. \nRight click - disable.");
+                    ImGui.SetTooltip("夜间模式已启用。\n左键点击 - 打开 AutoRetainer\n右键点击 - 禁用夜间模式");
                 }
             }
             else
             {
-                ImGuiEx.Text($"loading Night.png");
+                ImGuiEx.Text("正在加载界面…");
             }
             ImGui.SameLine();
         }
@@ -259,7 +259,7 @@ internal class MultiModeOverlay : Window
             }
             else
             {
-                ImGuiEx.Text($"loading submarine.png");
+                ImGuiEx.Text("正在加载界面…");
             }
             ImGui.SameLine();
         }
@@ -285,7 +285,7 @@ internal class MultiModeOverlay : Window
             }
             else
             {
-                ImGuiEx.Text($"loading bell.png");
+                ImGuiEx.Text("正在加载界面…");
             }
             ImGui.SameLine();
         }
@@ -312,7 +312,7 @@ internal class MultiModeOverlay : Window
             }
             else
             {
-                ImGuiEx.Text($"loading notify.png");
+                ImGuiEx.Text("正在加载界面…");
             }
             ImGui.SameLine();
         }
@@ -326,11 +326,11 @@ internal class MultiModeOverlay : Window
                     if(ThreadLoadImageHandler.TryGetTextureWrap(Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName, "res", "wait.png"), out var t))
                     {
                         ImGui.Image(t.Handle, StatusPanelSize / 2);
-                        ImGuiEx.Tooltip("已全域启用等待所有远征探险功能");
+                        ImGuiEx.Tooltip("已全局启用等待所有远航探索功能");
                     }
                     else
                     {
-                        ImGuiEx.Text($"loading wait.png");
+                        ImGuiEx.Text("正在加载界面…");
                     }
                     ImGui.SameLine();
                 }
@@ -339,11 +339,11 @@ internal class MultiModeOverlay : Window
                     if(ThreadLoadImageHandler.TryGetTextureWrap(Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName, "res", "wait.png"), out var t))
                     {
                         ImGui.Image(t.Handle, StatusPanelSize / 2);
-                        ImGuiEx.Tooltip("已为此角色启用等待所有远征探险功能");
+                        ImGuiEx.Tooltip("已为此角色启用等待所有远航探索功能");
                     }
                     else
                     {
-                        ImGuiEx.Text($"loading wait.png");
+                        ImGuiEx.Text("正在加载界面…");
                     }
                     ImGui.SameLine();
                 }

@@ -17,7 +17,7 @@ public static unsafe class TroubleshootingUI
 
     public static void Draw()
     {
-        ImGuiEx.TextWrapped("本分页将检查您的配置是否有常见问题，您可以在联络技术支援前自行解决这些问题。");
+        ImGuiEx.TextWrapped("此页面会检查配置中的常见问题，方便你在联系技术支持前自行排查。");
 
         if(!Player.Available)
         {
@@ -32,7 +32,7 @@ public static unsafe class TroubleshootingUI
 
         if(Data == null)
         {
-            Error($"找不到目前角色的资料。请开启传唤铃、探险队（派遣）面板或重新登录以产生资料。");
+            Error("找不到当前角色的数据。请打开传唤铃或远航探索管制面板，或重新登录以生成数据。");
         }
 
         if(C.IgnoreGCRankCheck)
@@ -42,12 +42,12 @@ public static unsafe class TroubleshootingUI
 
         if(!Svc.ClientState.ClientLanguage.EqualsAny(ClientLanguage.Japanese, ClientLanguage.German, ClientLanguage.French, ClientLanguage.English))
         {
-            Error($"侦测到非国际服客户端。 AutoRetainer未在其它最终幻想14客户端上进行测试。部分或全部功能可能无法正常运作。此外，请注意，ottercorp 的中国 Dalamud 分支会在未经您同意的情况下收集有关您的电脑、角色、所用插件和 Dalamud 配置的遥测数据，并且您无法选择退出。");
+            Warning("检测到非国际服客户端。当前汉化版已针对国服适配，但上游功能更新后仍可能出现国服特有的兼容性问题。");
         }
 
         if(C.DontLogout)
         {
-            Error("已启用DontLogout调试选项");
+            Error("已启用 DontLogout 调试选项。");
         }
 
         if(C.FullAutoGCDelivery) 
@@ -67,11 +67,11 @@ public static unsafe class TroubleshootingUI
             }
             if(warnSub && C.FullAutoGCDeliveryInventory < 50)
             {
-                Warning($"在潜水艇模块启用的情况下，多角色模式专家交付的空闲背包栏位触发值被设置为 {C.FullAutoGCDeliveryInventory}。建议至少设置为 50，以避免背包溢出问题。");
+                Warning($"已启用潜水艇处理，但多角色模式筹备稀有品的背包剩余触发值仅为 {C.FullAutoGCDeliveryInventory}。建议至少设为 50，避免背包空间不足。");
             }
             if(C.FullAutoGCDeliveryInventory < maxRetainersWhenGcDelivery * 5)
             {
-                Warning($"你的一些多角色模式角色启用了 {maxRetainersWhenGcDelivery} 名雇员，而多角色模式专家交付的空闲背包栏位触发值被设置为 {C.FullAutoGCDeliveryInventory}。强烈建议你至少设置为 {C.FullAutoGCDeliveryInventory * maxRetainersWhenGcDelivery}（每名雇员 5 个栏位）。");
+                Warning($"部分角色启用了 {maxRetainersWhenGcDelivery} 名雇员，但筹备稀有品的背包剩余触发值仅为 {C.FullAutoGCDeliveryInventory}。建议至少设为 {maxRetainersWhenGcDelivery * 5}（每名雇员预留 5 格）。");
             }
         }
 
@@ -89,7 +89,7 @@ public static unsafe class TroubleshootingUI
 
         if((C.GlobalTeleportOptions.Enabled || C.OfflineData.Any(x => x.TeleportOptionsOverride.Enabled == true)) && !Svc.PluginInterface.InstalledPlugins.Any(x => x.InternalName == "Lifestream" && x.IsLoaded))
         {
-            Error("已启用传送功能但未安装或未加载 Lifestream 插件。在此配置下 AutoRetainer 无法运作。请禁用传送功能或安装 Lifestream 插件。");
+            Error("已启用传送功能，但未安装或加载 Lifestream 插件。AutoRetainer 无法在此配置下运行，请禁用传送功能或安装 Lifestream。");
         }
 
         foreach(var x in C.SubmarineUnlockPlans)
@@ -112,7 +112,7 @@ public static unsafe class TroubleshootingUI
         {
             if(DalamudReflector.IsOnStaging())
             {
-                Error($"侦测到非正式版Dalamud分支。这可能导致问题。请透过输入/xlbranch开启分支切换器，切换到 \"release\" 分支并重新启动游戏");
+                Error("检测到非正式版 Dalamud 分支，可能导致兼容性问题。请输入 /xlbranch 打开分支切换器，切换到 release 分支并重启游戏。");
             }
         }
         catch(Exception e)
@@ -123,19 +123,19 @@ public static unsafe class TroubleshootingUI
         {
             if(Player.CurrentWorld != Player.HomeWorld)
             {
-                Error("您正在访问其他服务器。必须返回原始服务器后，AutoRetainer才能继续处理此角色。");
+                Error("当前正在跨服。返回所属服务器后，AutoRetainer 才能继续处理此角色。");
             }
             if(C.Blacklist.Any(x => x.CID == Player.CID))
             {
-                Error("目前角色已完全排除在AutoRetainer处理之外。请前往设置→排除项进行变更。");
+                Error("当前角色已被 AutoRetainer 完全排除。请前往“设置 → 排除项”修改。");
             }
             if(Data?.ExcludeRetainer == true)
             {
-                Error("目前角色已被排除在雇员清单外。请前往设置→排除项进行变更。");
+                Error("当前角色已被排除在雇员列表外。请前往“设置 → 排除项”修改。");
             }
             if(Data?.ExcludeWorkshop == true)
             {
-                Error("当前角色已被排除在远征探险清单外。请前往设置→排除项进行变更。");
+                Error("当前角色已被排除在远航探索列表外。请前往“设置 → 排除项”修改。");
             }
         }
 
@@ -143,7 +143,7 @@ public static unsafe class TroubleshootingUI
             var list = C.OfflineData.Where(x => x.GetAreTeleportSettingsOverriden());
             if(list.Any())
             {
-                Info("部分角色的传送选项已自订。滑鼠悬停查看清单。", list.Select(x => $"{x.Name}@{x.World}").Print("\n"));
+                Info("部分角色使用了单独的传送设置。鼠标悬停可查看角色列表。", list.Select(x => $"{x.Name}@{x.World}").Print("\n"));
             }
         }
 
@@ -156,12 +156,12 @@ public static unsafe class TroubleshootingUI
 
         if(C.AllowSimpleTeleport)
         {
-            Warning("已启用简单传送选项。此选项不如在Lifestream中登记房屋可靠。如遇到传送问题，请考虑禁用此选项并在Lifestream中登记您的房屋。");
+            Warning("已启用简易传送。此方式不如在 Lifestream 中登记房屋可靠；如遇传送问题，请关闭此选项并登记房屋。");
         }
 
         if(!C.EnableEntrustManager && C.AdditionalData.Any(x => x.Value.EntrustPlan != Guid.Empty))
         {
-            Warning($"托管管理器已全域禁用，但部分雇员已指派托管计划。托管计划将仅在手动操作时处理。");
+            Warning("存放管理器已全局禁用，但部分雇员仍分配了存放计划。这些计划只能手动执行。");
         }
 
         if(C.ExtraDebug)
@@ -193,21 +193,21 @@ public static unsafe class TroubleshootingUI
             var list = C.OfflineData.Where(x => !x.ExcludeRetainer && !x.Enabled && x.RetainerData.Count > 0);
             if(list.Any())
             {
-                Warning($"部分角色未启用雇员多角色模式，但已登记雇员。滑鼠悬停查看清单。", list.Print("\n"));
+                Warning("部分角色记录了雇员，但未启用雇员多角色模式。鼠标悬停可查看角色列表。", list.Print("\n"));
             }
         }
         {
             var list = C.OfflineData.Where(x => !x.ExcludeRetainer && x.Enabled && x.RetainerData.Count > 0 && C.SelectedRetainers.TryGetValue(x.CID, out var rd) && !x.RetainerData.All(r => rd.Contains(r.Name)));
             if(list.Any())
             {
-                Warning($"部分角色未启用所有雇员进行处理。滑鼠悬停查看清单。", list.Print("\n"));
+                Warning("部分角色没有启用全部雇员。鼠标悬停可查看角色列表。", list.Print("\n"));
             }
         }
         {
             var list = C.OfflineData.Where(x => !x.ExcludeWorkshop && !x.WorkshopEnabled && (x.OfflineSubmarineData.Count + x.OfflineAirshipData.Count) > 0);
             if(list.Any())
             {
-                Warning($"部分角色未启用远征探险多角色模式，但已登记远征探险。滑鼠悬停查看清单。", list.Print("\n"));
+                Warning("部分角色记录了远航探索，但未启用远航探索多角色模式。鼠标悬停可查看角色列表。", list.Print("\n"));
             }
         }
 
@@ -215,7 +215,7 @@ public static unsafe class TroubleshootingUI
             var list = C.OfflineData.Where(x => !x.ExcludeWorkshop && x.WorkshopEnabled && x.GetEnabledVesselsData(Internal.VoyageType.Airship).Count + x.GetEnabledVesselsData(Internal.VoyageType.Submersible).Count < Math.Min(x.OfflineAirshipData.Count + x.OfflineSubmarineData.Count, 4));
             if(list.Any())
             {
-                Warning($"部分角色未启用所有远征探险进行处理。滑鼠悬停查看清单。", list.Print("\n"));
+                Warning("部分角色没有启用全部远航探索。鼠标悬停可查看角色列表。", list.Print("\n"));
             }
         }
 
@@ -226,7 +226,7 @@ public static unsafe class TroubleshootingUI
 
         if(C.OfflineData.Any(x => x.MultiWaitForAllDeployables))
         {
-            Info("部分角色已启用了\"等待所有待处理潜艇\"选项。这代表对于这些角色，AutoRetainer 会等到所有潜艇回归后才开始处理。将游标悬停在此处可查看启用了此选项的角色清单。", C.OfflineData.Where(x => x.MultiWaitForAllDeployables).Select(x => $"{x.Name}@{x.World}").Print("\n"));
+            Info("部分角色启用了“等待所有待处理潜艇”。AutoRetainer 会等这些角色的全部潜艇返航后再开始处理。鼠标悬停可查看角色列表。", C.OfflineData.Where(x => x.MultiWaitForAllDeployables).Select(x => $"{x.Name}@{x.World}").Print("\n"));
         }
 
         if(C.MultiModeWorkshopConfiguration.MultiWaitForAll)
@@ -236,7 +236,7 @@ public static unsafe class TroubleshootingUI
 
         if(C.MultiModeWorkshopConfiguration.WaitForAllLoggedIn)
         {
-            Info("潜艇已启用「即使已登录也等待」选项。这代表即使你已在线上，AutoRetainer 仍会等到该角色的所有潜艇任务完成后才进行处理。");
+            Info("潜艇已启用“即使已登录也等待”。即使角色当前在线，AutoRetainer 也会等该角色的全部潜艇返航后再处理。");
         }
 
         if(C.DisableRetainerVesselReturn > 0)
@@ -258,7 +258,7 @@ public static unsafe class TroubleshootingUI
 
         if(C.MultiModeRetainerConfiguration.WaitForAllLoggedIn)
         {
-            Info("雇员已启用\"即使已登录也等待\"选项。这代表即使你已在线上，AutoRetainer 仍会等到该角色的所有雇员探险完成后才进行处理。");
+            Info("雇员已启用“即使已登录也等待”。即使角色当前在线，AutoRetainer 也会等该角色的全部雇员探险完成后再处理。");
         }
 
         {
@@ -276,11 +276,11 @@ public static unsafe class TroubleshootingUI
             }
             if(manualList.Count > 0)
             {
-                Info("你的一些雇员设置了手动存放计划。这些计划在重新派遣雇员后不会自动执行，只能透过点击覆盖界面上的按钮来手动触发。将游标悬停以查看名单。", manualList.Print("\n"));
+                Info("部分雇员使用手动存放计划。重新派遣后不会自动执行，只能点击覆盖层按钮触发。鼠标悬停可查看列表。", manualList.Print("\n"));
             }
             if(deletedList.Count > 0)
             {
-                Warning("你的一些雇员存放计划先前已被删除。这些雇员将不会存放任何物品。将游标悬停以查看名单。", deletedList.Print("\n"));
+                Warning("部分雇员使用的存放计划已被删除，因此不会存放任何物品。鼠标悬停可查看列表。", deletedList.Print("\n"));
             }
         }
 
@@ -291,27 +291,27 @@ public static unsafe class TroubleshootingUI
 
         if(Svc.PluginInterface.InstalledPlugins.Any(x => x.InternalName == "SimpleTweaksPlugin" && x.IsLoaded))
         {
-            Info("侦测到 Simple Tweaks 插件。任何与雇员或潜水艇相关的微调都可能对 AutoRetainer 的功能造成负面影响。请确保微调设置不会干扰 AutoRetainer 的运作。");
+            Info("检测到 Simple Tweaks 插件。与雇员或潜水艇有关的调整可能干扰 AutoRetainer，请检查相关设置。");
         }
 
         if(Svc.PluginInterface.InstalledPlugins.Any(x => x.InternalName == "PandorasBox" && x.IsLoaded))
         {
-            Info("侦测到 Pandora's Box 插件。在 AutoRetainer 启用时自动执行动作可能会造成负面影响。请确保当 AutoRetainer 处于活动状态时，Pandora's Box 不会自动执行任何动作。");
+            Info("检测到 Pandora's Box 插件。请确保 AutoRetainer 运行时，Pandora's Box 不会自动执行动作。");
         }
 
         if(Svc.PluginInterface.InstalledPlugins.Any(x => x.InternalName == "Automaton" && x.IsLoaded))
         {
-            Info("侦测到 Automaton 插件。在 AutoRetainer 启用时自动执行动作或自动输入数值可能会造成负面影响。请确保在 AutoRetainer 活动期间，Automaton 不会自动执行动作。");
+            Info("检测到 Automaton 插件。请确保 AutoRetainer 运行时，Automaton 不会自动执行动作或输入数值。");
         }
 
         if(Svc.PluginInterface.InstalledPlugins.Any(x => x.InternalName == "RotationSolver" && x.IsLoaded))
         {
-            Info("侦测到 RotationSolver 插件。在 AutoRetainer 启用时自动执行技能可能会造成负面影响。请确保在 AutoRetainer 活动期间，RotationSolver 不会自动执行动作。");
+            Info("检测到 RotationSolver 插件。请确保 AutoRetainer 运行时，RotationSolver 不会自动执行技能或其他动作。");
         }
 
         if(Svc.PluginInterface.InstalledPlugins.Any(x => x.InternalName.StartsWith("BossMod") && x.IsLoaded))
         {
-            Info("侦测到 BossMod 插件。在 AutoRetainer 启用时自动执行动作可能会造成负面影响。请确保在 AutoRetainer 活动期间，BossMod 不会自动执行动作。");
+            Info("检测到 BossMod 插件。请确保 AutoRetainer 运行时，BossMod 不会自动执行动作。");
         }
 
         ImGui.Separator();
@@ -320,16 +320,16 @@ public static unsafe class TroubleshootingUI
         CheckExpertSetting("有可用派遣任务时存取传唤铃的操作", nameof(C.OpenBellBehaviorWithVentures));
         CheckExpertSetting("访问传唤铃后任务完成行为", nameof(C.TaskCompletedBehaviorAccess));
         CheckExpertSetting("手动启用后任务完成行为", nameof(C.TaskCompletedBehaviorManual));
-        CheckExpertSetting("如果 5 分钟内有雇员将完成探险，则停留在雇员选单中", nameof(C.Stay5));
+        CheckExpertSetting("如果 5 分钟内有雇员将完成探险，则停留在雇员菜单中", nameof(C.Stay5));
         CheckExpertSetting("关闭雇员列表时自动禁用插件", nameof(C.AutoDisable));
         CheckExpertSetting("不显示插件状态图标", nameof(C.HideOverlayIcons));
         CheckExpertSetting("显示多角色模式类型选择器", nameof(C.DisplayMMType));
-        CheckExpertSetting("在部队工房中显示远航探险", nameof(C.ShowDeployables));
+        CheckExpertSetting("在部队工房中显示远航探索", nameof(C.ShowDeployables));
         CheckExpertSetting("启用应急复原模块", nameof(C.EnableBailout));
-        CheckExpertSetting("AutoRetainer尝试解除卡死前的超时时间(秒)", nameof(C.BailoutTimeout));
+        CheckExpertSetting("AutoRetainer 尝试解除卡死前的超时时间（秒）", nameof(C.BailoutTimeout));
         CheckExpertSetting("禁用排序和折叠/展开功能", nameof(C.NoCurrentCharaOnTop));
-        CheckExpertSetting("在插件UI栏显示多角色模式复选框", nameof(C.MultiModeUIBar));
-        CheckExpertSetting("雇员选单延迟(秒)", nameof(C.RetainerMenuDelay));
+        CheckExpertSetting("在插件界面栏显示多角色模式复选框", nameof(C.MultiModeUIBar));
+        CheckExpertSetting("雇员菜单延迟（秒）", nameof(C.RetainerMenuDelay));
         CheckExpertSetting("不检查派遣计划错误", nameof(C.NoErrorCheckPlanner2));
         CheckExpertSetting("启用多角色模式时，尝试进入附近房屋", nameof(C.MultiHETOnEnable));
         CheckExpertSetting("Artisan 整合功能", nameof(C.ArtisanIntegration));

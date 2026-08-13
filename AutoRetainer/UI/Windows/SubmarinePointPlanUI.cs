@@ -126,7 +126,7 @@ internal unsafe class SubmarinePointPlanUI : Window
                     Copy(JsonConvert.SerializeObject(SelectedPlan));
                 }
                 ImGui.SameLine();
-                if(ImGui.Button($"贴上计划设置"))
+                if(ImGui.Button($"粘贴计划设置"))
                 {
                     try
                     {

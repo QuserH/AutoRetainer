@@ -167,26 +167,26 @@ internal static unsafe class MultiModeUI
         StatusTextWidth = 0f;
         UIUtils.DrawOverlayTexts(overlayTexts, ref StatusTextWidth);
 
-        if(C.Verbose && ImGui.CollapsingHeader("Debug"))
+        if(C.Verbose && ImGui.CollapsingHeader("调试"))
         {
-            ImGuiEx.Text($"GetCurrentTargetCharacter: {MultiMode.GetCurrentTargetCharacter()}");
+            ImGuiEx.Text($"当前目标角色：{MultiMode.GetCurrentTargetCharacter()}");
             //ImGuiEx.Text($"Yes Already: {YesAlready.IsEnabled()}");
-            ImGuiEx.Text($"IsCurrentCharacterDone: {MultiMode.IsCurrentCharacterDone()}");
-            ImGuiEx.Text($"NextInteraction: {Math.Max(0, MultiMode.NextInteractionAt - Environment.TickCount64)}");
-            ImGuiEx.Text($"EnsureCharacterValidity: {MultiMode.EnsureCharacterValidity(true)}");
-            ImGuiEx.Text($"IsInteractionAllowed: {MultiMode.IsInteractionAllowed()}");
-            ImGuiEx.Text($"GetPreferredCharacter: {MultiMode.GetPreferredCharacter()}");
-            ImGuiEx.Text($"IsAllRetainersHaveMoreThan15Mins: {MultiMode.IsAllRetainersHaveMoreThan15Mins()}");
-            ImGuiEx.Text($"Target ?? Preferred: {MultiMode.GetCurrentTargetCharacter() ?? MultiMode.GetPreferredCharacter()}");
+            ImGuiEx.Text($"当前角色已处理完毕：{MultiMode.IsCurrentCharacterDone()}");
+            ImGuiEx.Text($"距下次操作：{Math.Max(0, MultiMode.NextInteractionAt - Environment.TickCount64)} 毫秒");
+            ImGuiEx.Text($"角色有效：{MultiMode.EnsureCharacterValidity(true)}");
+            ImGuiEx.Text($"允许交互：{MultiMode.IsInteractionAllowed()}");
+            ImGuiEx.Text($"首选角色：{MultiMode.GetPreferredCharacter()}");
+            ImGuiEx.Text($"所有雇员剩余时间均超过 15 分钟：{MultiMode.IsAllRetainersHaveMoreThan15Mins()}");
+            ImGuiEx.Text($"目标或首选角色：{MultiMode.GetCurrentTargetCharacter() ?? MultiMode.GetPreferredCharacter()}");
             //ImGuiEx.Text($"GetAutoAfkOpt: {MultiMode.GetAutoAfkOpt()}");
             //ImGuiEx.Text($"AutoAfkValue: {ConfigModule.Instance()->GetIntValue(145)}");
-            ImGuiEx.Text($"LastLongin: {MultiMode.LastLogin:X16}");
-            ImGuiEx.Text($"AnyRetainersAvailable: {MultiMode.AnyRetainersAvailable()}");
-            ImGuiEx.Text($"IsAnySelectedRetainerFinishesWithin, 60: {MultiMode.IsAnySelectedRetainerFinishesWithin(60)}");
-            ImGuiEx.Text($"IsAnySelectedRetainerFinishesWithin, 5*60: {MultiMode.IsAnySelectedRetainerFinishesWithin(5 * 60)}");
+            ImGuiEx.Text($"上次登录角色：{MultiMode.LastLogin:X16}");
+            ImGuiEx.Text($"存在可处理雇员：{MultiMode.AnyRetainersAvailable()}");
+            ImGuiEx.Text($"有雇员将在 60 秒内完成：{MultiMode.IsAnySelectedRetainerFinishesWithin(60)}");
+            ImGuiEx.Text($"有雇员将在 5 分钟内完成：{MultiMode.IsAnySelectedRetainerFinishesWithin(5 * 60)}");
             foreach(var data in C.OfflineData)
             {
-                ImGuiEx.Text($"Chatacter {data}\n  GetNeededVentureAmount: {data.GetNeededVentureAmount()}");
+                ImGuiEx.Text($"角色 {data}\n  所需探险币：{data.GetNeededVentureAmount()}");
             }
         }
     }

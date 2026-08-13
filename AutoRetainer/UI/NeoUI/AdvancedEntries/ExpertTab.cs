@@ -12,15 +12,15 @@ public class ExpertTab : NeoUIEntry
         .EnumComboFullWidth(null, "存取雇员铃铛时若有可用探险任务的动作：", () => ref C.OpenBellBehaviorWithVentures, null, Lang.OpenBellBehaviorNames)
         .EnumComboFullWidth(null, "存取铃铛后任务完成的行为：", () => ref C.TaskCompletedBehaviorAccess, null, Lang.TaskCompletedBehaviorNames)
         .EnumComboFullWidth(null, "手动启用后任务完成的行为：", () => ref C.TaskCompletedBehaviorManual, null, Lang.TaskCompletedBehaviorNames)
-        .EnumComboFullWidth(null, "插件运作期间任务完成的行为：", () => ref C.TaskCompletedBehaviorAuto, null, Lang.TaskCompletedBehaviorNames)
-        .TextWrapped(ImGuiColors.DalamudGrey, "多角色模式运作期间，上述3个设置中的\"关闭雇员清单并禁用外挂程式\"选项将被强制启用。")
-        .Checkbox("如果 5 分钟内有雇员将完成探险，则停留在雇员选单中", () => ref C.Stay5, "此选项在多角色模式运行期间强制启用。")
-        .Checkbox($"关闭雇员列表时自动禁用插件", () => ref C.AutoDisable, "仅在你手动退出选单时生效；否则将套用上方的设置。")
+        .EnumComboFullWidth(null, "插件运行期间任务完成的行为：", () => ref C.TaskCompletedBehaviorAuto, null, Lang.TaskCompletedBehaviorNames)
+        .TextWrapped(ImGuiColors.DalamudGrey, "多角色模式运行期间，上述三个设置会强制使用“关闭雇员列表并禁用插件”。")
+        .Checkbox("如果 5 分钟内有雇员完成探险，则停留在雇员列表", () => ref C.Stay5, "多角色模式运行期间会强制启用此选项。")
+        .Checkbox($"关闭雇员列表时自动禁用插件", () => ref C.AutoDisable, "仅在手动关闭雇员列表时生效；其他情况使用上方设置。")
         .Checkbox($"不显示插件状态图标", () => ref C.HideOverlayIcons)
         .Checkbox($"显示多角色模式类型选择器", () => ref C.DisplayMMType)
-        .Checkbox($"在部队工房中显示远航探险", () => ref C.ShowDeployables)
+        .Checkbox($"在部队工房中显示远航探索", () => ref C.ShowDeployables)
         .Checkbox("启用应急复原模块", () => ref C.EnableBailout)
-        .InputInt(150f, "AutoRetainer尝试解除卡死前的超时时间(秒)", () => ref C.BailoutTimeout)
+        .InputInt(150f, "AutoRetainer 尝试解除卡死前的超时时间（秒）", () => ref C.BailoutTimeout)
 
         .Section("设置")
         .Checkbox("允许操作没有职业的雇员", () => ref C.AllowUnemployed)
@@ -34,8 +34,8 @@ public class ExpertTab : NeoUIEntry
             ImGuiEx.HelpMarker("跳过登录动画可被服务器检测到，会增加被封锁机率", EColor.RedBright, FontAwesomeIcon.ExclamationTriangle.ToIconString());
         })
         .Checkbox($"禁用排序和折叠/展开功能", () => ref C.NoCurrentCharaOnTop)
-        .Checkbox($"在插件UI栏显示多角色模式复选框", () => ref C.MultiModeUIBar)
-        .SliderIntAsFloat(100f, "雇员选单延迟(秒)", () => ref C.RetainerMenuDelay.ValidateRange(0, 2000), 0, 2000)
+        .Checkbox($"在插件界面栏显示多角色模式复选框", () => ref C.MultiModeUIBar)
+        .SliderIntAsFloat(100f, "雇员菜单延迟（秒）", () => ref C.RetainerMenuDelay.ValidateRange(0, 2000), 0, 2000)
         .Checkbox($"允许探险计时器显示负值", () => ref C.TimerAllowNegative)
         .Checkbox($"不检查派遣计划错误", () => ref C.NoErrorCheckPlanner2)
         .Checkbox("启用手动重新登录后的角色后处理", () => ref C.AllowManualPostprocess, "当 AutoRetainer 锁定在后处理状态时，允许手动调用指令。")
@@ -70,14 +70,14 @@ public class ExpertTab : NeoUIEntry
                 {
                     i += d.RetainerData.RemoveAll(x => x.Name == "");
                 }
-                DuoLog.Information($"Cleaned {i} entries");
+                DuoLog.Information($"已清理 {i} 条无效雇员记录");
             }
         })
 
         .Section("导入/导出")
         .Widget(() =>
         {
-            if(ImGui.Button("导出（不含角色资料）"))
+            if(ImGui.Button("导出（不含角色数据）"))
             {
                 var clone = C.JSONClone();
                 clone.OfflineData = null;
@@ -88,7 +88,7 @@ public class ExpertTab : NeoUIEntry
                 clone.AutoLogin = "";
                 Copy(EzConfig.DefaultSerializationFactory.Serialize(clone, false));
             }
-            if(ImGui.Button("导入并合并角色资料"))
+            if(ImGui.Button("导入并合并角色数据"))
             {
                 try
                 {

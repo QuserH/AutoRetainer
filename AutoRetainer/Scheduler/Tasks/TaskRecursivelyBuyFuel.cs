@@ -41,7 +41,7 @@ public unsafe class TaskRecursivelyBuyFuel
                 var fuel = shop.Items.FirstOrDefault(x => x.ItemId == 10155);
                 if(fuel.ItemId != 10155 || fuel.Price == 0)
                 {
-                    PluginLog.Warning("Unable to find ceruleum tanks in the Free Company credit shop.");
+                    PluginLog.Warning("未在部队用品商店中找到青磷水。");
                     return true;
                 }
                 var amount = Math.Clamp((int)(reader.Credits / fuel.Price), 1, Math.Min(fuel.MaxPurchaseSize, remaining));

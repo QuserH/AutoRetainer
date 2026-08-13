@@ -42,6 +42,7 @@ UI_METHODS = {
     "iconbuttonwithtext", "textv", "begincombo", "inputtextwithhint", "textwrapped",
     "textcentered", "texttitled", "drawlabel", "hint", "subheader", "samelinehelp",
     "spinner", "textcopyable", "helpmarker", "hoveredandclicked",
+    "settooltip", "treenodecollapsingheader", "begindefaulttable",
 }
 
 BLACK_METHODS = {

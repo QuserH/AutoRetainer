@@ -482,7 +482,7 @@ internal static unsafe class GCContinuation
                                 }
                                 else
                                 {
-                                    DuoLog.Information($"Purchasing {i}'th item {itemInfo.Name} (venture)");
+                                    DuoLog.Information($"正在兑换第 {i + 1} 项：{itemInfo.Name}（探险币）");
                                 }
                                 ContinuePurchase(meta, amount, currentSealsCount, item);
                                 return true;
@@ -499,7 +499,7 @@ internal static unsafe class GCContinuation
                                 }
                                 else
                                 {
-                                    DuoLog.Information($"Purchasing {i}'th item {itemInfo.Name}");
+                                    DuoLog.Information($"正在兑换第 {i + 1} 项：{itemInfo.Name}");
                                 }
                                 ContinuePurchase(meta, amount, currentSealsCount, item);
                                 return true;

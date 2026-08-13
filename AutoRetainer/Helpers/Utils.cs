@@ -96,7 +96,7 @@ public static unsafe class Utils
         {
             Data.WorkshopEnabled = false;
             CleanupOperations();
-            S.AnomalyWindow.Add($"Insufficient fuel. To ensure stable operation, you must have 30 or more ceruleum tanks, this is a hard requirement. You have only {fuelInInventory} ceruleum tanks. Please replenish your fuel. Character excluded from submarines.");
+            S.AnomalyWindow.Add($"青磷水不足。为保证流程稳定，背包中至少需要 30 个青磷水；当前只有 {fuelInInventory} 个。请补充青磷水。该角色已停止处理潜水艇。");
         }
     }
 
@@ -685,7 +685,7 @@ public static unsafe class Utils
             {
                 if(imPlan.IMProtectList.Contains(slot->ItemId))
                 {
-                    DuoLog.Warning($"请求丢弃栏位 {type}[{slotIndex}] 中的物品 {ExcelItemHelper.GetName(expectedItem)} 受保护，无法丢弃");
+                    DuoLog.Warning($"请求丢弃槽位 {type}[{slotIndex}] 中的物品 {ExcelItemHelper.GetName(expectedItem)} 受保护，无法丢弃");
                 }
                 else
                 {
@@ -701,7 +701,7 @@ public static unsafe class Utils
             }
             else
             {
-                DuoLog.Warning($"请求丢弃栏位 {type}[{slotIndex}]，预期物品 {ExcelItemHelper.GetName(expectedItem)}，实际为 {slotIndex}，无法丢弃");
+                DuoLog.Warning($"请求丢弃槽位 {type}[{slotIndex}]，预期物品 {ExcelItemHelper.GetName(expectedItem)}，实际为 {slotIndex}，无法丢弃");
             }
         }
     }

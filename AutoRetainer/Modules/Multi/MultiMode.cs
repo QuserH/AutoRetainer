@@ -154,7 +154,7 @@ internal static unsafe class MultiMode
                 if(val != 0)
                 {
                     Svc.GameConfig.Set(SystemConfigOption.AutoAfkSwitchingTime, 0u);
-                    S.AnomalyWindow.Add($"Your Auto Afk Switching Time option was incompatible with current AutoRetainer configuration and was set to (Never). This is not an error.");
+                    S.AnomalyWindow.Add("游戏的自动离开模式等待时间与当前 AutoRetainer 设置冲突，已改为“从不”。这不是错误。");
                 }
             }
         }
@@ -164,7 +164,7 @@ internal static unsafe class MultiMode
                 if(val != 0)
                 {
                     Svc.GameConfig.Set(SystemConfigOption.IdlingCameraAFK, 0u);
-                    S.AnomalyWindow.Add($"Your Idling Camera AFK option was incompatible with current AutoRetainer configuration and was set to (Disabled). This is not an error.");
+                    S.AnomalyWindow.Add("游戏的空闲镜头设置与当前 AutoRetainer 设置冲突，已将其关闭。这不是错误。");
                 }
             }
         }
@@ -612,7 +612,7 @@ internal static unsafe class MultiMode
                     P.TaskManager.Enqueue(() => Player.Interactable && IsScreenReady());
                     if(C.DontLogout)
                     {
-                        P.TaskManager.Enqueue(() => DuoLog.Warning($"Would change character to {data?.NameWithWorldCensored ?? "Logout"}"));
+                        P.TaskManager.Enqueue(() => DuoLog.Warning($"原本将切换至角色：{data?.NameWithWorldCensored ?? "退出登录"}"));
                         P.TaskManager.EnqueueDelay(99999999);
                     }
                     else

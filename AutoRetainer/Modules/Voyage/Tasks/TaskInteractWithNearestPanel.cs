@@ -12,7 +12,7 @@ internal static class TaskInteractWithNearestPanel
             TaskNeoHET.TryEnterWorkshop(() =>
             {
                 Data.WorkshopEnabled = false;
-                DuoLog.Error($"由于无法找到工房，该角色已被排除在远征探险处理之外");
+                DuoLog.Error($"由于无法找到工房，该角色已被排除在远航探索处理之外");
                 P.TaskManager.Abort();
             });
         }

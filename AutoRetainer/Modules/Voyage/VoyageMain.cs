@@ -33,13 +33,13 @@ internal static unsafe class VoyageMain
             if(txt == LogMessage.Get(4141).Text.GetText())
             {
                 //You are not authorized to finalize exploratory or subaquatic voyages.
-                S.AnomalyWindow.Add($"You lack sufficient permissions to resend submarines. Character excluded from submarines. (FC {(Player.Available?Player.Object.Struct()->FreeCompanyTagString:"")})");
+                S.AnomalyWindow.Add($"当前角色没有重新派遣潜水艇的部队权限，已停止处理该角色的潜水艇。（部队简称：{(Player.Available?Player.Object.Struct()->FreeCompanyTagString:"")}）");
                 Utils.CleanupOperations();
                 Data.WorkshopEnabled = false;
             }
             if(txt == Lang.VoyageInventoryError)
             {
-                S.AnomalyWindow.Add($"Your inventory is full. Character excluded from submarines.");
+                S.AnomalyWindow.Add("背包空间不足，已停止处理该角色的潜水艇。");
                 Utils.CleanupOperations();
                 Data.WorkshopEnabled = false;
             }
@@ -48,7 +48,7 @@ internal static unsafe class VoyageMain
                 TaskRepairAll.Abort = true;
                 DuoLog.Warning($"[远征] 你的修理配件用完了！");
                 Data.GetEnabledVesselsData(TaskRepairAll.Type).Remove(TaskRepairAll.Name);
-                S.AnomalyWindow.Add($"Out of repair materials, could not repair {TaskRepairAll.Type} {TaskRepairAll.Name}");
+                S.AnomalyWindow.Add($"魔导修理材料不足，无法修理 {TaskRepairAll.Name}（{TaskRepairAll.Type}）。");
             }
         }
     }
@@ -85,7 +85,7 @@ internal static unsafe class VoyageMain
                             }
                             else
                             {
-                                Notify.Warning($"警告！\n远征探险未启用，因为还没有任何可处理的内容");
+                                Notify.Warning($"警告！\n远航探索未启用，因为还没有任何可处理的内容");
                             }
                         }
                     }

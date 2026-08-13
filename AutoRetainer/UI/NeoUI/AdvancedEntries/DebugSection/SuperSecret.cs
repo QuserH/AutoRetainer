@@ -8,7 +8,7 @@ internal class SuperSecret : DebugSectionBase
     {
         ImGuiEx.TextWrapped(ImGuiColors.ParsedOrange, "这里可能会发生任何状况");
         ImGui.Checkbox("旧版传唤铃感应", ref C.OldRetainerSense);
-        ImGuiComponents.HelpMarker("侦测并使用玩家有效距离内最近的传唤铃");
+        ImGuiComponents.HelpMarker("检测并使用玩家有效距离内最近的传唤铃");
         ImGuiEx.TextWrapped(ImGuiColors.DalamudGrey, "在多角色模式执行期间，强制启用传唤铃感应");
         ImGui.Separator();
         ImGui.Checkbox($"不安全选项保护", ref C.UnsafeProtection);

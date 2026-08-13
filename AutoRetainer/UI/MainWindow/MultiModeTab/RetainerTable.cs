@@ -57,7 +57,7 @@ public static unsafe class RetainerTable
                         if(!C.EnableEntrustManager) c = ImGuiColors.DalamudRed;
                         ImGuiEx.Text(c, Lang.IconDuplicate);
                         ImGui.PopFont();
-                        ImGuiEx.Tooltip($"存放计划 \"{plan.Name}\" 已激活。" + (plan.ManualPlan ? "\nThis is manual processing plan" : "") + (Utils.GetReachableRetainerBell(false) != null ? "\nClick to Entrust." : ""));
+                        ImGuiEx.Tooltip($"存放计划 \"{plan.Name}\" 已启用。" + (plan.ManualPlan ? "\n这是手动执行的存放计划" : "") + (Utils.GetReachableRetainerBell(false) != null ? "\n点击立即存放物品。" : ""));
                         if(ImGui.IsItemClicked())
                         {
                             if(!Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.OccupiedSummoningBell])

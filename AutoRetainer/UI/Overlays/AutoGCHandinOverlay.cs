@@ -11,7 +11,7 @@ internal unsafe class AutoGCHandinOverlay : Window
     internal float height;
     internal bool Allowed = false;
     internal int Remaining = 0;
-    public AutoGCHandinOverlay() : base("AutoRetainer GC Handin overlay", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoSavedSettings, true)
+    public AutoGCHandinOverlay() : base("AutoRetainer 筹备稀有品覆盖层", ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoSavedSettings, true)
     {
         RespectCloseHotkey = false;
         IsOpen = true;

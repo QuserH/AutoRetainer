@@ -41,7 +41,7 @@ public static unsafe class InventorySpaceManager
             var slot = inv->Items[Task.Slot];
             if(Task.ItemID != slot.ItemId || slot.ItemId == 0 || slot.Quantity != Task.Quantity)
             {
-                DuoLog.Warning($"栏位包含不同的物品 {ExcelItemHelper.GetName(slot.ItemId)}x{slot.Quantity}，应为 {Task}");
+                DuoLog.Warning($"槽位包含不同的物品 {ExcelItemHelper.GetName(slot.ItemId)}x{slot.Quantity}，应为 {Task}");
                 return true;
             }
             if(!IsRetainerInventoryLoaded())
@@ -61,7 +61,7 @@ public static unsafe class InventorySpaceManager
             }
             else
             {
-                DuoLog.Warning($"> IMDry > 将出售栏位 {Task}");
+                DuoLog.Warning($"> IMDry > 将出售槽位 {Task}");
             }
             Log.Add($"[{DateTime.Now}] Sold {Task} on {Data.Name}");
             return true;

@@ -16,7 +16,7 @@ using VesselDescriptor = (ulong CID, string VesselName);
 namespace AutoRetainer.UI.NeoUI;
 public class DeployablesTab : NeoUIEntry
 {
-    public override string Path => "远征探险";
+    public override string Path => "远航探索";
 
     private static int MinLevel = 0;
     private static int MaxLevel = 0;
@@ -67,7 +67,7 @@ public class DeployablesTab : NeoUIEntry
             ImGui.SameLine();
             ImGuiEx.SetNextItemWidthScaled(60f);
             ImGui.DragInt("##rank2", ref MaxLevel, 0.1f);
-            ImGuiEx.TextV($"配置项目:");
+            ImGuiEx.TextV($"配件组合：");
             ImGui.SameLine();
             ImGui.Checkbox($"非", ref InvertConf);
             ImGui.SameLine();

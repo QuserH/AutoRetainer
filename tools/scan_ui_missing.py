@@ -17,6 +17,8 @@ DICT = os.path.join(ROOT, "tools", "zh-CN.json")
 with open(DICT, encoding="utf-8-sig") as f:
     data = json.load(f)
 
+REPORTS = "--write" in sys.argv
+
 dict_lower = {}
 for k, v in data.items():
     if k != v and any("\u4e00" <= c <= "\u9fff" for c in v):
@@ -53,11 +55,13 @@ for fp in walk():
             arrow = get_expr_context(text, pos)
             name_ctx = get_name_context(text, pos)
             is_ui = method in UI_METHODS or \
-                ((arrow == "arrow" or name_ctx == "name") and "/UI/" in rel_slash)
+                ((arrow == "arrow" or name_ctx == "name") and "/UI/" in rel_slash) or \
+                ("/UI/" in rel_slash and re.search(r"(?:Window|Overlay)\s*\([^)]*\)\s*:\s*base\s*\([^\n]*$", text[max(0, pos - 300):pos]))
             visible = re.sub(r"\{[^{}]*\}", "{}", content)
             internal_token = (
                 content.startswith("##") or content.startswith("loading ") or
                 content.startswith(("About", "planbuttons")) or content == "LoginCenter" or
+                method == "begindefaulttable" or
                 re.fullmatch(r"[A-Za-z0-9_.:/\\-]+", content or "") is not None or
                 all("\ue000" <= char <= "\uf8ff" for char in content)
             )
@@ -68,6 +72,7 @@ for fp in walk():
             if not (content.startswith("##") or content == "" or
                     content.startswith("loading ") or content == "LoginCenter" or
                     content in ("Debug", "Discord") or content.startswith(("About", "planbuttons")) or
+                    method == "begindefaulttable" or
                     all("\ue000" <= char <= "\uf8ff" for char in content) or
                     any(marker in content for marker in ("{", "}", "##", "\\u", "%")) or
                     re.fullmatch(r"[-~/:\\.\s]+", content) or
@@ -83,15 +88,18 @@ for fp in walk():
 
 items = sorted(miss.items(), key=lambda x: -x[1][0])
 print(f"未覆盖 UI 字符串总数（去重）: {len(items)}")
-with open(os.path.join(ROOT, "tools", "_ui_missing.txt"), "w", encoding="utf-8") as f:
-    for content, (cnt, files) in items:
-        f.write(f"[{cnt}] {content!r}  # {', '.join(sorted(files))}\n")
-print("清单已写入 tools/_ui_missing.txt")
+if REPORTS:
+    with open(os.path.join(ROOT, "tools", "_ui_missing.txt"), "w", encoding="utf-8") as f:
+        for content, (cnt, files) in items:
+            f.write(f"[{cnt}] {content!r}  # {', '.join(sorted(files))}\n")
+    print("清单已写入 tools/_ui_missing.txt")
 
 fragment_items = sorted(english_fragments.items(), key=lambda x: (-x[1][0], x[0]))
 fragment_path = os.path.join(ROOT, "tools", "_ui_english_fragments.txt")
-with open(fragment_path, "w", encoding="utf-8") as f:
-    for content, (cnt, files) in fragment_items:
-        f.write(f"[{cnt}] {content!r}  # {', '.join(sorted(files))}\n")
+if REPORTS:
+    with open(fragment_path, "w", encoding="utf-8") as f:
+        for content, (cnt, files) in fragment_items:
+            f.write(f"[{cnt}] {content!r}  # {', '.join(sorted(files))}\n")
 print(f"含英文片段的 UI 文本（去重）: {len(fragment_items)}")
-print("清单已写入 tools/_ui_english_fragments.txt")
+if REPORTS:
+    print("清单已写入 tools/_ui_english_fragments.txt")
