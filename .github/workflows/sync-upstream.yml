@@ -81,23 +81,42 @@ jobs:
           }
           git push origin HEAD:master
 
-      - name: Keep plugin version synchronized with upstream
+      - name: Keep plugin version ahead of upstream release
         shell: pwsh
         run: |
-          $upstreamProject = git show upstream/master:AutoRetainer/AutoRetainer.csproj
-          $upstreamVersion = [regex]::Match(($upstreamProject -join "`n"), '<Version>([^<]+)</Version>').Groups[1].Value
-          if ([string]::IsNullOrWhiteSpace($upstreamVersion)) {
-            throw "Unable to read the upstream plugin version."
+          # 上游公开源码可能落后于 puni.sh 实际发布的版本，版本以 puni.sh 为准。
+          $baseVersion = $null
+          try {
+            $repo = Invoke-RestMethod -Uri "https://love.puni.sh/ment.json" -TimeoutSec 30
+            $entry = @($repo) | Where-Object { $_.InternalName -eq "AutoRetainer" } | Select-Object -First 1
+            if ($null -ne $entry -and -not [string]::IsNullOrWhiteSpace($entry.AssemblyVersion)) {
+              $baseVersion = $entry.AssemblyVersion
+            }
+          } catch {
+            Write-Output "::warning::Unable to read puni.sh plugin list: $($_.Exception.Message)"
           }
+
+          if ([string]::IsNullOrWhiteSpace($baseVersion)) {
+            $upstreamProject = git show upstream/master:AutoRetainer/AutoRetainer.csproj
+            $baseVersion = [regex]::Match(($upstreamProject -join "`n"), '<Version>([^<]+)</Version>').Groups[1].Value
+          }
+          if ([string]::IsNullOrWhiteSpace($baseVersion)) {
+            throw "Unable to determine upstream version."
+          }
+
+          # 我们的版本 = 上游已发布版本 +1 个补丁号，避免被其他插件源的同名包提示覆盖。
+          $parts = $baseVersion.Split('.')
+          $parts[-1] = ([int]$parts[-1] + 1).ToString()
+          $targetVersion = $parts -join '.'
 
           $projectPath = "AutoRetainer/AutoRetainer.csproj"
           $project = Get-Content $projectPath -Raw -Encoding utf8
           $currentVersion = [regex]::Match($project, '<Version>([^<]+)</Version>').Groups[1].Value
-          if ($currentVersion -ne $upstreamVersion) {
-            $project = [regex]::Replace($project, '<Version>[^<]+</Version>', "<Version>$upstreamVersion</Version>", 1)
+          if ($currentVersion -ne $targetVersion) {
+            $project = [regex]::Replace($project, '<Version>[^<]+</Version>', "<Version>$targetVersion</Version>", 1)
             Set-Content $projectPath -Value $project -Encoding utf8 -NoNewline
             git add $projectPath
-            git commit -m "chore: align version with upstream v$upstreamVersion"
+            git commit -m "chore: set version to $targetVersion (upstream release $baseVersion + 1)"
             git push origin HEAD:master
           }
 
@@ -124,20 +143,23 @@ jobs:
           $shouldBuild = $manualBuild -or $pushBuild -or ($env:UPSTREAM_CHANGED -eq "true")
           "SHOULD_BUILD=$($shouldBuild.ToString().ToLowerInvariant())" >> $env:GITHUB_ENV
 
-      - name: Download Dalamud SDK
+      - name: Download Dalamud SDK (CN)
         if: env.SHOULD_BUILD == 'true'
         shell: pwsh
         run: |
+          # 国服 Dalamud 分发（ottercorp），不要用国际服 goatcorp 的包。
           $out = Join-Path $env:GITHUB_WORKSPACE "dalamud"
           New-Item -ItemType Directory -Force -Path $out | Out-Null
-          Invoke-WebRequest -Uri "https://github.com/goatcorp/dalamud-distrib/raw/main/latest.zip" -OutFile (Join-Path $out "dalamud.zip")
-          Expand-Archive -Path (Join-Path $out "dalamud.zip") -DestinationPath $out -Force
-          Remove-Item (Join-Path $out "dalamud.zip")
+          $archive = Join-Path $env:RUNNER_TEMP "dalamud-cn.7z"
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ottercorp/dalamud-distrib/main/latest.7z" -OutFile $archive
+          $sevenZip = (Get-Command 7z -ErrorAction SilentlyContinue).Source
+          if (-not $sevenZip) { $sevenZip = 'C:\Program Files\7-Zip\7z.exe' }
+          & $sevenZip x $archive "-o$out" -y | Out-Null
           $dalamudAssembly = Get-ChildItem -Path $out -Recurse -Filter "Dalamud.dll" | Select-Object -First 1
-          if ($null -eq $dalamudAssembly) { throw "Dalamud.dll was not found in the downloaded SDK." }
+          if ($null -eq $dalamudAssembly) { throw "Dalamud.dll was not found in the CN distrib archive." }
           $dalamudRoot = $dalamudAssembly.Directory.FullName
           "DALAMUD_HOME=$dalamudRoot" >> $env:GITHUB_ENV
-          Write-Output "Using Dalamud SDK at $dalamudRoot"
+          Write-Output "Using CN Dalamud SDK at $dalamudRoot"
 
       - name: Build plugin
         if: env.SHOULD_BUILD == 'true'
