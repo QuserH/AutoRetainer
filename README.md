@@ -1,5 +1,15 @@
 ﻿# AutoRetainer
 Collect and assign ventures to your retainers from the comfort of your bed.
+## 汉化版安装 / 更新源
+
+在 Dalamud 的「设置 → 实验性 → 自定义插件仓库」中添加：
+
+```
+https://raw.githubusercontent.com/QuserH/zh-repo/main/pluginmaster.json
+```
+
+保存后在插件安装器搜索「AutoRetainer」安装或更新。下方原版安装说明仍指向上游 puni.sh 源。
+
 ## Become a Supporter!
 If you like AutoRetainer or any of the other plugins I maintain, please consider becoming a supporter on Patreon or via other means! This will help me to continue updating AutoRetainer and work on new plugins and features.
 - [Subscribe on Patreon (Starts from $1)](https://subscribe.nightmarexiv.org/)
