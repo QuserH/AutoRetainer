@@ -9,7 +9,6 @@ using Dalamud.Game;
 using Dalamud.Interface.Components;
 using ECommons.MathHelpers;
 using Lumina.Excel.Sheets;
-using MessagePack;
 
 
 namespace AutoRetainer.UI.MainWindow;
@@ -41,7 +40,7 @@ internal static unsafe class WorkshopUI
             }
         }
         UIUtils.DrawSearch();
-        foreach(var data in sortedData.Where(x => x.OfflineAirshipData.Count + x.OfflineSubmarineData.Count > 0 && !x.ExcludeWorkshop))
+        foreach(var data in sortedData.Where(x => (C.ShowAllInWorkshop || x.OfflineAirshipData.Count + x.OfflineSubmarineData.Count > 0) && !x.ExcludeWorkshop))
         {
             var search = Ref<string>.Get("搜索角色");
             if(search != "" && !$"{data.Name}@{data.World}".Contains(search, StringComparison.OrdinalIgnoreCase)) continue;
@@ -54,17 +53,23 @@ internal static unsafe class WorkshopUI
             ImGuiEx.Tooltip($"在此角色启用多角色模式下的潜水艇自动化");
             ImGuiEx.DragDropRepopulate("工作坊数据重整", data.WorkshopEnabled, ref data.WorkshopEnabled);
             ImGui.SameLine(0, 3);
+
             if(ImGuiEx.IconButton(FontAwesomeIcon.DoorOpen))
             {
-                if(MultiMode.Relog(data, out var error, RelogReason.ConfigGUI))
+                if(!Utils.IsBusy)
                 {
-                    Notify.Success("正在重新登录...");
-                }
-                else
-                {
-                    Notify.Error(error);
+                    MultiMode.Relog(data, out _, RelogReason.ConfigGUI);
                 }
             }
+            if(ImGuiEx.HoveredAndClicked("Left click - relog to this character\nRight click - open quick travel window", ImGuiMouseButton.Right))
+            {
+                if(C.MultiDisableOnRelog)
+                {
+                    MultiMode.Enabled = false;
+                }
+                Svc.Commands.ProcessCommand($"/li w {data.Name}@{data.World}");
+            }
+
             ImGui.SameLine(0, 3);
             if(ImGuiEx.IconButton(FontAwesomeIcon.UserCog))
             {
@@ -78,6 +83,7 @@ internal static unsafe class WorkshopUI
                 CharaConfig.Draw(data, false);
                 ImGui.EndPopup();
             }
+            UIUtils.DrawTeleportIcons(data.CID);
 
             if(data.NumSubSlots > data.GetVesselData(VoyageType.Submersible).Count)
             {
@@ -85,6 +91,15 @@ internal static unsafe class WorkshopUI
                 ImGuiEx.TextV(ImGuiColors.DalamudYellow, "\uf6e3");
                 ImGui.PopFont();
                 ImGuiEx.Tooltip($"你可以建造新的潜水艇（{data.GetVesselData(VoyageType.Submersible).Count}/{data.NumSubSlots}）");
+                ImGui.SameLine(0, 3);
+            }
+
+            if(data.OfflineAirshipData.Count + data.OfflineSubmarineData.Count == 0)
+            {
+                ImGui.PushFont(UiBuilder.IconFont);
+                ImGuiEx.TextV(ImGuiColors.DalamudViolet, FontAwesomeIcon.ShopSlash.ToIconString());
+                ImGui.PopFont();
+                ImGuiEx.Tooltip($"There are no submarines registered or detected on this character");
                 ImGui.SameLine(0, 3);
             }
 
@@ -145,7 +160,6 @@ internal static unsafe class WorkshopUI
             }
 
             data.DrawDCV();
-            UIUtils.DrawTeleportIcons(data.CID);
             SharedUI.DrawLockout(data);
 
             var initCurpos = ImGui.GetCursorPos();
@@ -181,7 +195,11 @@ internal static unsafe class WorkshopUI
             }
 
             ImGui.SameLine(0, 0);
-            List<(bool, string)> texts = [(data.RepairKits < C.UIWarningDepRepairNum, $"修理材料: {data.RepairKits}"), (data.Ceruleum < C.UIWarningDepTanksNum, $"青磷水: {data.Ceruleum}"), (data.InventorySpace < C.UIWarningDepSlotNum, $"背包剩余: {data.InventorySpace}")];
+            List<(bool, string)> texts = [
+                (data.Gil < C.UIWarningGil, $"G: {Utils.FormatGil(data.Gil)}"),
+                (data.RepairKits < C.UIWarningDepRepairNum, $"R: {data.RepairKits}"), 
+                (data.Ceruleum < C.UIWarningDepTanksNum, $"C: {data.Ceruleum}"), 
+                (data.InventorySpace < C.UIWarningDepSlotNum, $"I: {data.InventorySpace}")];
             overlayTexts.Add((new Vector2(ImGui.GetContentRegionMax().X - ImGui.GetStyle().FramePadding.X, rCurPos.Y + ImGui.GetStyle().FramePadding.Y), [.. texts]));
             ImGui.NewLine();
 
@@ -439,11 +457,6 @@ internal static unsafe class WorkshopUI
                 }
             });
         }
-        if(adata.IndexOverride > 0)
-        {
-            ImGui.SameLine();
-            ImGuiEx.Text(ImGuiColors.DalamudGrey3, $"索引覆盖: {adata.IndexOverride}");
-        }
         var end = ImGui.GetCursorPos();
         var p = vessel.GetRemainingSeconds() / (60f * 60f * 24f);
         if(vessel.ReturnTime != 0) Bars.Add((data.CID, Svc.PluginInterface.UiBuilder.FrameCount, start, end, vessel.ReturnTime == 0 ? 0 : p.ValidateRange(0f, 1f)));
@@ -566,10 +579,7 @@ internal static unsafe class WorkshopUI
                 }
             }
             ImGui.Separator();
-            ImGuiEx.SetNextItemWidthScaled(150f);
-            ImGuiEx.SliderInt("索引值覆盖", ref adata.IndexOverride, 0, 4, adata.IndexOverride == 0 ? "禁用" : $"{adata.IndexOverride}");
-            ImGuiComponents.HelpMarker("如果 AutoRetainer 中的舰船顺序与航行控制面板中的顺序不同，请使用此功能为顺序错误的舰船设置正确索引。请确保索引与控制面板中的顺序一致。");
-            if(ImGui.CollapsingHeader("我最近重新命名了这艘潜艇"))
+            if(ImGui.CollapsingHeader("I have recently renamed this vessel"))
             {
                 if(ImGui.BeginCombo("##selprev", "选择更名前的潜艇名称", ImGuiComboFlags.HeightLarge))
                 {

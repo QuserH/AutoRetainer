@@ -46,8 +46,18 @@ public unsafe class InventoryManagementCommon
                 e.Log();
             }
         }
-        ImGuiEx.Tooltip("按住 CTRL 并点击");
-        ImGuiEx.TreeNodeCollapsingHeader("批量新增/移除", () =>
+        ImGuiEx.Tooltip("Hold CTRL and click");
+        ImGui.SameLine();
+        if(ImGuiEx.IconButtonWithText(FontAwesomeIcon.Trash, "Clear list", ImGuiEx.Ctrl))
+        {
+            for(var i = itemList.Count - 1; i >= 0; i--)
+            {
+                var x = itemList[i];
+                removeAction(x);
+            }
+        }
+        ImGuiEx.Tooltip("Hold CTRL and click");
+        ImGuiEx.TreeNodeCollapsingHeader("Mass addition/removal", () =>
         {
             ImGui.SetNextItemWidth(200f);
             if(ImGui.BeginCombo("选择类别", SelectedCategories.Count != 0 ? $"已选择 {SelectedCategories.Count}" : "未选择", ImGuiComboFlags.HeightLarge))

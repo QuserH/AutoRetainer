@@ -99,6 +99,7 @@ internal unsafe class Config
     public int UIWarningDepTanksNum = 300;
     public int UIWarningDepRepairNum = 100;
     public int UIWarningDepSlotNum = 20;
+    public int UIWarningGil = 5000;
     public int TargetMSPTIdle = 0;
     public int TargetMSPTRunning = 0;
     public bool NoFPSLockWhenActive = true;
@@ -116,6 +117,7 @@ internal unsafe class Config
     public bool ShowNightMode = false;
     public bool NightModeRetainers = false;
     public bool NightModeDeployables = true;
+    public bool NightModeAutoWsLocked = false;
     internal bool NightModeFPSLimit = true;
 
     internal bool ExtraDebug = false;
@@ -164,6 +166,8 @@ internal unsafe class Config
     public bool MultiDisableRender = false;
     public bool MultiDisableRenderNightModeOnly = false;
     public bool MultiDisableRenderOnlyInactive = true;
+    public bool NoHetWhenNothingEnabled = true;
+    public bool WindowDefaultOpen = false;
 
     internal bool DontReassign
     {
@@ -250,6 +254,7 @@ internal unsafe class Config
     public bool No2ndInstanceNotify = false;
 
     public bool FCChestGilCheck = false;
+    public bool FCChestItemCheck = false;
     public int FCChestGilCheckCd = 24;
     public Dictionary<ulong, long> FCChestGilCheckTimes = [];
     public Dictionary<ExcelWorldHelper.Region, long> LockoutTime = [];
@@ -269,10 +274,10 @@ internal unsafe class Config
     public bool FullAutoGCDeliveryUseBuffFCAction = false;
     public bool FullAutoGCDeliveryDeliverOnVentureExhaust = false;
     public int FullAutoGCDeliveryDeliverOnVentureLessThan = 50;
-    public float GCHandinDelayMinSeconds = 0;
-    public float GCHandinDelayMaxSeconds = 0;
-    public float GCExchangeDelayMinSeconds = 0;
-    public float GCExchangeDelayMaxSeconds = 0;
+    public bool FullAutoGCDeliveryDeliverOnCeruleumExhaust = false;
+    public int FullAutoGCDeliveryDeliverOnCeruleumLessThan = 400;
+    public int FullAutoGCDeliveryDeliverOnFcPointsLessThan = 5000;
+    public bool FullAutoGCDeliveryBuyBuffFCAction = false;
     public bool VendorItemAfterVoyage = false;
 
     public bool ShutdownOnSubExhaustion = false;
@@ -284,4 +289,9 @@ internal unsafe class Config
 
     public bool PreserveMultiModeState = false;
     public bool MultiModeEnabled = false;
+
+    public bool ShowAllInWorkshop = false;
+
+    public bool? ShouldGrandfatherRetainerCount = null;
+    public bool? ShouldGrandfatherSubmarineCharacterCount = null;
 }

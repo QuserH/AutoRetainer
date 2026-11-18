@@ -44,14 +44,22 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
         启用后:
         - 启用传送的角色将在多角色模式下自动筹备稀有品，并在军衔满足条件时按兑换计划购买物品。
         """)
-        .Checkbox("启用多角色筹备交换", () => ref C.FullAutoGCDelivery)
-        .Checkbox("仅在工作台未锁定时触发", () => ref C.FullAutoGCDeliveryOnlyWsUnlocked)
-        .InputInt(150f, "触发筹备的剩余背包格数 (小于或等于)", () => ref C.FullAutoGCDeliveryInventory, "仅计算主要背包，不包含兵装库")
-        .Checkbox("探险币不足时触发", () => ref C.FullAutoGCDeliveryDeliverOnVentureExhaust, "此选项可能导致每次登录时都前往大国防联军兑换。请确保兑换计划中设置了足够的探险币。")
+        .Checkbox("Enable Multi Mode Expert Delivery", () => ref C.FullAutoGCDelivery)
+        .Checkbox("Only when workstation is not locked", () => ref C.FullAutoGCDeliveryOnlyWsUnlocked)
+        .InputInt(150f, "Inventory slots remaining to trigger delivery, less or equal", () => ref C.FullAutoGCDeliveryInventory, "Only primary inventory is accounted for, not armory")
+
+        .Checkbox("Trigger on venture exhaustion", () => ref C.FullAutoGCDeliveryDeliverOnVentureExhaust, "This may cause situation where you will just go to GC exchange every login. Make sure you have a purchase plan to buy enough ventures set. ")
         .Indent()
         .InputInt(150f, "触发筹备的剩余探险币数量 (小于或等于)", () => ref C.FullAutoGCDeliveryDeliverOnVentureLessThan)
         .Unindent()
-        .Checkbox("优先使用军票加成票券，如果可用的话", () => ref C.FullAutoGCDeliveryUseBuffItem)
+
+        .Checkbox("Trigger on ceruleum tanks and FC seals exhaustion", () => ref C.FullAutoGCDeliveryDeliverOnCeruleumExhaust, "This may cause situation where you will just go to GC exchange every login.")
+        .Indent()
+        .InputInt(150f, "Ceruleum tanks remaining to trigger delivery, less or equal", () => ref C.FullAutoGCDeliveryDeliverOnCeruleumLessThan)
+        .InputInt(150f, "FC points remaining to trigger delivery, less or equal", () => ref C.FullAutoGCDeliveryDeliverOnFcPointsLessThan)
+        .Unindent()
+
+        .Checkbox("Use Priority seal allowance, if possible", () => ref C.FullAutoGCDeliveryUseBuffItem)
         .Widget(() =>
         {
             if(C.FullAutoGCDeliveryUseBuffItem)
@@ -72,12 +80,25 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
             if(C.FullAutoGCDeliveryUseBuffFCAction)
             {
                 ImGui.Indent();
-                if(Data != null)
                 {
-                    ImGuiEx.Checkbox($"排除 {Data.NameWithWorldCensored}", ref Data.NoFcBuffUse);
+                    if(Data != null)
+                    {
+                        ImGuiEx.Checkbox($"Exclude {Data.NameWithWorldCensored}", ref Data.NoFcBuffUse);
+                    }
+                    var cnt = C.OfflineData.Count(x => x.NoFcBuffUse);
+                    ImGuiEx.Text($"{(cnt > 0 ? $"{cnt} character(s) are excluded from buff item usage. " : "")} Navigate to \"Functions, Exclusions, Order\" section to exclude a character.");
                 }
-                var cnt = C.OfflineData.Count(x => x.NoFcBuffUse);
-                ImGuiEx.Text($"{(cnt > 0 ? $"已排除 {cnt} 个角色使用部队军票加成。" : "")}可在“功能、排除与排序”区域中排除角色。");
+                ImGui.Checkbox("Buy buff if needed", ref C.FullAutoGCDeliveryBuyBuffFCAction);
+                ImGui.Indent();
+                {
+                    if(Data != null)
+                    {
+                        ImGuiEx.Checkbox($"Exclude {Data.NameWithWorldCensored} from buff purchase", ref Data.DisallowedFromBuffPurchase);
+                    }
+                    var cnt = C.OfflineData.Count(x => x.DisallowedFromBuffPurchase);
+                    ImGuiEx.Text($"{(cnt > 0 ? $"{cnt} character(s) are excluded from buff item purchase. " : "")} Navigate to \"Functions, Exclusions, Order\" section to exclude a character.");
+                }
+                ImGui.Unindent();
                 ImGui.Unindent();
             }
         })

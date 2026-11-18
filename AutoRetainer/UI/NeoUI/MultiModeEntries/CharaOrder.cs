@@ -54,6 +54,12 @@ public class CharaOrder : NeoUIEntry
                     ImGuiEx.Tooltip("允许此角色使用部队增益");
                     if(!C.FullAutoGCDeliveryUseBuffFCAction) ImGuiEx.Tooltip(EColor.RedBright, $"你必须同时在全局设置中启用此功能，它才能生效。");
                     ImGuiEx.DragDropRepopulate("EnFcBuf", chr.NoFcBuffUse, ref chr.NoFcBuffUse);
+                    ImGui.SameLine();
+
+                    ImGuiEx.ButtonCheckbox(FontAwesomeIcon.Tape, ref chr.DisallowedFromBuffPurchase, color: !C.FullAutoGCDeliveryBuyBuffFCAction ? ImGuiColors.DalamudRed : ImGuiColors.TankBlue, inverted: true);
+                    ImGuiEx.Tooltip("Allow this character to buy FC buffs");
+                    if(!C.FullAutoGCDeliveryBuyBuffFCAction) ImGuiEx.Tooltip(EColor.RedBright, $"You are required to enable this function globally as well in order for it to work.");
+                    ImGuiEx.DragDropRepopulate("EnFcBuf2", chr.DisallowedFromBuffPurchase, ref chr.DisallowedFromBuffPurchase);
 
                     ImGui.SameLine();
 

@@ -19,9 +19,10 @@ public sealed unsafe class UserInterface : NeoUIEntry
         {
             if(ImGui.Checkbox(x, ref C.IgnoreEsc)) Utils.ResetEscIgnoreByWindows();
         })
-        .Checkbox("在状态栏仅显示最高优先级图标", () => ref C.StatusBarMSI)
-        .SliderInt(120f, "状态栏图标大小", () => ref C.StatusBarIconWidth, 32, 128)
-        .Checkbox("游戏启动时打开 AutoRetainer 窗口", () => ref C.DisplayOnStart)
+        .Checkbox("Display only most significant icon in status bar", () => ref C.StatusBarMSI)
+        .SliderInt(120f, "Status bar icon size", () => ref C.StatusBarIconWidth, 32, 128)
+        .Checkbox("Open AutoRetainer window on game start", () => ref C.DisplayOnStart)
+        .Checkbox("Open UI at plugin start", () => ref C.WindowDefaultOpen)
         //.Checkbox("Skip item sell/trade confirmation while plugin is active", () => ref C.SkipItemConfirmations)
         .Checkbox("启用标题界面按钮（需重启插件）", () => ref C.UseTitleScreenButton)
         .Checkbox("隐藏角色搜索", () => ref C.NoCharaSearch)
@@ -37,7 +38,4 @@ public sealed unsafe class UserInterface : NeoUIEntry
         .Checkbox("启用", () => ref C.EnableDeployablesSort)
         .TextWrapped("此排序仅影响视觉显示顺序，不会影响角色处理逻辑。")
         .Widget(() => UIUtils.DrawSortableEnumList("dorder", C.DeployablesVisualOrders));
-
-
-
 }

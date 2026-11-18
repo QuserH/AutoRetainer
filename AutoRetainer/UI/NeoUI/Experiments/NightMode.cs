@@ -5,18 +5,19 @@ internal class NightMode : ExperimentUIEntry
     public override string Name => "夜间模式";
     public override void Draw()
     {
-        ImGuiEx.TextWrapped($"夜间模式:\n" +
-                $"- 在登录画面等待选项将被强制启用\n" +
-                $"- 将强制启用内置帧率限制器\n" +
-                $"- 当窗口未聚焦且在等待时，游戏帧率将限制为 0.2\n" +
-                $"- 游戏画面可能会暂时卡死；重新激活游戏窗口后，请等待最多 5 秒恢复。\n" +
-                $"- 预设情况下，夜间模式仅启用潜艇自动化\n" +
-                $"- 禁用夜间模式后，紧急恢复模块会启动并重新登录游戏。");
-        if(ImGui.Checkbox("启用夜间模式", ref C.NightMode)) MultiMode.BailoutNightMode();
-        ImGui.Checkbox("显示夜间模式勾选框", ref C.ShowNightMode);
-        ImGui.Checkbox("在夜间模式下处理雇员", ref C.NightModeRetainers);
-        ImGui.Checkbox("在夜间模式下处理派遣", ref C.NightModeDeployables);
-        ImGui.Checkbox("使夜间模式状态持久化", ref C.NightModePersistent);
-        ImGui.Checkbox("使关机指令改为启动夜间模式而非关闭游戏", ref C.ShutdownMakesNightMode);
+        ImGuiEx.TextWrapped($"Night mode:\n" +
+                $"- Wait on login screen option is forcefully enabled\n" +
+                $"- Built-in FPS limiter restrictions forcefully applied\n" +
+                $"- While unfocused and awaiting, game is limited to 0.2 FPS\n" +
+                $"- It may look like game hung up, but let it up to 5 seconds to wake up after you reactivate game window.\n" +
+                $"- By default, only Deployables are enabled in Night mode\n" +
+                $"- After disabling Night mode, Bailout manager will activate to relog you back to the game.");
+        if(ImGui.Checkbox("Activate night mode", ref C.NightMode)) MultiMode.BailoutNightMode();
+        ImGui.Checkbox("Show Night mode checkbox", ref C.ShowNightMode);
+        ImGui.Checkbox("Do retainers in Night mode", ref C.NightModeRetainers);
+        ImGui.Checkbox("Do deployables in Night mode", ref C.NightModeDeployables);
+        ImGui.Checkbox("Make night mode status persistent", ref C.NightModePersistent);
+        ImGui.Checkbox("Make shutdown command activate night mode instead of shutting down the game", ref C.ShutdownMakesNightMode);
+        ImGui.Checkbox("Auto-activate temporary night mode when workstation is locked", ref C.NightModeAutoWsLocked);
     }
 }
