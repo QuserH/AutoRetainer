@@ -508,7 +508,7 @@ public unsafe class AutoRetainer : IDalamudPlugin
         {
             P.TaskManager.Abort();
             SchedulerMain.CharacterPostProcessLocked = null;
-            Notify.Success("Reset completed");
+            Notify.Success("重置完成");
         }
         else if(arguments.EqualsIgnoreCase("deliver"))
         {

@@ -300,7 +300,7 @@ internal static unsafe class MultiMode
                     data.Enabled = false;
                     data.WorkshopEnabled = false;
                     S.AnomalyWindow.Add("Too many interaction errors, current character is excluded.");
-                    DuoLog.Warning("Too many errors, current character is excluded.");
+                    DuoLog.Warning("错误过多，当前角色已被排除。");
                     Interactions.Clear();
                     return;
                 }
@@ -309,7 +309,7 @@ internal static unsafe class MultiMode
                     Enabled = false;
                     data.WorkshopEnabled = false;
                     S.AnomalyWindow.Add("Unknown error. Character is excluded.");
-                    DuoLog.Error("Fatal error. Please report this with logs.");
+                    DuoLog.Error("致命错误。请连同日志报告此问题。");
                     Interactions.Clear();
                     return;
                 }

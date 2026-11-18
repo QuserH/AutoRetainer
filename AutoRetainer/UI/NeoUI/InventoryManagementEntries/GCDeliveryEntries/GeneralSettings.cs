@@ -44,11 +44,11 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
         启用后:
         - 启用传送的角色将在多角色模式下自动筹备稀有品，并在军衔满足条件时按兑换计划购买物品。
         """)
-        .Checkbox("Enable Multi Mode Expert Delivery", () => ref C.FullAutoGCDelivery)
-        .Checkbox("Only when workstation is not locked", () => ref C.FullAutoGCDeliveryOnlyWsUnlocked)
-        .InputInt(150f, "Inventory slots remaining to trigger delivery, less or equal", () => ref C.FullAutoGCDeliveryInventory, "Only primary inventory is accounted for, not armory")
+        .Checkbox("启用多角色筹备交换", () => ref C.FullAutoGCDelivery)
+        .Checkbox("仅在工作台未锁定时触发", () => ref C.FullAutoGCDeliveryOnlyWsUnlocked)
+        .InputInt(150f, "触发筹备的剩余背包格数 (小于或等于)", () => ref C.FullAutoGCDeliveryInventory, "仅计算主要背包，不包含兵装库")
 
-        .Checkbox("Trigger on venture exhaustion", () => ref C.FullAutoGCDeliveryDeliverOnVentureExhaust, "This may cause situation where you will just go to GC exchange every login. Make sure you have a purchase plan to buy enough ventures set. ")
+        .Checkbox("探险币不足时触发", () => ref C.FullAutoGCDeliveryDeliverOnVentureExhaust, "此选项可能导致每次登录时都会前往军队兑换。请确保已设置足够探险币的方案。")
         .Indent()
         .InputInt(150f, "触发筹备的剩余探险币数量 (小于或等于)", () => ref C.FullAutoGCDeliveryDeliverOnVentureLessThan)
         .Unindent()
@@ -59,7 +59,7 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
         .InputInt(150f, "FC points remaining to trigger delivery, less or equal", () => ref C.FullAutoGCDeliveryDeliverOnFcPointsLessThan)
         .Unindent()
 
-        .Checkbox("Use Priority seal allowance, if possible", () => ref C.FullAutoGCDeliveryUseBuffItem)
+        .Checkbox("优先使用军票加成票券，如果可用的话", () => ref C.FullAutoGCDeliveryUseBuffItem)
         .Widget(() =>
         {
             if(C.FullAutoGCDeliveryUseBuffItem)
@@ -83,7 +83,7 @@ public sealed unsafe class GeneralSettings : InventoryManagementBase
                 {
                     if(Data != null)
                     {
-                        ImGuiEx.Checkbox($"Exclude {Data.NameWithWorldCensored}", ref Data.NoFcBuffUse);
+                        ImGuiEx.Checkbox($"排除 {Data.NameWithWorldCensored}", ref Data.NoFcBuffUse);
                     }
                     var cnt = C.OfflineData.Count(x => x.NoFcBuffUse);
                     ImGuiEx.Text($"{(cnt > 0 ? $"{cnt} character(s) are excluded from buff item usage. " : "")} Navigate to \"Functions, Exclusions, Order\" section to exclude a character.");

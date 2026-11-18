@@ -30,10 +30,10 @@ public class DeployablesTab : NeoUIEntry
     public DeployablesTab()
     {
         Builder = new NuiBuilder()
-        .Section("General")
-        .Checkbox($"Resend vessels when accessing the Voyage Control Panel", () => ref C.SubsAutoResend2)
-        .Checkbox($"Finalize all vessels before resending them", () => ref C.FinalizeBeforeResend)
-        .Checkbox($"Hide Airships from Deployables UI", () => ref C.HideAirships)
+        .Section("一般")
+        .Checkbox($"存取探险控制面板时重新派遣船只", () => ref C.SubsAutoResend2)
+        .Checkbox($"在重新派遣之前完成所有船只的结算", () => ref C.FinalizeBeforeResend)
+        .Checkbox($"在派遣界面隐藏飞空艇", () => ref C.HideAirships)
         .Checkbox("Show characters that don't have any deployables", () => ref C.ShowAllInWorkshop)
 
         .Section("计划设置")
@@ -428,11 +428,11 @@ public class DeployablesTab : NeoUIEntry
 
     private void AutomatedSubPlannerWidget()
     {
-        ImGui.Checkbox("Enable automatic sub registration", ref C.EnableAutomaticSubRegistration);
-        ImGui.Checkbox("Enable automatic components and plan change", ref C.EnableAutomaticComponentsAndPlanChange);
+        ImGui.Checkbox("启用自动注册潜水艇", ref C.EnableAutomaticSubRegistration);
+        ImGui.Checkbox("启用自动更换配件与计划", ref C.EnableAutomaticComponentsAndPlanChange);
         ImGui.SameLine();
-        ImGuiEx.TextV("Ranges:");
-        if(ImGuiEx.IconButton(FontAwesomeIcon.Copy, "Copy"))
+        ImGuiEx.TextV("范围:");
+        if(ImGuiEx.IconButton(FontAwesomeIcon.Copy, "复制"))
         {
             Copy(EzConfig.DefaultSerializationFactory.Serialize(C.LevelAndPartsData));
         }
@@ -510,7 +510,7 @@ public class DeployablesTab : NeoUIEntry
                     if(ImGui.BeginCombo($"##unlockplan{entry.GUID}", C.SubmarineUnlockPlans.Any(x => x.GUID == entry.SelectedUnlockPlan)
                     ? C.SubmarineUnlockPlans.First(x => x.GUID == entry.SelectedUnlockPlan)
                         .Name
-                    : "Not selected", ImGuiComboFlags.HeightLarge))
+                    : "未选择", ImGuiComboFlags.HeightLarge))
                     {
                         foreach(var plan in C.SubmarineUnlockPlans)
                         {

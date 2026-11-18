@@ -579,7 +579,7 @@ internal static unsafe class WorkshopUI
                 }
             }
             ImGui.Separator();
-            if(ImGui.CollapsingHeader("I have recently renamed this vessel"))
+            if(ImGui.CollapsingHeader("我最近重新命名了这艘潜艇"))
             {
                 if(ImGui.BeginCombo("##selprev", "选择更名前的潜艇名称", ImGuiComboFlags.HeightLarge))
                 {

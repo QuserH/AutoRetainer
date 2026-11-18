@@ -92,7 +92,7 @@ public static unsafe class RetainerConfig
         }
 
         ImGui.Separator();
-        ImGui.Checkbox($"Withdraw/Deposit Gil", ref adata.WithdrawGil);
+        ImGui.Checkbox($"存取金币", ref adata.WithdrawGil);
         if(adata.WithdrawGil)
         {
             if(ImGui.RadioButton("取出", !adata.Deposit)) adata.Deposit = false;
@@ -106,7 +106,7 @@ public static unsafe class RetainerConfig
         }
         if(ImGui.BeginPopup("CopyGilSettingsTo"))
         {
-            if(ImGui.Selectable("To all other retainers of this character"))
+            if(ImGui.Selectable("复制到此角色的其他所有雇员"))
             {
                 var cnt = 0;
                 foreach(var x in data.RetainerData)
@@ -116,9 +116,9 @@ public static unsafe class RetainerConfig
                     Utils.GetAdditionalData(data.CID, x.Name).WithdrawGilPercent = adata.WithdrawGilPercent;
                     Utils.GetAdditionalData(data.CID, x.Name).Deposit = adata.Deposit;
                 }
-                Notify.Info($"Changed {cnt} retainers");
+                Notify.Info($"已更改 {cnt} 名雇员");
             }
-            if(ImGui.Selectable("To all other retainers of ALL characters"))
+            if(ImGui.Selectable("复制到所有角色的其他所有雇员"))
             {
                 var cnt = 0;
                 foreach(var offlineData in C.OfflineData)
@@ -131,7 +131,7 @@ public static unsafe class RetainerConfig
                         cnt++;
                     }
                 }
-                Notify.Info($"Changed {cnt} retainers");
+                Notify.Info($"已更改 {cnt} 名雇员");
             }
             ImGui.EndPopup();
         }

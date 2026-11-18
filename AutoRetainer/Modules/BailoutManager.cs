@@ -100,7 +100,7 @@ internal static unsafe class BailoutManager
                         {
                             if(Utils.GenericThrottle)
                             {
-                                DuoLog.Warning($"[Bailout] Closing stuck SelectString window");
+                                DuoLog.Warning($"[Bailout] 关闭卡住的选项窗口");
                                 Callback.Fire(addon, true, -1);
                                 NoSelectString = Environment.TickCount64;
                             }
@@ -123,12 +123,12 @@ internal static unsafe class BailoutManager
                             {
                                 if(Utils.GenericThrottle)
                                 {
-                                    DuoLog.Warning($"[Bailout] Backing out of CharaSelect");
+                                    DuoLog.Warning($"[Bailout] 退出角色选择");
                                     addon->GetComponentButtonById(4)->ClickAddonButton(addon);
                                     CharaSelectStuck = Environment.TickCount64;
                                     EzThrottler.Throttle("MultiModeAfkOnTitleLogin", 60000, true);
                                     IsLogOnTitleEnabled = true;
-                                    S.AnomalyWindow.Add("Stuck character select encountered. Retrying login...");
+                                    S.AnomalyWindow.Add("角色选择界面卡住，正在重新尝试登录……");
                                 }
                             }
                         }
@@ -155,13 +155,13 @@ internal static unsafe class BailoutManager
                                 addon->GetComponentButtonById(4)->ClickAddonButton(addon);
                                 EzThrottler.Throttle("MultiModeAfkOnTitleLogin", 60000, true);
                                 IsLogOnTitleEnabled = true;
-                                S.AnomalyWindow.Add("Disconnected. Trying to log back in...");
+                                S.AnomalyWindow.Add("连接已断开，正在尝试重新登录……");
                             }
                         }
                     }
                     else if(EzThrottler.Throttle("NotifyRestart", TimeSpan.FromDays(10)))
                     {
-                        S.AnomalyWindow.Add("You need to restart your game to continue playing.");
+                        S.AnomalyWindow.Add("登录会话已失效，需要重启游戏才能继续。");
                     }
                 }
             }
